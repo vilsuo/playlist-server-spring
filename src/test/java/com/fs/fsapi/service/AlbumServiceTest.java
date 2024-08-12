@@ -6,20 +6,17 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.util.Optional;
-
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.fs.fsapi.domain.Album;
 import com.fs.fsapi.domain.AlbumCreation;
@@ -28,16 +25,14 @@ import com.fs.fsapi.repository.AlbumRepository;
 
 import jakarta.validation.ConstraintViolationException;
 
-//@ExtendWith(SpringExtension.class)
-//@SpringBootTest
-@DataJpaTest
-@Import(ValidationAutoConfiguration.class)
+@Testcontainers
+@SpringBootTest
 public class AlbumServiceTest {
 
-  @Mock
+  @Autowired
   private AlbumRepository repository;
 
-  @InjectMocks
+  @Autowired
   private AlbumService service;
 
   private final AlbumCreation albumValues = new AlbumCreation(
@@ -56,39 +51,53 @@ public class AlbumServiceTest {
     "Thrash"
   );
 
-  private final Integer id = 1947;
-  private final String addDate = "2022-05-14T11:40:01.000Z";
+  @Container
+  static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
+    "postgres:16-alpine"
+  );
 
-  private Album target;
+  @BeforeAll
+  static void beforeAll() {
+    postgres.start();
+  }
+
+  @AfterAll
+  static void afterAll() {
+    postgres.stop();
+  }
+
+  // register the database connection properties dynamically obtained 
+  // from the Postgres container using Spring Boot’s DynamicPropertyRegistry.
+  @DynamicPropertySource
+  static void configureProperties(DynamicPropertyRegistry registry) {
+    registry.add("spring.datasource.url", postgres::getJdbcUrl);
+    registry.add("spring.datasource.username", postgres::getUsername);
+    registry.add("spring.datasource.password", postgres::getPassword);
+  }
 
   @BeforeEach
   void setUpTarget() {
-    this.target = new Album(
-      id,
-      "qJVktESKhKY",
-      "Devastation",
-      "Idolatry",
-      1991,
-      "Thrash",
-      addDate
-    );
+    repository.deleteAll();
   }
 
   @Test
   public void findOneReturnsExistingAlbumTest(){
+    Album target = service.createIfNotExists(newAlbumValues);
     Integer id = target.getId();
-
-    given(repository.findById(id)).willReturn(Optional.of(target));
+    
+    //given(repository.findById(id)).willReturn(Optional.of(target));
 
     var result = service.findOne(id);
     assertEquals(target, result);
+
+    //verify(repository, times(1)).findById(id);
   }
 
   @Test
   public void findOneThrowsIfNotFoundTest(){
-    Integer id = target.getId();
+    Integer id = 123;
 
-    given(repository.findById(id)).willReturn(Optional.empty());
+    //given(repository.findById(id)).willReturn(Optional.empty());
 
     Exception e = assertThrows(
       CustomDataNotFoundException.class,
@@ -126,6 +135,5 @@ public class AlbumServiceTest {
     );
   }
   */
-
 
 }

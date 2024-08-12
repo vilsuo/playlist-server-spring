@@ -1,4 +1,4 @@
-package com.fs.fsapi;
+package com.fs.fsapi.album;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -10,14 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.fs.fsapi.domain.Album;
-import com.fs.fsapi.domain.AlbumCreation;
-
-import lombok.RequiredArgsConstructor;
-
 //@RequiredArgsConstructor(onConstructor=@__({@Autowired}))
 @SpringBootTest(classes = AlbumMapperImpl.class)
-class AlbumMapperTest {
+public class AlbumMapperTest {
 
   @Autowired
   private AlbumMapper mapper;
@@ -32,10 +27,10 @@ class AlbumMapperTest {
 
   @Nested
   @DisplayName("albumCreationToAlbum")
-  class AlbumCreationToAlbum {
+  public class AlbumCreationToAlbum {
 
     @Test
-    void mapsNullToNull() {
+    public void mapsNullToNull() {
       AlbumCreation source = null;
 
       var target = mapper.albumCreationToAlbum(source);
@@ -43,7 +38,7 @@ class AlbumMapperTest {
     }
 
     @Test
-    void mapsNullPropertiesToNullProperties() {
+    public void mapsNullPropertiesToNullProperties() {
       AlbumCreation source = new AlbumCreation();
 
       var target = mapper.albumCreationToAlbum(source);
@@ -57,7 +52,7 @@ class AlbumMapperTest {
     }
 
     @Test
-    void mapsPropertiesToProperties() {
+    public void mapsPropertiesToProperties() {
       var target = mapper.albumCreationToAlbum(source);
       assertEquals(source.getVideoId(), target.getVideoId());
       assertEquals(source.getArtist(), target.getArtist());
@@ -69,7 +64,7 @@ class AlbumMapperTest {
 
   @Nested
   @DisplayName("updateAlbumFromAlbumCreation")
-  class UpdateAlbumFromAlbumCreation {
+  public class UpdateAlbumFromAlbumCreation {
 
     private final Integer id = 1947;
     private final String addDate = "2022-05-14T11:40:01.000Z";
@@ -77,7 +72,7 @@ class AlbumMapperTest {
     private Album target;
 
     @BeforeEach
-    void setUpTarget() {
+    public void setUpTarget() {
       this.target = new Album(
         id,
         "qJVktESKhKY",
@@ -90,7 +85,7 @@ class AlbumMapperTest {
     }
 
     @Test
-    void setsNonNullValues() {
+    public void setsNonNullValues() {
       mapper.updateAlbumFromAlbumCreation(source, target);
 
       assertEquals(id, target.getId());
@@ -105,7 +100,7 @@ class AlbumMapperTest {
     }
 
     @Test
-    void doesNotSetValuesToNull() {
+    public void doesNotSetValuesToNull() {
       AlbumCreation source = new AlbumCreation();
 
       mapper.updateAlbumFromAlbumCreation(source, target);

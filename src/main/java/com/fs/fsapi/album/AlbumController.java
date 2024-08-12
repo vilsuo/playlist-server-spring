@@ -1,12 +1,8 @@
-package com.fs.fsapi.controller;
+package com.fs.fsapi.album;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import com.fs.fsapi.domain.Album;
-import com.fs.fsapi.domain.AlbumCreation;
-import com.fs.fsapi.service.AlbumService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -54,7 +50,7 @@ public class AlbumController {
   public ResponseEntity<Album> getAlbum(@PathVariable Integer id) {
     return ResponseEntity
       .ok()
-      .body(service.findOne(null));
+      .body(service.findOne(id));
   }
 
   @PutMapping("/{id}")
@@ -75,5 +71,4 @@ public class AlbumController {
       .noContent()
       .build();
   }
-  
 }

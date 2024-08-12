@@ -1,4 +1,4 @@
-package com.fs.fsapi.service;
+package com.fs.fsapi.album;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -6,12 +6,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import com.fs.fsapi.AlbumMapper;
-import com.fs.fsapi.domain.Album;
-import com.fs.fsapi.domain.AlbumCreation;
 import com.fs.fsapi.exceptions.CustomDataNotFoundException;
 import com.fs.fsapi.exceptions.CustomParameterConstraintException;
-import com.fs.fsapi.repository.AlbumRepository;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -26,7 +22,8 @@ TODO
   - already exists
   - validation
   - check for null values
-- create a commmon base class (for Album & AlbumCreation) where validation happens?
+- create a common base class (for Album & AlbumCreation) where validation happens?
+
 - handle addDate
   - manually create or create by annotation?
   - save as Date object or String

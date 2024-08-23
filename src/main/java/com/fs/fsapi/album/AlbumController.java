@@ -34,12 +34,12 @@ public class AlbumController {
   
   @PostMapping
   public ResponseEntity<Album> postAlbum(@Valid @RequestBody AlbumCreation values) {
-    Album album = service.createIfNotExists(values);
+    Album album = service.create(values);
 
     URI uri = ServletUriComponentsBuilder
       .fromCurrentRequest()
       .path("/{id}")
-      .buildAndExpand(album).toUri();
+      .buildAndExpand(album.getId()).toUri();
     
     return ResponseEntity
       .created(uri)

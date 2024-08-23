@@ -31,18 +31,15 @@ public class VideoIdValidator implements ConstraintValidator<VideoId, String> {
 
       if (!isCorrectLength) {
         String message = String.format(
-          "The video id value '%s' must be %d characters long",
-          object, VIDEO_ID_LENGTH
+          "The video id must be %d characters long", VIDEO_ID_LENGTH
         );
 
         context.buildConstraintViolationWithTemplate(message)
           .addConstraintViolation();
 
       } else if (!matchesPattern) {
-        String message = String.format(
-          "The video id value '%s' must consist of characters "
-          + "'a-z', 'A-Z', '0-9', '-'' and '_'", object
-        );
+        String message = "The video id must consist of characters "
+          + "'a-z', 'A-Z', '0-9', '-'' and '_'";
 
         context.buildConstraintViolationWithTemplate(message)
           .addConstraintViolation();

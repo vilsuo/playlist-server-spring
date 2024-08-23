@@ -3,11 +3,13 @@ package com.fs.fsapi.exceptions;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,8 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @ControllerAdvice
 public class CustomControllerAdvice {
 
-  // When a validation error occurs in a Spring application,
-  // a MethodArgumentNotValidException is thrown.
+  // Exception to be thrown when validation on an argument annotated with @Valid fails
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidExceptions(
     MethodArgumentNotValidException e
@@ -36,6 +37,39 @@ public class CustomControllerAdvice {
       )  
       .collect(Collectors.toList());  
       
+    return new ResponseEntity<>(
+      new ErrorResponse(status, message, validationErrors),
+      status
+    );
+  }
+
+  @ExceptionHandler(HandlerMethodValidationException.class)
+  public ResponseEntity<ErrorResponse> handleValidationException(
+    HandlerMethodValidationException e
+  ) {
+    HttpStatus status = HttpStatus.valueOf(e.getStatusCode().value());
+    String message = e.getReason();
+    
+    List<ApiValidationError> validationErrors = e.getAllValidationResults()
+      .stream()
+      .map(err -> {
+        String parameter = err.getMethodParameter().getParameterName();
+
+        String validationMessage = err.getResolvableErrors()
+          .stream()
+          .map(MessageSourceResolvable::getDefaultMessage)
+          .collect(Collectors.joining(", "));
+
+        Object obj = err.getArgument();
+
+        return new ApiValidationError(
+          parameter,
+          validationMessage,
+          obj
+        );
+      })
+      .collect(Collectors.toList());  
+
     return new ResponseEntity<>(
       new ErrorResponse(status, message, validationErrors),
       status
@@ -81,14 +115,5 @@ public class CustomControllerAdvice {
       status
     );
   }
-
-  /*
-  private String getStackTrace(Exception e) {
-    StringWriter stringWriter = new StringWriter();
-    PrintWriter printWriter = new PrintWriter(stringWriter);
-    e.printStackTrace(printWriter);
-
-    return stringWriter.toString();
-  }
-  */
+  
 }

@@ -19,7 +19,7 @@ public class CustomControllerAdvice {
 
   // Exception to be thrown when validation on an argument annotated with @Valid fails
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidExceptions(
+  public ResponseEntity<ErrorDataResponse<List<ApiValidationError>>> handleMethodArgumentNotValidExceptions(
     MethodArgumentNotValidException e
   ) {
     HttpStatus status = HttpStatus.BAD_REQUEST;
@@ -38,13 +38,13 @@ public class CustomControllerAdvice {
       .collect(Collectors.toList());  
       
     return new ResponseEntity<>(
-      new ErrorResponse(status, message, validationErrors),
+      new ErrorDataResponse<>(status, message, validationErrors),
       status
     );
   }
 
   @ExceptionHandler(HandlerMethodValidationException.class)
-  public ResponseEntity<ErrorResponse> handleValidationException(
+  public ResponseEntity<ErrorDataResponse<List<ApiValidationError>>> handleValidationException(
     HandlerMethodValidationException e
   ) {
     HttpStatus status = HttpStatus.valueOf(e.getStatusCode().value());
@@ -71,7 +71,7 @@ public class CustomControllerAdvice {
       .collect(Collectors.toList());  
 
     return new ResponseEntity<>(
-      new ErrorResponse(status, message, validationErrors),
+      new ErrorDataResponse<>(status, message, validationErrors),
       status
     );
   }

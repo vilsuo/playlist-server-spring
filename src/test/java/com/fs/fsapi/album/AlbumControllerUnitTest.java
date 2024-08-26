@@ -19,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -323,6 +324,21 @@ public class AlbumControllerUnitTest {
       controller.deleteAlbum(id);
 
       verify(service).remove(id);
+    }
+  }
+
+  @Nested
+  @DisplayName("downloadAlbums")
+  public class Download {
+
+    @Test
+    public void shouldSetContentDispositionHeaderTest() {
+      when(service.findAll()).thenReturn(List.of());
+
+      ResponseEntity<List<Album>> ent = controller.downloadAlbums();
+      ContentDisposition disp = ent.getHeaders().getContentDisposition();
+
+      assertTrue(disp.isAttachment());
     }
   }
 }

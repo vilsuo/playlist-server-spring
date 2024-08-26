@@ -8,8 +8,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import java.net.URI;
+import java.time.Instant;
 import java.util.List;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -71,4 +73,23 @@ public class AlbumController {
       .noContent()
       .build();
   }
+
+  @GetMapping("/download")
+  public ResponseEntity<List<Album>> downloadAlbums() {
+    HttpHeaders headers = new HttpHeaders();
+    headers.add(
+      HttpHeaders.CONTENT_DISPOSITION,
+      String.format("attachment; filename=\"%s\"", createFilename())
+    );
+
+    return ResponseEntity
+      .ok()
+      .headers(headers)
+      .body(service.findAll());
+  }
+
+  private String createFilename() {
+    return String.format("albums-%d.json", Instant.now().toEpochMilli());
+  }
+  
 }

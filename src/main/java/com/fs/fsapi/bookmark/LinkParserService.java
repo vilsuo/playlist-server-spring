@@ -19,9 +19,6 @@ public class LinkParserService {
   // reluctant one or more times
   private final Pattern TEXT_PATTERN = Pattern.compile("(.+?) - (.+?) \\((\\d+)\\)$");
 
-  // instead get with the "exact" query parameter "v" value (no length required)
-  private final int VIDEO_ID_LENGTH = 11;
-  
   public List<AlbumBase> createAlbumBases(List<FolderLink> folderLinks) {
     return folderLinks.stream()
       .map(folderLink -> {
@@ -47,15 +44,9 @@ public class LinkParserService {
     if (!href.startsWith(HREF_PREFIX)) {
       throw new RuntimeException("Link href attribute is not youtube");
     }
-  
-    if (href.length() < HREF_PREFIX.length() + VIDEO_ID_LENGTH) {
-      throw new Error("Link href attribute is too short");
-    }
-  
-    return href.substring(
-      HREF_PREFIX.length(),
-      HREF_PREFIX.length() + VIDEO_ID_LENGTH
-    );
+
+    // return the first query parameter "v" value
+    return href.substring(HREF_PREFIX.length()).split("&")[0];
   };
 
   /**

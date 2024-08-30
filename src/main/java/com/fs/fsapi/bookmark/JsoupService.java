@@ -13,9 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 // TODO
-// - remove Link class
-// - name FolderLink to Link
-// 
 // - create custom exception class, with more info about exception (folder location etc.)
 
 @Service
@@ -77,11 +74,9 @@ public class JsoupService {
 
           folderLinks.add(
             new FolderLink(
-              new Link(
-                link.text(),
-                link.attribute("href").getValue(),
-                link.attribute("add_date").getValue()
-              ),
+              link.text(),
+              link.attribute("href").getValue(),
+              link.attribute("add_date").getValue(),
               text
             )
           );

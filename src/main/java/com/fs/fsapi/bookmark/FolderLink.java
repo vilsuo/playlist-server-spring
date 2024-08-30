@@ -1,16 +1,17 @@
 package com.fs.fsapi.bookmark;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-public class FolderLink extends Link {
+@AllArgsConstructor
+public class FolderLink {
   
+  private String text;
+
+  private String href;
+
+  private String addDate;
+
   private String folder;
-
-  public FolderLink(Link link, String folder) {
-    super(link.getText(), link.getHref(), link.getAddDate());
-
-    this.folder = folder;
-  }
-  
 }

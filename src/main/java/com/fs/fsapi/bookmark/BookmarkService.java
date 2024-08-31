@@ -12,12 +12,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BookmarkService {
   
-  private final JsoupService jsoup;
+  private final HtmlParserService htmlService;
 
-  private final LinkParserService parser;
+  private final LinkParserService linkService;
 
   public List<AlbumBase> getAlbumBases(MultipartFile file, String name) throws IOException {
-    return parser.createAlbumBases(jsoup.createFolderLinks(file, name));
+    return linkService.createAlbumBases(htmlService.createFolderLinks(file, name));
   }
   
 }

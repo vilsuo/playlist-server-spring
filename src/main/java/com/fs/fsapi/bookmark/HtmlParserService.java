@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 // - create custom exception class, with more info about exception (folder location etc.)
 
 @Service
-public class JsoupService {
+public class HtmlParserService {
 
   private final Pattern HEADER_PATTERN = Pattern.compile("h[1-6]");
 

@@ -27,12 +27,12 @@ public class JsoupService {
   }
 
   /**
-   * Find a header element with the given text content.
+   * Find a header element with the given text content. Case sensitive.
    * 
    * @param doc Document to search in
    * @param headerText text content of the header
    * @return the header element
-   * @throws RuntimeException unless a single such header is found
+   * @throws RuntimeException unless an unique such header is found
    */
   private Element findHeader(Document doc, String headerText) {
     Elements headers = doc.select(
@@ -40,7 +40,7 @@ public class JsoupService {
     );
 
     if (headers.isEmpty()) {
-      throw new RuntimeException("header '" + headerText + "' was not found");
+      throw new RuntimeException("Header '" + headerText + "' was not found");
 
     } else if (headers.size() > 1) {
       throw new RuntimeException("Multiple headers '" + headerText + "' were found");
@@ -50,7 +50,7 @@ public class JsoupService {
   }
 
   private List<FolderLink> parseFolder(Document doc, Element h, List<FolderLink> folderLinks) {
-    String text = h.text();
+    final String text = h.text();
 
     // find the dl element following the header
     Element dlElement = h.nextElementSibling();
@@ -70,20 +70,22 @@ public class JsoupService {
       .skip(1) // first element is paragraph, so skip it
       .forEach(dt -> {
         if (isLinkDtElement(dt)) {
+          // the only child is link element
           Element link = dt.child(0);
 
           folderLinks.add(
             new FolderLink(
-              link.text(),
-              link.attribute("href").getValue(),
-              link.attribute("add_date").getValue(),
-              text
+              link.text(), // empty default
+              link.attribute("href").getValue(), // empty default
+              link.attribute("add_date").getValue(), // empty default
+              text // empty default
             )
           );
 
         } else if (isFolderDtElement(dt)) {
-          String newText = dt.child(0).text();
-          parseFolder(doc, findHeader(doc, newText), folderLinks);
+          // the first child is header element
+          Element subH = dt.child(0);
+          parseFolder(doc, subH, folderLinks);
 
         } else {
           throw new RuntimeException(

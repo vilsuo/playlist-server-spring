@@ -12,8 +12,8 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-// TODO
-// - create custom exception class, with more info about exception (folder location etc.)
+import com.fs.fsapi.exceptions.CustomHtmlParsingException;
+import com.fs.fsapi.exceptions.CustomParameterConstraintException;
 
 @Service
 public class HtmlParserService {
@@ -32,7 +32,7 @@ public class HtmlParserService {
    * @param doc Document to search in
    * @param headerText text content of the header
    * @return the header element
-   * @throws RuntimeException unless an unique such header is found
+   * @throws CustomParameterConstraintException unless an unique such header is found
    */
   private Element findHeader(Document doc, String headerText) {
     Elements headers = doc.select(
@@ -40,10 +40,14 @@ public class HtmlParserService {
     );
 
     if (headers.isEmpty()) {
-      throw new RuntimeException("Header '" + headerText + "' was not found");
+      throw new CustomParameterConstraintException(
+        "Could not find a header with the text content '" + headerText + "'"
+      );
 
     } else if (headers.size() > 1) {
-      throw new RuntimeException("Multiple headers '" + headerText + "' were found");
+      throw new CustomParameterConstraintException(
+        "Found multiple headers with the text content '" + headerText + "'"
+      );
     }
 
     return headers.first();
@@ -52,44 +56,48 @@ public class HtmlParserService {
   private List<FolderLink> parseFolder(Document doc, Element h, List<FolderLink> folderLinks) {
     final String text = h.text();
 
-    // find the dl element following the header
-    Element dlElement = h.nextElementSibling();
+    // the next element should be a dl element
+    Element next = h.nextElementSibling();
 
-    if (dlElement == null) {
-      throw new RuntimeException(
-        "Header '" + text + "' does not have sibling elements"
+    if (next == null) {
+      throw new CustomHtmlParsingException(
+        "Header with the text content '" + text
+        + "' does not have any sibling elements", h
       );
 
-    } else if (!elementHasTag(dlElement, Tag.DL)) {
-      throw new RuntimeException(
-        "The next element of header '" + text + "' was not a '" + Tag.DL + "' element"
+    } else if (!elementHasTag(next, Tag.DL)) {
+      throw new CustomHtmlParsingException(
+        "Expected the next sibling element of header with text content '"
+        + text + "' to be '" + Tag.DL.name + "' element, instead found '"
+        + getElementName(next) + "' element", next
       );
     }
 
-    dlElement.children().stream()
+    next.children().stream()
       .skip(1) // first element is paragraph, so skip it
-      .forEach(dt -> {
-        if (isLinkDtElement(dt)) {
+      .forEach(element -> {
+        if (isLinkDtElement(element)) {
           // the only child is link element
-          Element link = dt.child(0);
+          Element a = element.child(0);
 
           folderLinks.add(
             new FolderLink(
-              link.text(), // empty default
-              link.attribute("href").getValue(), // empty default
-              link.attribute("add_date").getValue(), // empty default
+              a.text(), // empty default
+              a.attribute("href").getValue(), // empty default
+              a.attribute("add_date").getValue(), // empty default
               text // empty default
             )
           );
 
-        } else if (isFolderDtElement(dt)) {
+        } else if (isFolderDtElement(element)) {
           // the first child is header element
-          Element subH = dt.child(0);
-          parseFolder(doc, subH, folderLinks);
+          Element hSub = element.child(0);
+          parseFolder(doc, hSub, folderLinks);
 
         } else {
-          throw new RuntimeException(
-            "Found unexpected child element type of '" + Tag.DL + "' element"
+          throw new CustomHtmlParsingException(
+            "A child element of '" + Tag.DL.name
+            + "' has unexpected structure", element
           );
         }
       });
@@ -97,8 +105,12 @@ public class HtmlParserService {
     return folderLinks;
   }
 
+  private String getElementName(Element e) {
+    return e.normalName();
+  }
+
   private boolean elementHasTag(Element e, Tag tag) {
-    return tag.name.equals(e.normalName());
+    return tag.name.equals(getElementName(e));
   }
 
   /**
@@ -136,7 +148,7 @@ public class HtmlParserService {
   private boolean isFolderDtElement(Element e) {
     return elementHasTag(e, Tag.DT)
       && (e.childrenSize() == 3)
-      && HEADER_PATTERN.matcher(e.child(0).normalName()).matches()
+      && HEADER_PATTERN.matcher(getElementName(e.child(0))).matches()
       && elementHasTag(e.child(1), Tag.DL)
       && elementHasTag(e.child(2), Tag.P);
   }

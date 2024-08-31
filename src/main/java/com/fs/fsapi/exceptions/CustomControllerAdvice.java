@@ -3,6 +3,7 @@ package com.fs.fsapi.exceptions;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.jsoup.nodes.Element;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -90,7 +91,9 @@ public class CustomControllerAdvice {
   }
 
   @ExceptionHandler(CustomParameterConstraintException.class)
-  public ResponseEntity<ErrorResponse> handleCustomParameterConstraintExceptions(Exception e) {
+  public ResponseEntity<ErrorResponse> handleCustomParameterConstraintExceptions(
+    Exception e
+  ) {
     HttpStatus status = HttpStatus.BAD_REQUEST;
     String message = e.getMessage();
     
@@ -98,6 +101,23 @@ public class CustomControllerAdvice {
 
     return new ResponseEntity<>(
       new ErrorResponse(status, message),
+      status
+    );
+  }
+
+  @ExceptionHandler(CustomHtmlParsingException.class)
+  public ResponseEntity<ErrorDataResponse<String>> handleCustomHtmlParsingExceptions(
+    CustomHtmlParsingException e
+  ) {
+    HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY;
+    String message = e.getMessage();
+    
+    log.info(message);
+
+    Element element = e.getElement();
+
+    return new ResponseEntity<>(
+      new ErrorDataResponse<>(status, message, element.toString()),
       status
     );
   }

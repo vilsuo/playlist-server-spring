@@ -1,6 +1,7 @@
 package com.fs.fsapi.bookmark;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,7 +15,9 @@ import lombok.Getter;
 @Service
 public class LinkParserService {
 
-  private final String HREF_PREFIX = "https://www.youtube.com/watch?v=";
+  private final String HREF_PREFIX = "https://www.youtube.com/watch?";
+
+  private final String KEY_NAME = "v";
 
   // reluctant one or more times
   private final Pattern TEXT_PATTERN = Pattern.compile("(.+?) - (.+?) \\((\\d+)\\)$");
@@ -36,8 +39,15 @@ public class LinkParserService {
       .collect(Collectors.toList());
   }
 
+  /**
+   * Extract the query paramenter {@link LinkParserService#KEY_NAME} value
+   * from an URL starting with {@link LinkParserService#HREF_PREFIX}.
+   * 
+   * @param href Link element href attribute value
+   * @return the query parameter value
+   */
   private String extractVideoId (String href) {
-    if (href == null) {
+    if (href == null || href.isEmpty()) {
       throw new RuntimeException("Link href attribute is missing");
     }
   
@@ -45,8 +55,19 @@ public class LinkParserService {
       throw new RuntimeException("Link href attribute is not youtube");
     }
 
-    // return the first query parameter "v" value
-    return href.substring(HREF_PREFIX.length()).split("&")[0];
+    // take the query parameter key=value pairs
+    String[] keyValuePairs = href.substring(HREF_PREFIX.length()).split("&");
+
+    String keyAndValue = Arrays.stream(keyValuePairs)
+      .filter(pair -> pair.startsWith(KEY_NAME + "="))
+      .findFirst()
+      .orElseThrow(() -> new RuntimeException(
+        "Link href '" + href + "' does not contain a query parameter '"
+        + KEY_NAME + "' value"
+      ));
+
+    // return the value of the key and value pair
+    return keyAndValue.split("=", 2)[1];
   };
 
   /**
@@ -55,7 +76,7 @@ public class LinkParserService {
    * @return ISO-8601 date string
    */
   private String parseAddDate(String addDate) {
-    if (addDate.isBlank()) {
+    if (addDate == null || addDate.isEmpty()) {
       throw new RuntimeException("Link add_date attribute is missing");
     }
   

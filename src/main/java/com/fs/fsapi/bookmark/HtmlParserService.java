@@ -23,7 +23,7 @@ public class HtmlParserService {
   public List<FolderLink> createFolderLinks(MultipartFile file, String headerText) throws IOException {
     Document doc = Jsoup.parse(file.getInputStream(), null, "");
 
-    return parseFolder(doc, findHeader(doc, headerText), new ArrayList<>());
+    return parseFolder(findHeader(doc, headerText), new ArrayList<>());
   }
 
   /**
@@ -53,7 +53,7 @@ public class HtmlParserService {
     return headers.first();
   }
 
-  private List<FolderLink> parseFolder(Document doc, Element h, List<FolderLink> folderLinks) {
+  private List<FolderLink> parseFolder(Element h, List<FolderLink> folderLinks) {
     final String text = h.text();
 
     // the next element should be a dl element
@@ -62,7 +62,7 @@ public class HtmlParserService {
     if (next == null) {
       throw new CustomHtmlParsingException(
         "Header with the text content '" + text
-        + "' does not have any sibling elements", h
+        + "' does not have a next sibling", h
       );
 
     } else if (!elementHasTag(next, Tag.DL)) {
@@ -92,7 +92,7 @@ public class HtmlParserService {
         } else if (isFolderDtElement(element)) {
           // the first child is header element
           Element hSub = element.child(0);
-          parseFolder(doc, hSub, folderLinks);
+          parseFolder(hSub, folderLinks);
 
         } else {
           throw new CustomHtmlParsingException(

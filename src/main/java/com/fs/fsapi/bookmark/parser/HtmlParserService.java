@@ -1,4 +1,4 @@
-package com.fs.fsapi.bookmark;
+package com.fs.fsapi.bookmark.parser;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -54,7 +54,7 @@ public class HtmlParserService {
   }
 
   private List<FolderLink> parseFolder(Element h, List<FolderLink> folderLinks) {
-    final String text = h.text();
+    final String text = h.text(); // empty default
 
     // the next element should be a dl element
     Element next = h.nextElementSibling();
@@ -79,15 +79,7 @@ public class HtmlParserService {
         if (isLinkDtElement(element)) {
           // the only child is link element
           Element a = element.child(0);
-
-          folderLinks.add(
-            new FolderLink(
-              a.text(), // empty default
-              a.attribute("href").getValue(), // empty default
-              a.attribute("add_date").getValue(), // empty default
-              text // empty default
-            )
-          );
+          folderLinks.add(new FolderLink(a, text));
 
         } else if (isFolderDtElement(element)) {
           // the first child is header element

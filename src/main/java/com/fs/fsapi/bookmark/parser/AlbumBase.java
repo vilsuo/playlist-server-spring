@@ -1,4 +1,4 @@
-package com.fs.fsapi.bookmark;
+package com.fs.fsapi.bookmark.parser;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class AlbumBase {
+  
   private String videoId;
 
   private String artist;

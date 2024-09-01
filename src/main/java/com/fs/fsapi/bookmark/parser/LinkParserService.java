@@ -1,4 +1,4 @@
-package com.fs.fsapi.bookmark;
+package com.fs.fsapi.bookmark.parser;
 
 import java.time.Instant;
 import java.util.Arrays;
@@ -8,6 +8,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+
+import com.fs.fsapi.exceptions.CustomHtmlParsingException;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,14 +29,22 @@ public class LinkParserService {
       .map(folderLink -> {
         TextDetails details = extractTextContentDetails(folderLink.getText());
 
-        return new AlbumBase(
-          extractVideoId(folderLink.getHref()),
-          details.getArtist(),
-          details.getTitle(),
-          details.getPublished(),
-          folderLink.getFolder(),
-          parseAddDate(folderLink.getAddDate())
-        );
+        try {
+          return new AlbumBase(
+            extractVideoId(folderLink.getHref()),
+            details.getArtist(),
+            details.getTitle(),
+            details.getPublished(),
+            folderLink.getFolderName(),
+            parseAddDate(folderLink.getAddDate())
+          );
+          
+        } catch (CustomLinkParsingException ex) {
+          throw new CustomHtmlParsingException(
+            ex.getMessage(),
+            folderLink.getElement()
+          );
+        }
       })
       .collect(Collectors.toList());
   }
@@ -47,12 +57,17 @@ public class LinkParserService {
    * @return the query parameter value
    */
   private String extractVideoId (String href) {
-    if (href == null || href.isEmpty()) {
-      throw new RuntimeException("Link href attribute is missing");
+    if (href == null) {
+      throw new CustomLinkParsingException(
+        "Link href attribute is missing"
+      );
     }
   
     if (!href.startsWith(HREF_PREFIX)) {
-      throw new RuntimeException("Link href attribute is not youtube");
+      throw new CustomLinkParsingException(
+        "Link href attribute '" + href
+        + "' must start with the prefix '" + HREF_PREFIX + "'"
+      );
     }
 
     // take the query parameter key=value pairs
@@ -61,9 +76,9 @@ public class LinkParserService {
     String keyAndValue = Arrays.stream(keyValuePairs)
       .filter(pair -> pair.startsWith(KEY_NAME + "="))
       .findFirst()
-      .orElseThrow(() -> new RuntimeException(
-        "Link href '" + href + "' does not contain a query parameter '"
-        + KEY_NAME + "' value"
+      .orElseThrow(() -> new CustomLinkParsingException(
+        "Link href attribute '" + href
+        + "' is missing a required query parameter '" + KEY_NAME + "'"
       ));
 
     // return the value of the key and value pair
@@ -72,12 +87,15 @@ public class LinkParserService {
 
   /**
    * Convert Epoch seconds to date representation in ISO-8601 format
+   * 
    * @param addDate UTC seconds string
    * @return ISO-8601 date string
    */
   private String parseAddDate(String addDate) {
-    if (addDate == null || addDate.isEmpty()) {
-      throw new RuntimeException("Link add_date attribute is missing");
+    if (addDate == null) {
+      throw new CustomLinkParsingException(
+        "Link add_date attribute is missing"
+      );
     }
   
     try {
@@ -85,7 +103,9 @@ public class LinkParserService {
       return Instant.ofEpochSecond(utcSeconds).toString();
 
     } catch (NumberFormatException e) {
-      throw new RuntimeException("Link add date '" + addDate + "' is not a valid number");
+      throw new CustomLinkParsingException(
+        "Link add date attribute '" + addDate + "' is not a valid number"
+      );
     }
   };
 
@@ -100,7 +120,7 @@ public class LinkParserService {
       );
     }
 
-    throw new RuntimeException(
+    throw new CustomLinkParsingException(
       "Link text content '" + text + "' is in incorrect format"
     );
   };
@@ -115,4 +135,13 @@ public class LinkParserService {
 
     final int published;
   }
+
+  @Getter
+  public class CustomLinkParsingException extends RuntimeException {
+
+    public CustomLinkParsingException(String message) {
+      super(message);
+    }
+  }
+
 }

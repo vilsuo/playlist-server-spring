@@ -59,7 +59,7 @@ public class LinkParserService {
   private String extractVideoId (String href) {
     if (href == null) {
       throw new CustomLinkParsingException(
-        "Link href attribute is missing"
+        "Link 'href' attribute is missing"
       );
     }
   
@@ -94,7 +94,7 @@ public class LinkParserService {
   private String parseAddDate(String addDate) {
     if (addDate == null) {
       throw new CustomLinkParsingException(
-        "Link add_date attribute is missing"
+        "Link 'add_date' attribute is missing"
       );
     }
   
@@ -110,6 +110,12 @@ public class LinkParserService {
   };
 
   private TextDetails extractTextContentDetails (String text) {
+    if (text == null) {
+      throw new CustomLinkParsingException(
+        "Link text content is missing"
+      );
+    }
+
     Matcher m = TEXT_PATTERN.matcher(text);
     
     if (m.matches()) {

@@ -15,7 +15,7 @@ public class FolderLink {
   private String folderName;
 
   public String getText() {
-    return element.text();
+    return element.wholeText();
   }
 
   /**

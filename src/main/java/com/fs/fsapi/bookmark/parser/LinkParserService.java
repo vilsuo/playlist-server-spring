@@ -27,9 +27,9 @@ public class LinkParserService {
   public List<AlbumBase> createAlbumBases(List<FolderLink> folderLinks) {
     return folderLinks.stream()
       .map(folderLink -> {
-        TextDetails details = extractTextContentDetails(folderLink.getText());
-
         try {
+          final TextDetails details = extractTextContentDetails(folderLink.getText());
+
           return new AlbumBase(
             extractVideoId(folderLink.getHref()),
             details.getArtist(),

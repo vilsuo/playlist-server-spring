@@ -5,12 +5,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.jsoup.nodes.Element;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import com.fs.fsapi.bookmark.parser.AlbumBase;
@@ -67,7 +71,6 @@ public class LinkParserServiceTest {
 
       AlbumBase base = parseSingleWithHref(withEmptyParam);
       assertTrue(base.getVideoId().isEmpty());
-      assertEquals("", base.getVideoId());
     }
 
     @Test
@@ -141,6 +144,62 @@ public class LinkParserServiceTest {
   @DisplayName("extractTextContentDetails")
   public class TextContent {
 
+    private AlbumBase parseSingleWithText(String textValue) {
+      return parseSingle(folderName, textValue, href, addDate);
+    }
+
+    @Test
+    public void shouldExtractArtistFromTextContentTest() {
+      assertEquals("Annihilator", parseSingleWithText(text).getArtist());
+    }
+
+    @Test
+    public void shouldExtractTitleFromTextContentTest() {
+      assertEquals("Alice In Hell", parseSingleWithText(text).getTitle());
+    }
+
+    @Test
+    public void shouldExtractPublishedFromTextContentTest() {
+      assertEquals(1989, parseSingleWithText(text).getPublished());
+    }
+
+    private static Stream<Arguments> argumentProvider() {
+      return Stream.of(
+        Arguments.of("Annihilator Alice In Hell (1989)", "missing artist-title separator"),
+        Arguments.of("Annihilator - Alice In Hell 1989", "missing braces in published year"),
+        Arguments.of("Annihilator - Alice In Hell", "missing published year"),
+        Arguments.of("Annihilator", "only artist name is given")
+      );
+    }
+
+    @ParameterizedTest(name = "{index} should throw when {1}")
+    @MethodSource("argumentProvider")
+    public void shouldThrowWhenMissingSeparatorInTextContentTest(String value, String description) {
+      CustomHtmlParsingException ex = assertThrows(
+        CustomHtmlParsingException.class,
+        () -> parseSingleWithText(value)
+      );
+
+      assertEquals(
+        "Link text content '" + value + "' is in incorrect format",
+        ex.getMessage()
+      );
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    public void shouldThrowWhenTextContentIsNullOrEmptyTest(String value) {
+      CustomHtmlParsingException ex = assertThrows(
+        CustomHtmlParsingException.class,
+        () -> parseSingleWithText(value)
+      );
+
+      assertEquals(
+        "Link text content '' is in incorrect format",
+        ex.getMessage()
+      );
+    }
+
   }
 
   @Nested
@@ -154,6 +213,7 @@ public class LinkParserServiceTest {
     @Test
     public void shouldConvertWhenAddDateAttributeIsPositiveTest() {
       String result = parseSingleWithAddDate("1653126836").getAddDate();
+
       assertEquals("2022-05-21T09:53:56Z", result);
     }
 
@@ -168,20 +228,7 @@ public class LinkParserServiceTest {
     public void shouldReturnUnixExpochZeroWhenAddDateAttributeIsZeroTest() {
       String result = parseSingleWithAddDate("0").getAddDate();
 
-      assertEquals(
-        "1970-01-01T00:00:00Z",
-        result
-      );
-    }
-
-    @Test
-    public void shouldReturnUnixExpochZeroWhenAddDateAttributeIsZeroStringTest() {
-      String result = parseSingleWithAddDate("0").getAddDate();
-
-      assertEquals(
-        "1970-01-01T00:00:00Z",
-        result
-      );
+      assertEquals("1970-01-01T00:00:00Z", result);
     }
 
     @Test
@@ -211,10 +258,7 @@ public class LinkParserServiceTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {
-      "2022-05-21T09:53:56Z",
-      "1653126x360",
-    })
+    @ValueSource(strings = { "2022-05-21T09:53:56Z", "1653126x360" })
     public void shouldThrowWhenAddDateAttributeContainsCharactersTest(String value) {
       CustomHtmlParsingException ex = assertThrows(
         CustomHtmlParsingException.class,

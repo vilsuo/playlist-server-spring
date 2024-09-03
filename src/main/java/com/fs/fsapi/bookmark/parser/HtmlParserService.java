@@ -1,6 +1,7 @@
 package com.fs.fsapi.bookmark.parser;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -10,7 +11,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.fs.fsapi.exceptions.CustomHtmlParsingException;
 import com.fs.fsapi.exceptions.CustomParameterConstraintException;
@@ -20,8 +20,8 @@ public class HtmlParserService {
 
   private final Pattern HEADER_PATTERN = Pattern.compile("h[1-6]");
 
-  public List<FolderLink> createFolderLinks(MultipartFile file, String headerText) throws IOException {
-    Document doc = Jsoup.parse(file.getInputStream(), null, "");
+  public List<FolderLink> createFolderLinks(InputStream file, String headerText) throws IOException {
+    Document doc = Jsoup.parse(file, null, "");
 
     return parseFolder(findHeader(doc, headerText), new ArrayList<>());
   }

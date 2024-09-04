@@ -20,6 +20,33 @@ public class HtmlParserService {
 
   private final Pattern HEADER_PATTERN = Pattern.compile("h[1-6]");
 
+  /**
+   * Find HTML {@code a} elements in a specific block indicated by a header
+   * text content. Each resulting object will also contain the preceeding header
+   * element's text content. 
+   * 
+   * The input is expected to have/contain the structure specified by the following 
+   * Backus-Naur Form (BNF):
+   * 
+   * <pre> {@code
+   * <root>         ::= <header> <folder> "<p />"
+   * <folder>       ::= "<dl>" (<dtcontainer> | <dtsingle>)* "</dl>"
+   * <dtcontainer>  ::= "<dt>" <header> <folder> "<p />" "</dt>"
+   * <dtsingle>     ::= "<dt>" <link> "</dt>"
+   * <header>       ::= "<h" <step> (" " <attribute>)*  ">" <text> "</h" <step> ">"
+   * <link>         ::= "<a" (" " <attribute>)* ">" <text> "</a>"
+   * <step>         ::= [1-6]
+   * } </pre>
+   * 
+   * where {@code <attribute>} is element attribute key=value pair and 
+   * {@code <text>} is element text content. 
+   * 
+   * @param file html file input stream
+   * @param headerText the {@code <text>} of the {@code <header>} indicating
+   *                   the search for links is limited in the following {@code <folder>}
+   * @return
+   * @throws IOException
+   */
   public List<FolderLink> createFolderLinks(InputStream file, String headerText) throws IOException {
     Document doc = Jsoup.parse(file, null, "");
 
@@ -76,12 +103,12 @@ public class HtmlParserService {
     next.children().stream()
       .skip(1) // first element is paragraph, so skip it
       .forEach(element -> {
-        if (isLinkDtElement(element)) {
+        if (isDtSingleElement(element)) {
           // the only child is link element
           Element a = element.child(0);
           folderLinks.add(new FolderLink(a, text));
 
-        } else if (isFolderDtElement(element)) {
+        } else if (isDtContainerElement(element)) {
           // the first child is header element
           Element hSub = element.child(0);
           parseFolder(hSub, folderLinks);
@@ -116,7 +143,7 @@ public class HtmlParserService {
    * @param e the element to check
    * @return true if element is a certain {@link Tag#DT} element
    */
-  private boolean isLinkDtElement(Element e) {
+  private boolean isDtSingleElement(Element e) {
     return elementHasTag(e, Tag.DT)
       && (e.childrenSize() == 1)
       && elementHasTag(e.child(0), Tag.LINK);
@@ -137,7 +164,7 @@ public class HtmlParserService {
    * @param e the element to check
    * @return true if element is a certain {@link Tag#DT} element
    */
-  private boolean isFolderDtElement(Element e) {
+  private boolean isDtContainerElement(Element e) {
     return elementHasTag(e, Tag.DT)
       && (e.childrenSize() == 3)
       && HEADER_PATTERN.matcher(getElementName(e.child(0))).matches()
@@ -164,8 +191,8 @@ public class HtmlParserService {
      *  </li>
      * </ol>
      * 
-     * @see {@link JsoupService#isLinkDtElement}
-     * @see {@link JsoupService#isFolderDtElement}
+     * @see {@link HtmlParserService#isDtSingleElement}
+     * @see {@link HtmlParserService#isDtContainerElement}
      */
     DT ("dt"),
 

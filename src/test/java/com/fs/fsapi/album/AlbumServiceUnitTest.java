@@ -27,6 +27,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.fs.fsapi.exceptions.CustomDataNotFoundException;
+import com.fs.fsapi.exceptions.CustomParameterConstraintException;
 
 import jakarta.validation.ConstraintViolationException;
 
@@ -163,13 +164,35 @@ public class AlbumServiceUnitTest {
       );
     }
 
+    @Test
+    public void shouldThrowIfAlbumExistsWithArtistAndTitleTest() {
+      String artist = source.getArtist();
+      String title = source.getTitle();
+
+      when(repository.existsByArtistAndTitle(artist, title))
+        .thenReturn(true);
+
+      Exception ex = assertThrows(
+        CustomParameterConstraintException.class, 
+        () -> service.create(source)
+      );
+
+      assertEquals(
+        "Album with artist '" + artist + "' and title '" + title + "' already exists",
+        ex.getMessage()
+      );
+    }
+
     @Nested
-    public class Saving {
+    public class SavingNonExisting {
 
       private MockedStatic<Instant> mockedStatic;
 
       @BeforeEach
       public void setUpMocks() {
+        when(repository.existsByArtistAndTitle(source.getArtist(), source.getTitle()))
+          .thenReturn(false);
+
         when(mapper.albumCreationToAlbum(source))
           .thenReturn(mappedSource);
 
@@ -189,22 +212,15 @@ public class AlbumServiceUnitTest {
         mockedStatic.close();
       }
 
-      @Nested
-      public class InvalidValues {
+      @Test
+      public void throwsWhenValidationErrorsTest() {
+        when(repository.save(mappedSourceWithAddDate))
+          .thenThrow(ConstraintViolationException.class);
 
-        @BeforeEach
-        public void setUpSaving() {
-          when(repository.save(mappedSourceWithAddDate))
-            .thenThrow(ConstraintViolationException.class);
-        }
-
-        @Test
-        public void throwsWhenValidationErrorsTest() {
-          assertThrows(
-            ConstraintViolationException.class,
-            () -> service.create(source)
-          );
-        }
+        assertThrows(
+          ConstraintViolationException.class,
+          () -> service.create(source)
+        );
       }
 
       @Nested

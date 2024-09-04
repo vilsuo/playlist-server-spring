@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fs.fsapi.album.Album;
+import com.fs.fsapi.album.AlbumService;
 import com.fs.fsapi.bookmark.parser.AlbumBase;
 
 import jakarta.validation.constraints.NotEmpty;
@@ -26,17 +28,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequiredArgsConstructor
 public class BookmarksController {
 
-  private final BookmarkService service;
+  private final AlbumService albumService;
+
+  private final BookmarkService bookmarkService;
   
   @PostMapping
-  public ResponseEntity<List<AlbumBase>> uploadBookmarks(
+  public ResponseEntity<List<Album>> uploadBookmarks(
     @RequestParam MultipartFile file,
     @NotEmpty @RequestParam String name
   ) throws IOException {
 
+    List<AlbumBase> bases = bookmarkService.getAlbumBases(file, name);
+
     return ResponseEntity
       .ok()
-      .body(service.getAlbumBases(file, name));
+      .body(albumService.createMany(bases));
   }
 
 }

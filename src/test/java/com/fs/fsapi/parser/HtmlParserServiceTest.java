@@ -17,17 +17,17 @@ import org.junit.jupiter.api.Test;
 
 import com.fs.fsapi.bookmark.parser.FolderLink;
 import com.fs.fsapi.bookmark.parser.HtmlParserService;
+import com.fs.fsapi.exceptions.CustomHtmlParsingException;
 import com.fs.fsapi.exceptions.CustomParameterConstraintException;
 
-// TODO test files with
-// - invalid format
 public class HtmlParserServiceTest {
 
   private final HtmlParserService service = new HtmlParserService();
 
   private final String TEST_FILES_LOCATION = "src/test/data";
 
-  private final String FILE_NAME = "bookmarks-example.html";
+  private final String VALID_FILE = "bookmarks.html";
+  private final String INVALID_FILE = "bookmarks-invalid.html";
 
   private final String PARENT = "Example";
   private final String CHILD = "Sub";
@@ -39,12 +39,12 @@ public class HtmlParserServiceTest {
   }
 
   @Test
-  public void shouldThrowWhenFolderDoesNotWithTheTextContentTest() throws Exception {
+  public void shouldThrowWhenHeaderDoesNotExistWithTheGivenTextContentTest() throws Exception {
     final String nonExisting = "Punk";
 
     CustomParameterConstraintException ex = assertThrows(
       CustomParameterConstraintException.class, 
-      () -> service.createFolderLinks(getFileAsInputStream(FILE_NAME), nonExisting)
+      () -> service.createFolderLinks(getFileAsInputStream(VALID_FILE), nonExisting)
     );
 
     assertEquals(
@@ -55,7 +55,21 @@ public class HtmlParserServiceTest {
 
   @Test
   public void shouldNotCreateAnyWhenFolderIsEmptyTest() throws Exception {
-    assertTrue(service.createFolderLinks(getFileAsInputStream(FILE_NAME), EMPTY).isEmpty());
+    assertTrue(service.createFolderLinks(getFileAsInputStream(VALID_FILE), EMPTY).isEmpty());
+  }
+
+  @Test
+  public void shouldThrowWhenElementStructureIsInvalidTest() {
+    CustomHtmlParsingException ex = assertThrows(
+      CustomHtmlParsingException.class,
+      () -> service.createFolderLinks(getFileAsInputStream(INVALID_FILE), PARENT)
+    );
+
+    assertEquals(
+      "Expected the next sibling element of header with text content '"
+        + PARENT + "' to be 'dl' element, instead found 'p' element",
+      ex.getMessage()
+    );
   }
 
   @Nested
@@ -67,7 +81,7 @@ public class HtmlParserServiceTest {
 
     @BeforeEach
     public void create() throws Exception {
-      results = service.createFolderLinks(getFileAsInputStream(FILE_NAME), CHILD);
+      results = service.createFolderLinks(getFileAsInputStream(VALID_FILE), CHILD);
       result = results.get(0);
     }
 
@@ -111,7 +125,7 @@ public class HtmlParserServiceTest {
 
     @BeforeEach
     public void create() throws Exception {
-      results = service.createFolderLinks(getFileAsInputStream(FILE_NAME), PARENT);
+      results = service.createFolderLinks(getFileAsInputStream(VALID_FILE), PARENT);
     }
 
     @Test
@@ -120,19 +134,19 @@ public class HtmlParserServiceTest {
     }
 
     @Test
-    public void shouldParentFolderNameForLinksBeforeSubFolderTest() {
+    public void shouldSetParentHeaderTextContentAsFolderNameForLinksBeforeSubFolderTest() {
       assertEquals(PARENT, results.get(0).getFolderName());
       assertEquals(PARENT, results.get(1).getFolderName());
       assertEquals(PARENT, results.get(2).getFolderName());
     }
 
     @Test
-    public void shouldSetSubFolderNameForLinksInSubFolderTest() {
+    public void shouldSetChildHeaderTextContentAsFolderNameForLinksInSubFolderTest() {
       assertEquals(CHILD, results.get(3).getFolderName());
     }
 
     @Test
-    public void shouldParentFolderNameForLinksAfterSubFolderTest() {
+    public void shouldSetParentHeaderTextContentAsFolderNameForLinksAfterSubFolderTest() {
       assertEquals(PARENT, results.get(4).getFolderName());
     }
   }

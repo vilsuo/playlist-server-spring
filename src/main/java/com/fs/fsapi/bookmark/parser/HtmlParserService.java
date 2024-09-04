@@ -41,10 +41,11 @@ public class HtmlParserService {
    * where {@code <attribute>} is element attribute key=value pair and 
    * {@code <text>} is element text content. 
    * 
-   * @param file html file input stream
-   * @param headerText the {@code <text>} of the {@code <header>} indicating
-   *                   the search for links is limited in the following {@code <folder>}
-   * @return
+   * @param file  html file input stream
+   * @param headerText  the {@code <text>} of the {@code <header>} indicating
+   *                    the search for links is limited in the following
+   *                    {@code <folder>}
+   * @return the list of link elements with their associated header text content
    * @throws IOException
    */
   public List<FolderLink> createFolderLinks(InputStream file, String headerText) throws IOException {
@@ -56,8 +57,8 @@ public class HtmlParserService {
   /**
    * Find a header element with the given text content. Case sensitive.
    * 
-   * @param doc Document to search in
-   * @param headerText text content of the header
+   * @param doc  Document to search in
+   * @param headerText  text content of the header
    * @return the header element
    * @throws CustomParameterConstraintException unless an unique such header is found
    */
@@ -80,8 +81,17 @@ public class HtmlParserService {
     return headers.first();
   }
 
+  /**
+   * Find link elements recursively inside the block indicated by the header
+   * element text content.
+   * 
+   * @param h  the header element
+   * @param folderLinks  the list where to add found link elements with their
+   *                     associated header text content
+   * @return the passed in list 
+   */
   private List<FolderLink> parseFolder(Element h, List<FolderLink> folderLinks) {
-    final String text = h.text(); // empty default
+    final String text = h.text();
 
     // the next element should be a dl element
     Element next = h.nextElementSibling();
@@ -101,7 +111,7 @@ public class HtmlParserService {
     }
 
     next.children().stream()
-      .skip(1) // first element is paragraph, so skip it
+      .skip(1) // first element is expected to be paragraph, so skip it
       .forEach(element -> {
         if (isDtSingleElement(element)) {
           // the only child is link element
@@ -133,15 +143,15 @@ public class HtmlParserService {
   }
 
   /**
-   * Check if an element is a {@link Tag#DT} element with the structure
+   * Check if element has the structure
    * {@code
    *  <dt>
    *    <a />
    *  </dt>
    * }.
    * 
-   * @param e the element to check
-   * @return true if element is a certain {@link Tag#DT} element
+   * @param e  the element to check
+   * @return true if element has the structure
    */
   private boolean isDtSingleElement(Element e) {
     return elementHasTag(e, Tag.DT)
@@ -150,19 +160,19 @@ public class HtmlParserService {
   }
 
   /**
-   * Check if element is a {@link Tag#DT} element with the structure
+   * Check if element has the structure
    * {@code
    *  <dt>
    *    <h? />
-   *    <dl />
+   *    <dl>
+   *      ...
+   *    </dl>
    *    <p />
    *  </dt>
    * }. 
    * 
-   * @implNote Does not check the structure of child elements.
-   * 
-   * @param e the element to check
-   * @return true if element is a certain {@link Tag#DT} element
+   * @param e  the element to check
+   * @return true if element has the structure
    */
   private boolean isDtContainerElement(Element e) {
     return elementHasTag(e, Tag.DT)
@@ -181,14 +191,13 @@ public class HtmlParserService {
      * one of the following
      * 
      * <ol>
-     *  <li>Just a single html link element {@code <a />}.</li>
+     *  <li>Just a single html link element {@code <a />}.
      *  <li>
      *    Exactly three elements in the order {@code <h? /> <dl /> <p />}.
      *    The tag {@code h?} is a html header element of any level and
      *    {@code dl} has structure specified by {@link Tag#DL}. The header
      *    indicates the beginning of a subfolder structure and the {@code dl}
      *    element the contents of that folder.
-     *  </li>
      * </ol>
      * 
      * @see {@link HtmlParserService#isDtSingleElement}

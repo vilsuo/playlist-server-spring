@@ -1,5 +1,6 @@
 package com.fs.fsapi.exceptions;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,13 +13,17 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Path;
+import jakarta.validation.Path.Node;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @ControllerAdvice
 public class CustomControllerAdvice {
 
-  // Exception to be thrown when validation on an argument annotated with @Valid fails
+  // Exception to be thrown when validation on (controller method?) an argument annotated
+  // with @Valid fails
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ErrorDataResponse<List<ApiValidationError>>> handleMethodArgumentNotValidExceptions(
     MethodArgumentNotValidException e
@@ -38,6 +43,41 @@ public class CustomControllerAdvice {
       )  
       .collect(Collectors.toList());  
       
+    return new ResponseEntity<>(
+      new ErrorDataResponse<>(status, message, validationErrors),
+      status
+    );
+  }
+
+  @ExceptionHandler(ConstraintViolationException.class)
+  public ResponseEntity<ErrorDataResponse<List<ApiValidationError>>> handleConstraintViolationExceptions(
+    ConstraintViolationException e
+  ) {
+    HttpStatus status = HttpStatus.BAD_REQUEST;
+    String message = e.getMessage();
+
+    log.info(message);
+
+    List<ApiValidationError> validationErrors = e.getConstraintViolations()
+      .stream()
+      .map(err -> {
+        Path p = err.getPropertyPath();
+
+        // find field name
+        String field = "";
+        Iterator<Node> iter = p.iterator();
+        while(iter.hasNext()) {
+          field = iter.next().getName();
+        }
+
+        return new ApiValidationError(
+          field,
+          err.getMessage(),
+          err.getInvalidValue()
+        );
+      })
+      .collect(Collectors.toList());  
+
     return new ResponseEntity<>(
       new ErrorDataResponse<>(status, message, validationErrors),
       status

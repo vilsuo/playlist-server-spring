@@ -83,8 +83,8 @@ public class AlbumService {
     final String artist = base.getArtist();
     final String title = base.getTitle();
 
-    boolean checkDublicate = (artist != null) && (title != null);
-    if (checkDublicate && repository.existsByArtistAndTitle(artist, title)) {
+    boolean checkForDublicate = (artist != null) && (title != null);
+    if (checkForDublicate && repository.existsByArtistAndTitle(artist, title)) {
       return Optional.empty();
     }
 
@@ -92,9 +92,6 @@ public class AlbumService {
     return Optional.of(repository.save(album));
   }
 
-  // TODO
-  // - throw correct error
-  // - test
   @Transactional
   public List<Album> createMany(List<AlbumBase> bases) {
     return bases.stream()

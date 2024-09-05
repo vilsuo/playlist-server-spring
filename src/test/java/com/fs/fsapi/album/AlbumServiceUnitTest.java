@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.AfterEach;
@@ -26,6 +27,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.fs.fsapi.bookmark.parser.AlbumBase;
 import com.fs.fsapi.exceptions.CustomDataNotFoundException;
 import com.fs.fsapi.exceptions.CustomParameterConstraintException;
 
@@ -46,6 +48,8 @@ public class AlbumServiceUnitTest {
   private final Integer id = 123;
 
   private final String addDate = "2024-08-14T10:33:57.604056616Z";
+
+  private final String otherAddDate = "2024-09-05T22:26:40.701123555Z";
 
   private static final AlbumCreation source = new AlbumCreation(
     "JMAbKMSuVfI",
@@ -108,40 +112,40 @@ public class AlbumServiceUnitTest {
   public class FindOneTest {
 
     @Test
-    public void returnsExistingAlbumTest() {
+    public void shouldReturnAlbumWhenAlbumIsFoundTest() {
       when(repository.findById(id))
         .thenReturn(Optional.of(target));
 
-      var result = service.findOne(id);
+      Album result = service.findOne(id);
       assertEquals(target, result);
 
       verify(repository).findById(id);
     }
 
     @Test
-    public void throwsIfNotFoundTest() {
+    public void shouldThrowWhenAlbumIsNotFoundTest() {
       when(repository.findById(id))
         .thenReturn(Optional.empty());
 
-      Exception e = assertThrows(
+        CustomDataNotFoundException ex = assertThrows(
         CustomDataNotFoundException.class,
         () -> service.findOne(id)
       );
 
-      assertEquals("Album was not found", e.getMessage());
+      assertEquals("Album was not found", ex.getMessage());
 
       verify(repository).findById(id);
     }
 
     @Test
-    public void throwsWithNullIdTest() {
+    public void shouldThrowWhenIdIsNullTest() {
       Integer nullId = null;
 
       when(repository.findById(nullId))
-        .thenThrow(IllegalArgumentException.class);
+        .thenThrow(ConstraintViolationException.class);
 
       assertThrows(
-        IllegalArgumentException.class,
+        ConstraintViolationException.class,
         () -> service.findOne(nullId)
       );
     }
@@ -152,8 +156,8 @@ public class AlbumServiceUnitTest {
   public class CreateTest {
   
     @Test
-    public void throwsWithNullParameterTest() {
-      Exception e = assertThrows(
+    public void shouldThrowWhenParameterIsNullTest() {
+      IllegalArgumentException e = assertThrows(
         IllegalArgumentException.class,
         () -> service.create(null)
       );
@@ -172,7 +176,7 @@ public class AlbumServiceUnitTest {
       when(repository.existsByArtistAndTitle(artist, title))
         .thenReturn(true);
 
-      Exception ex = assertThrows(
+      CustomParameterConstraintException ex = assertThrows(
         CustomParameterConstraintException.class, 
         () -> service.create(source)
       );
@@ -213,7 +217,7 @@ public class AlbumServiceUnitTest {
       }
 
       @Test
-      public void throwsWhenValidationErrorsTest() {
+      public void shouldThrowWhenSaveThrowsTest() {
         when(repository.save(mappedSourceWithAddDate))
           .thenThrow(ConstraintViolationException.class);
 
@@ -227,27 +231,25 @@ public class AlbumServiceUnitTest {
       public class ValidValues {
 
         @BeforeEach
-        public void setUpSaving() {
+        public void setUpSavingMock() {
           when(repository.save(mappedSourceWithAddDate))
             .thenReturn(target);
         }
 
         @Test
-        public void returnsSavedAlbumTest() {
-          var result = service.create(source);
-
-          assertEquals(target, result);
+        public void shouldReturnSavedAlbumTest() {
+          assertEquals(target, service.create(source));
         }
 
         @Test
-        public void callsSavesWithNullIdTest() {
+        public void shouldSaveWithNullIdTest() {
           service.create(source);
 
           verify(repository).save(argThat(album -> album.getId() == null));
         }
 
         @Test
-        public void callsSavesWithCreationValuesTest() {
+        public void shouldSavesWithCreationValuesTest() {
           service.create(source);
 
           verify(repository).save(argThat(album -> 
@@ -260,7 +262,7 @@ public class AlbumServiceUnitTest {
         }
 
         @Test
-        public void callsSavesWithCreatedAddDateTest() {
+        public void shouldSaveWithCreatedAddDateTest() {
           service.create(source);
 
           verify(repository).save(argThat(album ->
@@ -272,18 +274,136 @@ public class AlbumServiceUnitTest {
   }
 
   @Nested
+  @DisplayName("createMany")
+  public class CreateManyTest {
+    // - if throws no albums are created
+
+    Integer id1 = 124;
+    Integer id2 = 125;
+
+    private final AlbumBase base = new AlbumBase(
+      source.getVideoId(),
+      source.getArtist(),
+      source.getTitle(),
+      source.getPublished(),
+      source.getCategory(),
+      addDate
+    );
+
+    private final Album mappedBase = new Album(
+      null,
+      base.getVideoId(),
+      base.getArtist(),
+      base.getTitle(),
+      base.getPublished(),
+      base.getCategory(),
+      base.getAddDate()
+    );
+
+    private final Album albumFromMappedBase = new Album(
+      id1,
+      mappedBase.getVideoId(),
+      mappedBase.getArtist(),
+      mappedBase.getTitle(),
+      mappedBase.getPublished(),
+      mappedBase.getCategory(),
+      mappedBase.getAddDate()
+    );
+
+    private final AlbumBase otherBase = new AlbumBase(
+      newValues.getVideoId(),
+      newValues.getArtist(),
+      newValues.getTitle(),
+      newValues.getPublished(),
+      newValues.getCategory(),
+      otherAddDate
+    );
+
+    private final Album mappedOtherBase = new Album(
+      null,
+      otherBase.getVideoId(),
+      otherBase.getArtist(),
+      otherBase.getTitle(),
+      otherBase.getPublished(),
+      otherBase.getCategory(),
+      otherBase.getAddDate()
+    );
+
+    private final Album albumFromOtherMappedBase = new Album(
+      id2,
+      mappedOtherBase.getVideoId(),
+      mappedOtherBase.getArtist(),
+      mappedOtherBase.getTitle(),
+      mappedOtherBase.getPublished(),
+      mappedOtherBase.getCategory(),
+      mappedOtherBase.getAddDate()
+    );
+
+    private List<AlbumBase> bases = List.of(base, otherBase);
+
+    @Test
+    public void shouldCreateAllWhenTheAlbumsDoesNotAlreadyExistByArtistAndTitleTest() {
+      // set up mocks
+      when(repository.existsByArtistAndTitle(any(), any()))
+        .thenReturn(false);
+      
+      when(mapper.albumBaseToAlbum(base)).thenReturn(mappedBase);
+      when(mapper.albumBaseToAlbum(otherBase)).thenReturn(mappedOtherBase);
+
+      when(repository.save(mappedBase)).thenReturn(albumFromMappedBase);
+      when(repository.save(mappedOtherBase)).thenReturn(albumFromOtherMappedBase);
+    
+      // call method
+      List<Album> albums = service.createMany(bases);
+
+      assertEquals(2, albums.size());
+      assertEquals(albumFromMappedBase, albums.get(0));
+      assertEquals(albumFromOtherMappedBase, albums.get(1));
+
+      verify(repository, times(2))
+        .save(any(Album.class));
+
+      verify(repository).save(mappedBase);
+      verify(repository).save(mappedOtherBase);
+    }
+
+    @Test
+    public void shouldSkipAlbumsWhenTheyAlreadyExistWithArtistAndTitleTest() {
+      // set up mocks...
+      when(repository.existsByArtistAndTitle(base.getArtist(), base.getTitle()))
+        .thenReturn(false);
+
+      // ...second one already exists
+      when(repository.existsByArtistAndTitle(otherBase.getArtist(), otherBase.getTitle()))
+        .thenReturn(true);
+      
+      when(mapper.albumBaseToAlbum(base)).thenReturn(mappedBase);
+      when(repository.save(mappedBase)).thenReturn(albumFromMappedBase);
+
+      // call method
+      List<Album> albums = service.createMany(bases);
+
+      assertEquals(1, albums.size());
+      assertEquals(albumFromMappedBase, albums.get(0));
+
+      verify(repository).save(mappedBase);
+      verify(repository, times(0)).save(mappedOtherBase);
+    }
+  }
+
+  @Nested
   @DisplayName("update")
   public class UpdateTest {
     
     @Test
-    public void throwsWithNullIdTest() {
+    public void shouldThrowWithNullIdTest() {
       Integer nullId = null;
   
       when(repository.findById(nullId))
-        .thenThrow(IllegalArgumentException.class);
+        .thenThrow(ConstraintViolationException.class);
   
       assertThrows(
-        IllegalArgumentException.class,
+        ConstraintViolationException.class,
         () -> service.update(nullId, source)
       );
 
@@ -291,11 +411,11 @@ public class AlbumServiceUnitTest {
     }
 
     @Test
-    public void throwsIfNotFoundTest() {
+    public void shouldThrowWhenAlbumIsNotFound() {
       when(repository.findById(id))
         .thenReturn(Optional.empty());
   
-      Exception e = assertThrows(
+        CustomDataNotFoundException e = assertThrows(
         CustomDataNotFoundException.class,
         () -> service.update(id, source)
       );
@@ -306,8 +426,8 @@ public class AlbumServiceUnitTest {
     }
 
     @Test
-    public void throwsWithNullNewValuesTest() {
-      Exception e = assertThrows(
+    public void shouldThrowWhenNewValueIsNullTest() {
+      IllegalArgumentException e = assertThrows(
         IllegalArgumentException.class,
         () -> service.update(id, null)
       );
@@ -321,13 +441,13 @@ public class AlbumServiceUnitTest {
     public class Saving {
 
       @BeforeEach
-      public void setUpMocks() {
+      public void setUpMockFinding() {
         when(repository.findById(id))
           .thenReturn(Optional.of(target));
       }
 
       @Test
-      public void throwsWhenSavingInvalidValuesTest() {
+      public void shouldThrowWhenSaveThrowsTest() {
         when(repository.save(any()))
           .thenThrow(ConstraintViolationException.class);
 
@@ -341,19 +461,19 @@ public class AlbumServiceUnitTest {
       public class Success {
 
         @BeforeEach
-        public void setUpSave() {
+        public void setUpMockSave() {
           when(repository.save(any()))
             .thenReturn(targetWithNewValues);
         }
 
         @Test
-        public void returnsSavedAlbumTest() {
+        public void shouldReturnUpdatedAlbumTest() {
           Album result = service.update(id, newValues);
           assertEquals(targetWithNewValues, result);
         }
 
         @Test
-        public void callsMapperUpdateWithNewValuesAndOriginalAlbumBeforeSavingTest() {
+        public void shouldCallMapperUpdateWithNewValuesAndOriginalAlbumBeforeSavingTest() {
           InOrder inOrder = inOrder(repository, mapper);
 
           service.update(id, newValues);

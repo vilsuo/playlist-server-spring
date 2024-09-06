@@ -13,8 +13,12 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
+import com.fs.fsapi.exceptions.response.ApiValidationError;
+import com.fs.fsapi.exceptions.response.ErrorDataResponse;
+import com.fs.fsapi.exceptions.response.ErrorResponse;
+import com.fs.fsapi.exceptions.response.ValidationErrorResponse;
+
 import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Path;
 import jakarta.validation.Path.Node;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,10 +26,10 @@ import lombok.extern.slf4j.Slf4j;
 @ControllerAdvice
 public class CustomControllerAdvice {
 
-  // Exception to be thrown when validation on (controller method?) an argument annotated
-  // with @Valid fails
+  // Exception to be thrown when validation on (controller method?) an argument 
+  // annotated with @Valid fails
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<ErrorDataResponse<List<ApiValidationError>>> handleMethodArgumentNotValidExceptions(
+  public ResponseEntity<ValidationErrorResponse> handleMethodArgumentNotValidExceptions(
     MethodArgumentNotValidException e
   ) {
     HttpStatus status = HttpStatus.BAD_REQUEST;
@@ -44,13 +48,13 @@ public class CustomControllerAdvice {
       .collect(Collectors.toList());  
       
     return new ResponseEntity<>(
-      new ErrorDataResponse<>(status, message, validationErrors),
+      new ValidationErrorResponse(status, message, validationErrors),
       status
     );
   }
 
   @ExceptionHandler(ConstraintViolationException.class)
-  public ResponseEntity<ErrorDataResponse<List<ApiValidationError>>> handleConstraintViolationExceptions(
+  public ResponseEntity<ValidationErrorResponse> handleConstraintViolationExceptions(
     ConstraintViolationException e
   ) {
     HttpStatus status = HttpStatus.BAD_REQUEST;
@@ -61,17 +65,14 @@ public class CustomControllerAdvice {
     List<ApiValidationError> validationErrors = e.getConstraintViolations()
       .stream()
       .map(err -> {
-        Path p = err.getPropertyPath();
-
-        // find field name
-        String field = "";
-        Iterator<Node> iter = p.iterator();
+        String fieldName = "";
+        Iterator<Node> iter = err.getPropertyPath().iterator();
         while(iter.hasNext()) {
-          field = iter.next().getName();
+          fieldName = iter.next().getName();
         }
 
         return new ApiValidationError(
-          field,
+          fieldName,
           err.getMessage(),
           err.getInvalidValue()
         );
@@ -79,13 +80,13 @@ public class CustomControllerAdvice {
       .collect(Collectors.toList());  
 
     return new ResponseEntity<>(
-      new ErrorDataResponse<>(status, message, validationErrors),
+      new ValidationErrorResponse(status, message, validationErrors),
       status
     );
   }
 
   @ExceptionHandler(HandlerMethodValidationException.class)
-  public ResponseEntity<ErrorDataResponse<List<ApiValidationError>>> handleValidationException(
+  public ResponseEntity<ValidationErrorResponse> handleValidationException(
     HandlerMethodValidationException e
   ) {
     HttpStatus status = HttpStatus.valueOf(e.getStatusCode().value());
@@ -112,7 +113,7 @@ public class CustomControllerAdvice {
       .collect(Collectors.toList());  
 
     return new ResponseEntity<>(
-      new ErrorDataResponse<>(status, message, validationErrors),
+      new ValidationErrorResponse(status, message, validationErrors),
       status
     );
   }

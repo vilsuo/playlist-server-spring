@@ -32,9 +32,9 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
-import com.fs.fsapi.exceptions.ApiValidationError;
-import com.fs.fsapi.exceptions.ErrorDataResponse;
-import com.fs.fsapi.exceptions.ErrorResponse;
+import com.fs.fsapi.exceptions.response.ApiValidationError;
+import com.fs.fsapi.exceptions.response.ErrorDataResponse;
+import com.fs.fsapi.exceptions.response.ErrorResponse;
 
 @Testcontainers
 @SpringBootTest

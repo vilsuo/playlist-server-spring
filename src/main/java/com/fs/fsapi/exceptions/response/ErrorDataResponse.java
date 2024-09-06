@@ -1,4 +1,4 @@
-package com.fs.fsapi.exceptions;
+package com.fs.fsapi.exceptions.response;
 
 import org.springframework.http.HttpStatus;
 

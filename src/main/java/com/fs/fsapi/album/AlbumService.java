@@ -1,6 +1,5 @@
 package com.fs.fsapi.album;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -8,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import com.fs.fsapi.DateTimeString;
 import com.fs.fsapi.bookmark.parser.AlbumBase;
 import com.fs.fsapi.exceptions.CustomDataNotFoundException;
 import com.fs.fsapi.exceptions.CustomParameterConstraintException;
@@ -62,7 +62,7 @@ public class AlbumService {
     }
 
     Album album = mapper.albumCreationToAlbum(values);
-    album.setAddDate(createAddDate());
+    album.setAddDate(DateTimeString.create());
 
     return repository.save(album);
   }
@@ -114,10 +114,6 @@ public class AlbumService {
 
   public void remove(@NotNull Integer id) {
     repository.deleteById(id);
-  }
-
-  private String createAddDate() {
-    return Instant.now().toString();
   }
 
 }

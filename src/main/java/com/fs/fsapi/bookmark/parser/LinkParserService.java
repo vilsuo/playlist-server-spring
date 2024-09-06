@@ -1,6 +1,6 @@
 package com.fs.fsapi.bookmark.parser;
 
-import java.time.Instant;
+import java.time.DateTimeException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.fs.fsapi.DateTimeString;
 import com.fs.fsapi.exceptions.CustomHtmlParsingException;
 
 import lombok.AllArgsConstructor;
@@ -119,10 +120,9 @@ public class LinkParserService {
     }
   
     try {
-      int utcSeconds = Integer.parseInt(addDate);
-      return Instant.ofEpochSecond(utcSeconds).toString();
+      return DateTimeString.parse(addDate);
 
-    } catch (NumberFormatException e) {
+    } catch (NumberFormatException | DateTimeException e) {
       throw new CustomLinkParsingException(
         "Link add date attribute '" + addDate + "' is not a valid number"
       );

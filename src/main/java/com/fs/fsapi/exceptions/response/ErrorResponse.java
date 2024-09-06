@@ -1,15 +1,15 @@
-package com.fs.fsapi.exceptions;
-
-import java.util.Date;
+package com.fs.fsapi.exceptions.response;
 
 import org.springframework.http.HttpStatus;
+
+import com.fs.fsapi.DateTimeString;
 
 import lombok.Getter;
 
 @Getter
 public class ErrorResponse {
   
-  private Date timestamp;
+  private String timestamp;
 
   private int code;
 
@@ -18,7 +18,7 @@ public class ErrorResponse {
   private String message;
 
   public ErrorResponse() {
-    this.timestamp = new Date();
+    this.timestamp = DateTimeString.create();
   }
 
   public ErrorResponse(HttpStatus httpStatus, String message) {

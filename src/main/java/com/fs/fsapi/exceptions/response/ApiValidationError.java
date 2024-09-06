@@ -1,4 +1,4 @@
-package com.fs.fsapi.exceptions;
+package com.fs.fsapi.exceptions.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

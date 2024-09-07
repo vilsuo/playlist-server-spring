@@ -8,7 +8,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyInt;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -257,7 +256,7 @@ public class AlbumServiceIntegrationTest {
         .usingRecursiveFieldByFieldElementComparatorIgnoringFields("id")
         .containsExactlyInAnyOrder(
           new Album(
-            anyInt(),
+            null, // ignored
             base.getVideoId(),
             base.getArtist(),
             base.getTitle(),
@@ -266,7 +265,7 @@ public class AlbumServiceIntegrationTest {
             base.getAddDate()
           ),
           new Album(
-            anyInt(),
+            null, // ignored
             otherBase.getVideoId(),
             otherBase.getArtist(),
             otherBase.getTitle(),
@@ -295,7 +294,7 @@ public class AlbumServiceIntegrationTest {
         .usingRecursiveFieldByFieldElementComparatorIgnoringFields("id")
         .contains(
           new Album(
-            anyInt(),
+            null, // ignored
             base.getVideoId(),
             base.getArtist(),
             base.getTitle(),

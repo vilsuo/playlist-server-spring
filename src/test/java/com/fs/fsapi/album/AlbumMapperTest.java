@@ -30,35 +30,42 @@ public class AlbumMapperTest {
   public class AlbumCreationToAlbumTest {
 
     @Test
-    public void mapsNullToNull() {
-      AlbumCreation values = null;
-
-      var target = mapper.albumCreationToAlbum(values);
-      assertNull(target);
+    public void shouldReturnNullWhenNullTest() {
+      assertNull(mapper.albumCreationToAlbum(null));
     }
 
     @Test
-    public void mapsNullPropertiesToNullProperties() {
+    public void shouldReturnNullPropertiesWhenNewPropertiesAreNullTest() {
       AlbumCreation values = new AlbumCreation();
 
       Album result = mapper.albumCreationToAlbum(values);
-      assertNull(result.getId());
       assertNull(result.getVideoId());
       assertNull(result.getArtist());
       assertNull(result.getTitle());
       assertNull(result.getPublished());
       assertNull(result.getCategory());
-      assertNull(result.getAddDate());
     }
 
     @Test
-    public void mapsPropertiesToProperties() {
+    public void shouldReturnNewPropertiesTest() {
       Album result = mapper.albumCreationToAlbum(source);
       assertEquals(source.getVideoId(), result.getVideoId());
       assertEquals(source.getArtist(), result.getArtist());
       assertEquals(source.getTitle(), result.getTitle());
       assertEquals(source.getPublished(), result.getPublished());
       assertEquals(source.getCategory(), result.getCategory());
+    }
+
+    @Test
+    public void shouldReturnNullIdTest() {
+      Album result = mapper.albumCreationToAlbum(source);
+      assertNull(result.getId());
+    }
+
+    @Test
+    public void shouldReturnNullAddDateTest() {
+      Album result = mapper.albumCreationToAlbum(source);
+      assertNull(result.getAddDate());
     }
   }
 
@@ -85,7 +92,7 @@ public class AlbumMapperTest {
     }
 
     @Test
-    public void doesNotUpdatePropertiesWhenSourceIsNull() {
+    public void shouldNotUpdatePropertiesWhenSourceIsNullTest() {
       AlbumCreation values = null;
       mapper.updateAlbumFromAlbumCreation(values, target);
 
@@ -97,7 +104,7 @@ public class AlbumMapperTest {
     }
 
     @Test
-    public void updatesPropertiesWhenNewPropertiesAreNonNull() {
+    public void shouldUpdatePropertiesWhenNewPropertiesAreNonNullTest() {
       mapper.updateAlbumFromAlbumCreation(source, target);
 
       assertEquals(source.getVideoId(), target.getVideoId());
@@ -108,7 +115,7 @@ public class AlbumMapperTest {
     }
 
     @Test
-    public void updatesGivenPropertiesToNullWhenNewPropertiesAreNull() {
+    public void shouldUpdatePropertiesToNullWhenNewPropertiesAreNullTest() {
       AlbumCreation values = new AlbumCreation();
 
       mapper.updateAlbumFromAlbumCreation(values, target);
@@ -121,14 +128,14 @@ public class AlbumMapperTest {
     }
 
     @Test
-    public void doesNotUpdateId() {
+    public void shouldNotUpdateIdTest() {
       mapper.updateAlbumFromAlbumCreation(source, target);
 
       assertEquals(id, target.getId());
     }
 
     @Test
-    public void doesNotUpdateAddDate() {
+    public void shouldNotUpdateAddDateTest() {
       mapper.updateAlbumFromAlbumCreation(source, target);
 
       assertEquals(addDate, target.getAddDate());

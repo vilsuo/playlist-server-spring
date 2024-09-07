@@ -20,7 +20,6 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 public class VideoIdValidatorUnitTest {
@@ -119,7 +118,7 @@ public class VideoIdValidatorUnitTest {
   }
 
   @Getter @Setter
-  @AllArgsConstructor @NoArgsConstructor
+  @AllArgsConstructor
   public class TestObject {
     
     @VideoId
@@ -133,6 +132,7 @@ public class VideoIdValidatorUnitTest {
       = new ConstraintValidatorFactoryImpl();
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T extends ConstraintValidator<?, ?>> T getInstance(Class<T> key) {
       if (VideoIdValidator.class.equals(key)) {
         //noinspection unchecked

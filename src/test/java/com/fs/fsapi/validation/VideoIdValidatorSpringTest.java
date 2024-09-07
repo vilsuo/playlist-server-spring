@@ -16,7 +16,6 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @SpringBootTest(classes = {
@@ -109,7 +108,7 @@ public class VideoIdValidatorSpringTest {
   }
 
   @Getter @Setter
-  @AllArgsConstructor @NoArgsConstructor
+  @AllArgsConstructor
   public class TestObject {
     
     @VideoId

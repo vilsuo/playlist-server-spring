@@ -4,12 +4,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import org.jsoup.nodes.Attributes;
-import org.jsoup.nodes.Element;
-import org.jsoup.parser.Tag;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+
+import com.fs.fsapi.helpers.ElementHelper;
 
 public class FolderLinktTest {
 
@@ -22,20 +21,9 @@ public class FolderLinktTest {
   private final String folderName = "Thrash";
 
   private final FolderLink folderLink = new FolderLink(
-    FolderLinktTest.createLinkElement(text, href, addDate),
+    ElementHelper.createLinkElement(text, href, addDate),
     folderName
   );
-
-  public static Element createLinkElement(String text, String href, String addDate) {
-    Attributes attrs = new Attributes();
-    if (href != null) { attrs.add("href", href); }
-    if (addDate != null) { attrs.add("add_date", addDate); }
-
-    Element linkElement = new Element(Tag.valueOf("a"), null, attrs);
-    if (text != null) { linkElement.appendText(text); }
-
-    return linkElement;
-  }
 
   @Nested
   @DisplayName("getText")
@@ -49,7 +37,7 @@ public class FolderLinktTest {
     @Test
     public void shouldReturnEmptyTextWhenElementTextContentIsEmptyTest() {
       final FolderLink f = new FolderLink(
-        FolderLinktTest.createLinkElement("", href, addDate),
+        ElementHelper.createLinkElement("", href, addDate),
         folderName
       );
 
@@ -59,7 +47,7 @@ public class FolderLinktTest {
     @Test
     public void shouldReturnEmptyTextWhenElementDoesNotHaveTextContentTest() {
       final FolderLink f = new FolderLink(
-        FolderLinktTest.createLinkElement(null, href, addDate),
+        ElementHelper.createLinkElement(null, href, addDate),
         folderName
       );
 
@@ -79,7 +67,7 @@ public class FolderLinktTest {
     @Test
     public void shouldReturnEmptyWhenElementHrefAttributeIsEmptyTest() {
       final FolderLink f = new FolderLink(
-        FolderLinktTest.createLinkElement(text, "", addDate),
+        ElementHelper.createLinkElement(text, "", addDate),
         folderName
       );
 
@@ -89,7 +77,7 @@ public class FolderLinktTest {
     @Test
     public void shouldReturnNullWhenElementDoesNotHaveHrefAttributeTest() {
       final FolderLink f = new FolderLink(
-        FolderLinktTest.createLinkElement(text, null, addDate),
+        ElementHelper.createLinkElement(text, null, addDate),
         folderName
       );
 
@@ -109,7 +97,7 @@ public class FolderLinktTest {
     @Test
     public void shouldReturnEmptyWhenElementAddDateAttributeIsEmptyTest() {
       final FolderLink f = new FolderLink(
-        FolderLinktTest.createLinkElement(text, href, ""),
+        ElementHelper.createLinkElement(text, href, ""),
         folderName
       );
 
@@ -119,7 +107,7 @@ public class FolderLinktTest {
     @Test
     public void shouldReturnNullWhenElementDoesNotHaveAddDateAttributeTest() {
       final FolderLink f = new FolderLink(
-        FolderLinktTest.createLinkElement(text, href, null),
+        ElementHelper.createLinkElement(text, href, null),
         folderName
       );
 

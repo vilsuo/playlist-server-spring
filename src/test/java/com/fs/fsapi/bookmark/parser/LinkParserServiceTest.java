@@ -18,6 +18,7 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import com.fs.fsapi.exceptions.CustomHtmlParsingException;
+import com.fs.fsapi.helpers.ElementHelper;
 
 public class LinkParserServiceTest {
   
@@ -29,7 +30,7 @@ public class LinkParserServiceTest {
   private final String addDate = "1653126836";
 
   private AlbumBase parseSingle(String folderName, String text, String href, String addDate) {
-    Element e = FolderLinktTest.createLinkElement(text, href, addDate);
+    Element e = ElementHelper.createLinkElement(text, href, addDate);
     return service.createAlbumBases(List.of(new FolderLink(e, folderName))).get(0);
   }
 
@@ -40,7 +41,7 @@ public class LinkParserServiceTest {
 
   @Test
   public void shouldReturnParsedAlbumBaseTest() {
-    Element e = FolderLinktTest.createLinkElement(text, href, addDate);
+    Element e = ElementHelper.createLinkElement(text, href, addDate);
 
     List<AlbumBase> result = service.createAlbumBases(List.of(new FolderLink(e, folderName)));
     assertEquals(1, result.size());

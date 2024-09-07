@@ -10,9 +10,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public class FolderLink {
 
-  private Element element;
+  private final Element element;
 
-  private String folderName;
+  private final String folderName;
 
   public String getText() {
     return element.wholeText();

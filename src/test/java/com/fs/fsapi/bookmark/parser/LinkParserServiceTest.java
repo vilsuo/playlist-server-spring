@@ -1,4 +1,4 @@
-package com.fs.fsapi.parser;
+package com.fs.fsapi.bookmark.parser;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -17,9 +17,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import com.fs.fsapi.bookmark.parser.AlbumBase;
-import com.fs.fsapi.bookmark.parser.FolderLink;
-import com.fs.fsapi.bookmark.parser.LinkParserService;
 import com.fs.fsapi.exceptions.CustomHtmlParsingException;
 
 public class LinkParserServiceTest {

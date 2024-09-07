@@ -1,4 +1,4 @@
-package com.fs.fsapi.parser;
+package com.fs.fsapi.bookmark.parser;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
@@ -15,8 +15,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import com.fs.fsapi.bookmark.parser.FolderLink;
-import com.fs.fsapi.bookmark.parser.HtmlParserService;
 import com.fs.fsapi.exceptions.CustomHtmlParsingException;
 import com.fs.fsapi.exceptions.CustomParameterConstraintException;
 

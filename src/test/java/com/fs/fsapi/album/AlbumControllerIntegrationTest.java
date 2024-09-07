@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -258,30 +259,30 @@ public class AlbumControllerIntegrationTest {
     
     @Test
     public void shouldBeAbleToUpdateExistingAlbumTest() throws Exception {
-        AlbumCreation newValues = createNewValues();
-        String content = objectMapper.writeValueAsString(newValues);
+      AlbumCreation newValues = createNewValues();
+      String content = objectMapper.writeValueAsString(newValues);
 
-        MvcResult result = mockMvc
-          .perform(put("/albums/{id}", initial.getId())
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(content)
-          )
-          .andExpect(status().isOk())
-          .andReturn();
-        
-        Album album = getAlbumFromResponse(result);
+      MvcResult result = mockMvc
+        .perform(put("/albums/{id}", initial.getId())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(content)
+        )
+        .andExpect(status().isOk())
+        .andReturn();
+      
+      Album album = getAlbumFromResponse(result);
 
-        assertEquals(initial.getId(), album.getId());
-        assertEquals(newValues.getArtist(), album.getArtist());
-        assertEquals(newValues.getTitle(), album.getTitle());
-        assertEquals(newValues.getPublished(), album.getPublished());
-        assertEquals(newValues.getCategory(), album.getCategory());
-        assertEquals(newValues.getVideoId(), album.getVideoId());
-        assertEquals(initial.getAddDate(), album.getAddDate());
-      }
+      assertEquals(initial.getId(), album.getId());
+      assertEquals(newValues.getArtist(), album.getArtist());
+      assertEquals(newValues.getTitle(), album.getTitle());
+      assertEquals(newValues.getPublished(), album.getPublished());
+      assertEquals(newValues.getCategory(), album.getCategory());
+      assertEquals(newValues.getVideoId(), album.getVideoId());
+      assertEquals(initial.getAddDate(), album.getAddDate());
+    }
 
     @Test
-    public void shouldReturnErrorWithMissingValuesTest() throws Exception {
+    public void shouldReturnErrorWhenRequiredPropertyIsMissingTest() throws Exception {
       AlbumCreation source = createNewSource();
 
       // do not include video id
@@ -330,6 +331,25 @@ public class AlbumControllerIntegrationTest {
       assertEquals("videoId", validationError.getField());
       assertEquals("The video id must be 11 characters long", validationError.getMessage());
     }
+
+    @Test
+    public void shouldReturnErrorWhenAlbumDoesNotExistTest() throws Exception {
+      Integer nonExistingId = initial.getId() + 1;
+      AlbumCreation newValues = createNewValues();
+      String content = objectMapper.writeValueAsString(newValues);
+
+      MvcResult result = mockMvc
+        .perform(put("/albums/{id}", nonExistingId)
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(content)
+        )
+        .andExpect(status().is4xxClientError())
+        .andReturn();
+
+      ErrorResponse error = getErrorFromResponse(result);
+
+      assertEquals("Album was not found", error.getMessage());
+    }
   }
 
   @Nested
@@ -354,6 +374,20 @@ public class AlbumControllerIntegrationTest {
         .perform(delete("/albums/{id}", id))
         .andExpect(status().isNoContent())
         .andReturn();
+    }
+  }
+
+  @Nested
+  public class Download {
+
+    @Test
+    public void shouldAttachContentDispositionHeaderTest() throws Exception {
+      MvcResult result = mockMvc
+        .perform(get("/albums/download"))
+        .andExpect(status().isOk())
+        .andReturn();
+
+      assertNotNull(result.getResponse().getHeader(HttpHeaders.CONTENT_DISPOSITION));
     }
   }
 

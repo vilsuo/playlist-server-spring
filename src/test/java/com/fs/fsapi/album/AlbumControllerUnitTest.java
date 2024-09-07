@@ -191,7 +191,7 @@ public class AlbumControllerUnitTest {
       when(service.create(source))
         .thenThrow(new RuntimeException(message));
 
-      Exception e = assertThrows(
+      RuntimeException e = assertThrows(
         RuntimeException.class, 
         () -> controller.postAlbum(source)
       );
@@ -241,7 +241,7 @@ public class AlbumControllerUnitTest {
       when(service.findOne(id))
         .thenThrow(new RuntimeException(message));
 
-      Exception e = assertThrows(
+      RuntimeException e = assertThrows(
         RuntimeException.class,
         () -> controller.getAlbum(id)
       );
@@ -299,12 +299,12 @@ public class AlbumControllerUnitTest {
       when(service.update(id, newValues))
         .thenThrow(new RuntimeException(message));
 
-        Exception e = assertThrows(
-          RuntimeException.class,
-          () -> controller.putAlbum(id, newValues)
-        );
+      RuntimeException e = assertThrows(
+        RuntimeException.class,
+        () -> controller.putAlbum(id, newValues)
+      );
   
-        assertEquals(message, e.getMessage());
+      assertEquals(message, e.getMessage());
     }
   }
 

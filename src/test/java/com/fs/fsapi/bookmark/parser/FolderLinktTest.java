@@ -30,7 +30,7 @@ public class FolderLinktTest {
   public class Text {
 
     @Test
-    public void shouldReturnElementTextContentTest() {
+    public void shouldReturnElementTextContentWhenItExistsTest() {
       assertEquals(text, folderLink.getText());
     }
 
@@ -60,7 +60,7 @@ public class FolderLinktTest {
   public class Href {
 
     @Test
-    public void shouldReturnElementHrefAttributeTest() {
+    public void shouldReturnElementHrefAttributeWhenItExistsTest() {
       assertEquals(href, folderLink.getHref());
     }
 
@@ -90,7 +90,7 @@ public class FolderLinktTest {
   public class AddDate {
 
     @Test
-    public void getAddDate_shouldReturnElementAddDateAttributeTest() {
+    public void shouldReturnElementAddDateAttributeWhenItExistsTest() {
       assertEquals(addDate, folderLink.getAddDate());
     }
 

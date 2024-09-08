@@ -9,12 +9,16 @@ import com.fs.fsapi.bookmark.parser.FolderLink;
 
 public class FileHelper {
 
-  public static InputStream getValidFileAsInputStream() throws FileNotFoundException {
+  public static InputStream getValidFile() throws FileNotFoundException {
     return getFileAsInputStream(VALID_FILE);
   }
 
-  public static InputStream getInvalidFileAsInputStream() throws FileNotFoundException {
-    return getFileAsInputStream(INVALID_FILE);
+  public static InputStream getInvalidFileStruture() throws FileNotFoundException {
+    return getFileAsInputStream(INVALID_FILE_STRUCTURE);
+  }
+
+  public static InputStream getInvalidFileLink() throws FileNotFoundException {
+    return getFileAsInputStream(INVALID_FILE_LINK);
   }
 
   private static InputStream getFileAsInputStream(String filename) throws FileNotFoundException {
@@ -25,8 +29,9 @@ public class FileHelper {
   private static final String TEST_FILES_LOCATION = "src/test/data";
 
   // files
-  private static final String INVALID_FILE = "bookmarks-invalid.html";
   private static final String VALID_FILE = "bookmarks.html";
+  private static final String INVALID_FILE_STRUCTURE = "bookmarks-invalid-structure.html";
+  private static final String INVALID_FILE_LINK = "bookmarks-invalid-links.html";
 
   public enum ValidHeader {
     ROOT ("Bookmarks"),
@@ -48,7 +53,11 @@ public class FileHelper {
   }
 
   public enum InvalidHeader {
-    INVALID_STRUCTURE ("Example");
+    STRUCTURE ("Example"),
+
+    LINK_ATTRIBUTE_MISSING ("Missing"), // missing "add_date" attribute
+    LINK_ATTRIBUTE_INVALID ("Invalid"), // invalid "href" attribute prefix
+    LINK_TEXT_CONTENT_INVALID ("Content"); // missing separator
 
     private final String textContent;
 

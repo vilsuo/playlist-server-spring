@@ -24,14 +24,14 @@ public class HtmlParserServiceTest {
 
   private List<FolderLink> createWithValidFile(ValidHeader header) throws Exception {
     return service.createFolderLinks(
-      FileHelper.getValidFileAsInputStream(), 
+      FileHelper.getValidFile(), 
       header.getTextContent()
     );
   }
 
   private List<FolderLink> createWithInValidFile(InvalidHeader header) throws Exception {
     return service.createFolderLinks(
-      FileHelper.getInvalidFileAsInputStream(), 
+      FileHelper.getInvalidFileStruture(), 
       header.getTextContent()
     );
   }
@@ -61,7 +61,7 @@ public class HtmlParserServiceTest {
 
   @Test
   public void shouldThrowWhenElementStructureIsInvalidTest() {
-    final InvalidHeader header = InvalidHeader.INVALID_STRUCTURE;
+    final InvalidHeader header = InvalidHeader.STRUCTURE;
 
     CustomHtmlParsingException ex = assertThrows(
       CustomHtmlParsingException.class,
@@ -138,7 +138,7 @@ public class HtmlParserServiceTest {
     }
 
     @Test
-    public void shouldCreateLinkBeforeSubFolderTest() {
+    public void shouldCreateFromLinksBeforeSubFolderTest() {
       FolderLink result = results.get(2);
       FolderLink expected = expectations[2];
 
@@ -149,7 +149,7 @@ public class HtmlParserServiceTest {
     }
 
     @Test
-    public void shouldCreateLinkInSubFolderTest() {
+    public void shouldCreateFromLinksInSubFolderTest() {
       FolderLink result = results.get(3);
       FolderLink expected = expectations[3];
 
@@ -160,7 +160,7 @@ public class HtmlParserServiceTest {
     }
 
     @Test
-    public void shouldCreateLinkAfterSubFolderTest() {
+    public void shouldCreateFromLinksAfterSubFolderTest() {
       FolderLink result = results.get(4);
       FolderLink expected = expectations[4];
 

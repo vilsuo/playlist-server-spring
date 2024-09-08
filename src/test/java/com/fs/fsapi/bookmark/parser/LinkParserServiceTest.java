@@ -18,16 +18,21 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import com.fs.fsapi.exceptions.CustomHtmlParsingException;
+import com.fs.fsapi.helpers.AlbumHelper;
 import com.fs.fsapi.helpers.ElementHelper;
+import com.fs.fsapi.helpers.FileHelper;
 
 public class LinkParserServiceTest {
   
   private final LinkParserService service = new LinkParserService();
 
-  private final String folderName = "Thrash";
-  private final String text = "Annihilator - Alice In Hell (1989)";
-  private final String href = "https://www.youtube.com/watch?v=IdRn9IYWuaQ";
-  private final String addDate = "1653126836";
+  private final FolderLink source = FileHelper.VALID_FILE_CONTAINER_LINKS[0];
+  private final AlbumBase expected = AlbumHelper.VALID_FILE_CONTAINER_ALBUMBASES[0];
+
+  private final String folderName = FileHelper.ValidHeader.CONTAINER.getTextContent();
+  private final String text = source.getText();
+  private final String href = source.getHref();
+  private final String addDate = source.getAddDate();
 
   private AlbumBase parseSingle(String folderName, String text, String href, String addDate) {
     Element e = ElementHelper.createLinkElement(text, href, addDate);
@@ -41,18 +46,17 @@ public class LinkParserServiceTest {
 
   @Test
   public void shouldReturnParsedAlbumBaseTest() {
-    Element e = ElementHelper.createLinkElement(text, href, addDate);
+    List<AlbumBase> results = service.createAlbumBases(List.of(source));
 
-    List<AlbumBase> result = service.createAlbumBases(List.of(new FolderLink(e, folderName)));
-    assertEquals(1, result.size());
+    assertEquals(1, results.size());
 
-    AlbumBase base = result.get(0);
-    assertEquals("IdRn9IYWuaQ", base.getVideoId());
-    assertEquals("Annihilator", base.getArtist());
-    assertEquals("Alice In Hell", base.getTitle());
-    assertEquals(1989, base.getPublished());
-    assertEquals(folderName, base.getCategory());
-    assertEquals("2022-05-21T09:53:56Z", base.getAddDate());
+    AlbumBase result = results.get(0);
+    assertEquals(expected.getVideoId(), result.getVideoId());
+    assertEquals(expected.getArtist(), result.getArtist());
+    assertEquals(expected.getTitle(), result.getTitle());
+    assertEquals(expected.getPublished(), result.getPublished());
+    assertEquals(expected.getCategory(), result.getCategory());
+    assertEquals(expected.getAddDate(), result.getAddDate());
   }
 
   @Nested
@@ -148,17 +152,17 @@ public class LinkParserServiceTest {
 
     @Test
     public void shouldExtractArtistFromTextContentTest() {
-      assertEquals("Annihilator", parseSingleWithText(text).getArtist());
+      assertEquals(expected.getArtist(), parseSingleWithText(text).getArtist());
     }
 
     @Test
     public void shouldExtractTitleFromTextContentTest() {
-      assertEquals("Alice In Hell", parseSingleWithText(text).getTitle());
+      assertEquals(expected.getTitle(), parseSingleWithText(text).getTitle());
     }
 
     @Test
     public void shouldExtractPublishedFromTextContentTest() {
-      assertEquals(1989, parseSingleWithText(text).getPublished());
+      assertEquals(expected.getPublished(), parseSingleWithText(text).getPublished());
     }
 
     private static Stream<Arguments> argumentProvider() {
@@ -210,23 +214,23 @@ public class LinkParserServiceTest {
 
     @Test
     public void shouldConvertWhenAddDateAttributeIsPositiveTest() {
-      String result = parseSingleWithAddDate("1653126836").getAddDate();
+      AlbumBase result = parseSingleWithAddDate(addDate);
 
-      assertEquals("2022-05-21T09:53:56Z", result);
+      assertEquals(expected.getAddDate(), result.getAddDate());
     }
 
     @Test
     public void shouldConvertWhenAddDateAttributeIsNegativeTest() {
-      String result = parseSingleWithAddDate("-1653126836").getAddDate();
+      AlbumBase result = parseSingleWithAddDate("-1653126836");
       
-      assertEquals("1917-08-13T14:06:04Z", result);
+      assertEquals("1917-08-13T14:06:04Z", result.getAddDate());
     }
 
     @Test
     public void shouldReturnUnixExpochZeroWhenAddDateAttributeIsZeroTest() {
-      String result = parseSingleWithAddDate("0").getAddDate();
+      AlbumBase result = parseSingleWithAddDate("0");
 
-      assertEquals("1970-01-01T00:00:00Z", result);
+      assertEquals("1970-01-01T00:00:00Z", result.getAddDate());
     }
 
     @Test

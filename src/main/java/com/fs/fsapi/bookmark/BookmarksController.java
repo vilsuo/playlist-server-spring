@@ -1,8 +1,14 @@
 package com.fs.fsapi.bookmark;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
+import org.apache.tika.Tika;
+import org.apache.tika.io.TikaInputStream;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.metadata.TikaCoreProperties;
+import org.apache.tika.mime.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -10,19 +16,17 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fs.fsapi.album.Album;
 import com.fs.fsapi.album.AlbumService;
 import com.fs.fsapi.bookmark.parser.AlbumBase;
+import com.fs.fsapi.exceptions.CustomInvalidMediaTypeException;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-// TODO
-// - add file type detection with Apache Tika
-//  - with validate with @annotation?
-//  - response with 415 (Unsupported Media Type)?
-
+@Slf4j
 @RestController
 @RequestMapping("/bookmarks")
 @RequiredArgsConstructor
@@ -32,11 +36,22 @@ public class BookmarksController {
 
   private final BookmarkService bookmarkService;
   
+  private final Tika tika = new Tika();
+  private final String SUPPORTED_MEDIA_TYPE = "text";
+
   @PostMapping
   public ResponseEntity<List<Album>> uploadBookmarks(
     @RequestParam MultipartFile file,
     @NotEmpty @RequestParam String name
   ) throws IOException {
+    
+    MediaType detectedMediaType = getFileMediaType(file);
+    if (!detectedMediaType.getType().equals(SUPPORTED_MEDIA_TYPE)) {
+      throw new CustomInvalidMediaTypeException(
+        detectedMediaType,
+        SUPPORTED_MEDIA_TYPE + "/*"
+      );
+    }
 
     List<AlbumBase> bases = bookmarkService.getAlbumBases(file, name);
 
@@ -45,4 +60,34 @@ public class BookmarksController {
       .body(albumService.createMany(bases));
   }
 
+  private MediaType getFileMediaType(MultipartFile file) {
+    final String filename = file.getOriginalFilename();
+
+    try {
+      InputStream inputStream = file.getInputStream();
+      
+      Metadata metadata = new Metadata();
+      metadata.set(
+        TikaCoreProperties.RESOURCE_NAME_KEY,
+        filename
+      );
+      
+      MediaType mediaType = tika.getDetector()
+        .detect(TikaInputStream.get(inputStream), metadata);
+
+      log.info(
+        "Detected mediatype '" + mediaType.getBaseType()
+        + "' for file '" + filename + "'"
+      );
+
+      return mediaType;
+
+    } catch (IOException ex) {
+      log.info("Error detecting mediatype for file '" + filename + "'", ex);
+
+      throw new RuntimeException(
+        "Can not read file '" + filename + "'"
+      );
+    }
+  }
 }

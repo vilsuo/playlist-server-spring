@@ -22,6 +22,9 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Path.Node;
 import lombok.extern.slf4j.Slf4j;
 
+// TODO
+// - change response messages to more user-friendly: "Validation failed" etc.
+
 @Slf4j
 @ControllerAdvice
 public class CustomControllerAdvice {
@@ -35,7 +38,7 @@ public class CustomControllerAdvice {
     HttpStatus status = HttpStatus.BAD_REQUEST;
     String message = e.getMessage();
 
-    log.info(message);
+    log.info("MethodArgumentNotValidException: " + message);
 
     List<ApiValidationError> validationErrors = e.getBindingResult()  
       .getFieldErrors()  
@@ -60,7 +63,7 @@ public class CustomControllerAdvice {
     HttpStatus status = HttpStatus.BAD_REQUEST;
     String message = e.getMessage();
 
-    log.info(message);
+    log.info("ConstraintViolationException: " + message);
 
     List<ApiValidationError> validationErrors = e.getConstraintViolations()
       .stream()
@@ -86,11 +89,13 @@ public class CustomControllerAdvice {
   }
 
   @ExceptionHandler(HandlerMethodValidationException.class)
-  public ResponseEntity<ValidationErrorResponse> handleValidationException(
+  public ResponseEntity<ValidationErrorResponse> handleHandlerMethodValidationExceptions(
     HandlerMethodValidationException e
   ) {
     HttpStatus status = HttpStatus.valueOf(e.getStatusCode().value());
     String message = e.getReason();
+
+    log.info("HandlerMethodValidationException: " + message);
     
     List<ApiValidationError> validationErrors = e.getAllValidationResults()
       .stream()
@@ -123,7 +128,7 @@ public class CustomControllerAdvice {
     HttpStatus status = HttpStatus.NOT_FOUND;
     String message = e.getMessage();
 
-    log.info(message);
+    log.info("CustomDataNotFoundException: " + message);
 
     return new ResponseEntity<>(
       new ErrorResponse(status, message),
@@ -138,7 +143,7 @@ public class CustomControllerAdvice {
     HttpStatus status = HttpStatus.BAD_REQUEST;
     String message = e.getMessage();
     
-    log.info(message);
+    log.info("CustomParameterConstraintException: " + message);
 
     return new ResponseEntity<>(
       new ErrorResponse(status, message),
@@ -153,12 +158,27 @@ public class CustomControllerAdvice {
     HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY;
     String message = e.getMessage();
     
-    log.info(message);
+    log.info("CustomHtmlParsingException: " + message);
 
     Element element = e.getElement();
 
     return new ResponseEntity<>(
       new ErrorDataResponse<>(status, message, element.toString()),
+      status
+    );
+  }
+
+  @ExceptionHandler(CustomInvalidMediaTypeException.class)
+  public ResponseEntity<ErrorResponse> handleInvalidMediaTypeExceptions(
+    CustomInvalidMediaTypeException e
+  ) {
+    HttpStatus status = HttpStatus.UNSUPPORTED_MEDIA_TYPE;
+    String message = e.getMessage();
+    
+    log.info("CustomInvalidMediaTypeException: " + message);
+
+    return new ResponseEntity<>(
+      new ErrorResponse(status, message),
       status
     );
   }
@@ -169,7 +189,7 @@ public class CustomControllerAdvice {
     HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
     String message = e.getMessage();
     
-    log.error(message, e);
+    log.error("Fallback error handler: " + message, e);
 
     return new ResponseEntity<>(
       new ErrorResponse(status, message),

@@ -20,6 +20,10 @@ public class HtmlParserService {
 
   private final Pattern HEADER_PATTERN = Pattern.compile("h[1-6]");
 
+  public Link createLink(String html) {
+    return new Link(Jsoup.parse(html).selectFirst("a"));
+  }
+
   /**
    * Find HTML {@code a} elements in a specific block indicated by a header
    * text content. Each resulting object will also contain the preceeding header
@@ -218,5 +222,5 @@ public class HtmlParserService {
       this.name = name;
     }
   };
-  
+
 }

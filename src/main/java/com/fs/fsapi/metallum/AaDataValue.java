@@ -10,17 +10,17 @@ import lombok.ToString;
 @Getter @Setter
 @ToString
 @NoArgsConstructor
-public class AaData {
+public class AaDataValue {
 
-  private String artistName;
+  private String artistLinkElementString;
 
-  private String albumTitle;
+  private String titleLinkElementString;
 
   private String albumType;
 
-  public AaData(List<String> args) {
-    this.artistName = args.get(0);
-    this.albumTitle = args.get(1);
+  public AaDataValue(List<String> args) {
+    this.artistLinkElementString = args.get(0);
+    this.titleLinkElementString = args.get(1);
     this.albumType = args.get(2);
   }
 }

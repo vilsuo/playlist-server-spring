@@ -20,9 +20,11 @@ public class MetallumController {
     @RequestParam String artist,
     @RequestParam String title
   ) {
-    
+
+    SearchLink s = service.getSearchResultsWeb(artist, title);
+
     return ResponseEntity
       .ok()
-      .body(service.getSearchResultsWeb(artist, title));
+      .body(new String[]{ s.getArtistHref(), s.getTitleHref() });
   }
 }

@@ -1,10 +1,15 @@
 package com.fs.fsapi.metallum;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.fs.fsapi.metallum.parser.MetallumParser;
+import com.fs.fsapi.metallum.parser.SongResult;
 import com.fs.fsapi.metallum.response.ArtistTitleSearchResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -37,8 +42,6 @@ public class MetallumService {
   public byte[] searchCover(String artist, String title) {
     ArtistTitleSearchResult result = searchWithArtistAndTitle(artist, title);
     final String path = getCoverPath(result.getTitleHref());
-
-    log.info("cover path: " + path);
 
     byte[] image = webClient.get()
       .uri(uriBuilder -> uriBuilder
@@ -73,5 +76,19 @@ public class MetallumService {
     // always jpg?
     final String extension = ".jpg";
     return String.join("/", new String[]{ baseUrl, middle, id }) + extension;
+  }
+
+  public List<SongResult> searchSongs(String artist, String title) throws URISyntaxException {
+    ArtistTitleSearchResult result = searchWithArtistAndTitle(artist, title);
+    final String path = result.getTitleHref();
+
+    String html = webClient.get()
+      .uri(new URI(path)) // ignore baseUrl
+      .accept(MediaType.TEXT_HTML)
+      .retrieve()
+      .bodyToMono(String.class)
+      .block();
+
+    return parser.getSongs(html);
   }
 }

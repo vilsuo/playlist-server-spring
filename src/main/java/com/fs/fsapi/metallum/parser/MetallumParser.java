@@ -1,6 +1,12 @@
 package com.fs.fsapi.metallum.parser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 import com.fs.fsapi.bookmark.parser.LinkElement;
@@ -59,5 +65,26 @@ public class MetallumParser {
 
   private LinkElement createLinkElement(String html) {
     return new LinkElement(Jsoup.parse(html).selectFirst("a"));
+  }
+
+  public List<SongResult> getSongs(String html) {
+    Document doc = Jsoup.parse(html);
+
+    Element tbody = doc.select(".table_lyrics > tbody").first();
+    List<SongResult> songs = new ArrayList<>();
+
+    tbody.children().stream()
+      .forEach(tr -> {
+        if (tr.hasClass("even") || tr.hasClass("odd")) {
+          Elements tds = tr.children();
+
+          final String songTitle = tds.get(1).ownText();
+          final String songDuration = tds.get(2).ownText();
+
+          songs.add(new SongResult(songTitle, songDuration));
+        }
+      });
+
+    return songs;
   }
 }

@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
-public class WebClientConfig {
+public class CustomWebClientConfig {
 
   private final String METALLUM_BASE_URL = "https://www.metal-archives.com";
 

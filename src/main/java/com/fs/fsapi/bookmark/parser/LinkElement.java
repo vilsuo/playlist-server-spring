@@ -8,7 +8,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class Link {
+public class LinkElement {
 
   private final Element element;
 

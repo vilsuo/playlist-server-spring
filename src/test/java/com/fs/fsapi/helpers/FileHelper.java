@@ -5,7 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
-import com.fs.fsapi.bookmark.parser.FolderLink;
+import com.fs.fsapi.bookmark.parser.BookmarksLinkElement;
 
 public class FileHelper {
 
@@ -71,8 +71,8 @@ public class FileHelper {
   }
 
   // folderlinks created from the valid file
-  private static final FolderLink f1 = new FolderLink(
-    ElementHelper.createLinkElement(
+  private static final BookmarksLinkElement f1 = new BookmarksLinkElement(
+    ElementHelper.createLinkTypeElement(
       "Annihilator - Alice In Hell (1989)",
       "https://www.youtube.com/watch?v=IdRn9IYWuaQ",
       "1653126836"
@@ -80,8 +80,8 @@ public class FileHelper {
     ValidHeader.CONTAINER.getTextContent()
   );
 
-  private static final FolderLink f2 = new FolderLink(
-    ElementHelper.createLinkElement(
+  private static final BookmarksLinkElement f2 = new BookmarksLinkElement(
+    ElementHelper.createLinkTypeElement(
       "A.O.D - Altars of Destruction (1988)",
       "https://www.youtube.com/watch?v=5av2oGfw34g&list=PLHz-VIInDvH9Wfr0oLNeOch_SIl6rA1ij&index=8",
       "1711378433"
@@ -89,8 +89,8 @@ public class FileHelper {
     ValidHeader.PARENT.getTextContent()
   );
 
-  private static final FolderLink f3 = new FolderLink(
-    ElementHelper.createLinkElement(
+  private static final BookmarksLinkElement f3 = new BookmarksLinkElement(
+    ElementHelper.createLinkTypeElement(
       "Nuclear Assault - Survive (1988)",
       "https://www.youtube.com/watch?v=zopfZLQibWw",
       "1711378636"
@@ -98,8 +98,8 @@ public class FileHelper {
     ValidHeader.PARENT.getTextContent()
   );
 
-  private static final FolderLink f4 = new FolderLink(
-    ElementHelper.createLinkElement(
+  private static final BookmarksLinkElement f4 = new BookmarksLinkElement(
+    ElementHelper.createLinkTypeElement(
       "Exodus - Fabulous Disaster (1989)",
       "https://www.youtube.com/watch?v=Zof79HxNpMs",
       "1711378682"
@@ -107,8 +107,8 @@ public class FileHelper {
     ValidHeader.PARENT.getTextContent()
   );
 
-  private static final FolderLink f5 = new FolderLink(
-    ElementHelper.createLinkElement(
+  private static final BookmarksLinkElement f5 = new BookmarksLinkElement(
+    ElementHelper.createLinkTypeElement(
       "Angel Dust - Into the Dark Past (1986)",
       "https://www.youtube.com/watch?v=DopHEl-BCGQ",
       "1711378617"
@@ -116,8 +116,8 @@ public class FileHelper {
     ValidHeader.CHILD.getTextContent()
   );
 
-  private static final FolderLink f6 = new FolderLink(
-    ElementHelper.createLinkElement(
+  private static final BookmarksLinkElement f6 = new BookmarksLinkElement(
+    ElementHelper.createLinkTypeElement(
       "Paradox - Product of Imagination (1987)",
       "https://www.youtube.com/watch?v=MV3yQFU3Z6s",
       "1711378656"
@@ -125,9 +125,9 @@ public class FileHelper {
     ValidHeader.PARENT.getTextContent()
   );
 
-  public static final FolderLink[] VALID_FILE_ROOT_LINKS = { f1, f2, f3, f4, f5, f6 };
-  public static final FolderLink[] VALID_FILE_CONTAINER_LINKS = { f1, f2, f3, f4, f5, f6 };
-  public static final FolderLink[] VALID_FILE_PARENT_LINKS = { f2, f3, f4, f5, f6 };
-  public static final FolderLink[] VALID_FILE_CHILD_LINKS = { f5 };
-  public static final FolderLink[] VALID_FILE_EMPTY_LINKS = { };
+  public static final BookmarksLinkElement[] VALID_FILE_ROOT_LINKS = { f1, f2, f3, f4, f5, f6 };
+  public static final BookmarksLinkElement[] VALID_FILE_CONTAINER_LINKS = { f1, f2, f3, f4, f5, f6 };
+  public static final BookmarksLinkElement[] VALID_FILE_PARENT_LINKS = { f2, f3, f4, f5, f6 };
+  public static final BookmarksLinkElement[] VALID_FILE_CHILD_LINKS = { f5 };
+  public static final BookmarksLinkElement[] VALID_FILE_EMPTY_LINKS = { };
 }

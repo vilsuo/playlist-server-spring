@@ -34,7 +34,7 @@ public class BookmarksController {
 
   private final AlbumService albumService;
 
-  private final BookmarkService bookmarkService;
+  private final BookmarksService bookmarkService;
   
   private final Tika tika = new Tika();
   private final String SUPPORTED_MEDIA_TYPE = "text";
@@ -45,10 +45,10 @@ public class BookmarksController {
     @NotEmpty @RequestParam String name
   ) throws IOException {
     
-    MediaType detectedMediaType = getFileMediaType(file);
-    if (!detectedMediaType.getType().equals(SUPPORTED_MEDIA_TYPE)) {
+    MediaType mediaType = detectMediaType(file);
+    if (!mediaType.getType().equals(SUPPORTED_MEDIA_TYPE)) {
       throw new CustomInvalidMediaTypeException(
-        detectedMediaType,
+        mediaType,
         SUPPORTED_MEDIA_TYPE + "/*"
       );
     }
@@ -60,7 +60,7 @@ public class BookmarksController {
       .body(albumService.createMany(bases));
   }
 
-  private MediaType getFileMediaType(MultipartFile file) {
+  private MediaType detectMediaType(MultipartFile file) {
     final String filename = file.getOriginalFilename();
 
     try {

@@ -11,12 +11,13 @@ import org.springframework.stereotype.Service;
 
 import com.fs.fsapi.DateTimeString;
 import com.fs.fsapi.exceptions.CustomHtmlParsingException;
+import com.fs.fsapi.exceptions.CustomLinkParsingException;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Service
-public class LinkParserService {
+public class BookmarksLinkParserService {
 
   private final String HREF_PREFIX = "https://www.youtube.com/watch?";
 
@@ -41,29 +42,29 @@ public class LinkParserService {
    *    The value is expected to be in Unix Epoch seconds
    * </ul>
    * 
-   * @param folderLinks  list of html elements with their associated folder name
+   * @param bookmarkLinks  list of html elements with their associated folder name
    * @return the created list of album base objects
    * 
    */
-  public List<AlbumBase> createAlbumBases(List<FolderLink> folderLinks) {
-    return folderLinks.stream()
-      .map(folderLink -> {
+  public List<AlbumBase> parseElements(List<BookmarksLinkElement> bookmarkLinks) {
+    return bookmarkLinks.stream()
+      .map(bookmarkLink -> {
         try {
-          final TextDetails details = extractTextContentDetails(folderLink.getText());
+          final TextDetails details = extractTextContentDetails(bookmarkLink.getText());
 
           return new AlbumBase(
-            extractVideoId(folderLink.getHref()),
+            extractVideoId(bookmarkLink.getHref()),
             details.getArtist(),
             details.getTitle(),
             details.getPublished(),
-            folderLink.getFolderName(),
-            parseAddDate(folderLink.getAddDate())
+            bookmarkLink.getHeaderText(),
+            parseAddDate(bookmarkLink.getAddDate())
           );
           
         } catch (CustomLinkParsingException ex) {
           throw new CustomHtmlParsingException(
             ex.getMessage(),
-            folderLink.getElement()
+            bookmarkLink.getElement()
           );
         }
       })
@@ -71,8 +72,8 @@ public class LinkParserService {
   }
 
   /**
-   * Extract the query paramenter {@link LinkParserService#VIDEO_ID_KEY_NAME} value
-   * from an URL starting with {@link LinkParserService#HREF_PREFIX}.
+   * Extract the query paramenter {@link BookmarksLinkParserService#VIDEO_ID_KEY_NAME} value
+   * from an URL starting with {@link BookmarksLinkParserService#HREF_PREFIX}.
    * 
    * @param href  Link element href attribute value
    * @return the extracted query parameter value
@@ -168,13 +169,4 @@ public class LinkParserService {
 
     final int published;
   }
-
-  @Getter
-  public class CustomLinkParsingException extends RuntimeException {
-
-    public CustomLinkParsingException(String message) {
-      super(message);
-    }
-  }
-
 }

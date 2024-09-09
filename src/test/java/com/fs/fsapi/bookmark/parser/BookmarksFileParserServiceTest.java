@@ -18,19 +18,19 @@ import com.fs.fsapi.helpers.FileHelper;
 import static com.fs.fsapi.helpers.FileHelper.InvalidHeader;
 import static com.fs.fsapi.helpers.FileHelper.ValidHeader;;
 
-public class HtmlParserServiceTest {
+public class BookmarksFileParserServiceTest {
 
-  private final HtmlParserService service = new HtmlParserService();
+  private final BookmarksFileParserService service = new BookmarksFileParserService();
 
-  private List<FolderLink> createWithValidFile(ValidHeader header) throws Exception {
-    return service.createFolderLinks(
+  private List<BookmarksLinkElement> createWithValidFile(ValidHeader header) throws Exception {
+    return service.parseFile(
       FileHelper.getValidFile(), 
       header.getTextContent()
     );
   }
 
-  private List<FolderLink> createWithInValidFile(InvalidHeader header) throws Exception {
-    return service.createFolderLinks(
+  private List<BookmarksLinkElement> createWithInValidFile(InvalidHeader header) throws Exception {
+    return service.parseFile(
       FileHelper.getInvalidFileStruture(), 
       header.getTextContent()
     );
@@ -55,7 +55,7 @@ public class HtmlParserServiceTest {
   public void shouldNotCreateAnyWhenFolderIsEmptyTest() throws Exception {
     final ValidHeader header = ValidHeader.EMPTY;
 
-    List<FolderLink> folderLinks = createWithValidFile(header);
+    List<BookmarksLinkElement> folderLinks = createWithValidFile(header);
     assertTrue(folderLinks.isEmpty());
   }
 
@@ -81,10 +81,10 @@ public class HtmlParserServiceTest {
 
     private ValidHeader header = ValidHeader.CHILD;
 
-    private List<FolderLink> results;
-    private FolderLink result;
+    private List<BookmarksLinkElement> results;
+    private BookmarksLinkElement result;
 
-    private final FolderLink expected = FileHelper.VALID_FILE_CHILD_LINKS[0];
+    private final BookmarksLinkElement expected = FileHelper.VALID_FILE_CHILD_LINKS[0];
 
     @BeforeEach
     public void create() throws Exception {
@@ -99,7 +99,7 @@ public class HtmlParserServiceTest {
 
     @Test
     public void shouldGetFolderNameFromHeaderTextContentTest() {
-      assertEquals(expected.getFolderName(), result.getFolderName());
+      assertEquals(expected.getHeaderText(), result.getHeaderText());
     }
 
     @Test
@@ -124,8 +124,8 @@ public class HtmlParserServiceTest {
 
     private ValidHeader header = ValidHeader.PARENT;
 
-    private List<FolderLink> results;
-    private FolderLink[] expectations = FileHelper.VALID_FILE_PARENT_LINKS;
+    private List<BookmarksLinkElement> results;
+    private BookmarksLinkElement[] expectations = FileHelper.VALID_FILE_PARENT_LINKS;
 
     @BeforeEach
     public void create() throws Exception {
@@ -139,10 +139,10 @@ public class HtmlParserServiceTest {
 
     @Test
     public void shouldCreateFromLinksBeforeSubFolderTest() {
-      FolderLink result = results.get(2);
-      FolderLink expected = expectations[2];
+      BookmarksLinkElement result = results.get(2);
+      BookmarksLinkElement expected = expectations[2];
 
-      assertEquals(expected.getFolderName(), result.getFolderName());
+      assertEquals(expected.getHeaderText(), result.getHeaderText());
       assertEquals(expected.getText(), result.getText());
       assertEquals(expected.getHref(), result.getHref());
       assertEquals(expected.getAddDate(), result.getAddDate());
@@ -150,10 +150,10 @@ public class HtmlParserServiceTest {
 
     @Test
     public void shouldCreateFromLinksInSubFolderTest() {
-      FolderLink result = results.get(3);
-      FolderLink expected = expectations[3];
+      BookmarksLinkElement result = results.get(3);
+      BookmarksLinkElement expected = expectations[3];
 
-      assertEquals(expected.getFolderName(), result.getFolderName());
+      assertEquals(expected.getHeaderText(), result.getHeaderText());
       assertEquals(expected.getText(), result.getText());
       assertEquals(expected.getHref(), result.getHref());
       assertEquals(expected.getAddDate(), result.getAddDate());
@@ -161,10 +161,10 @@ public class HtmlParserServiceTest {
 
     @Test
     public void shouldCreateFromLinksAfterSubFolderTest() {
-      FolderLink result = results.get(4);
-      FolderLink expected = expectations[4];
+      BookmarksLinkElement result = results.get(4);
+      BookmarksLinkElement expected = expectations[4];
 
-      assertEquals(expected.getFolderName(), result.getFolderName());
+      assertEquals(expected.getHeaderText(), result.getHeaderText());
       assertEquals(expected.getText(), result.getText());
       assertEquals(expected.getHref(), result.getHref());
       assertEquals(expected.getAddDate(), result.getAddDate());

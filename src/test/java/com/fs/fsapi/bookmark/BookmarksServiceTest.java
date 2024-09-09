@@ -13,8 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 
 import com.fs.fsapi.bookmark.parser.AlbumBase;
-import com.fs.fsapi.bookmark.parser.HtmlParserService;
-import com.fs.fsapi.bookmark.parser.LinkParserService;
+import com.fs.fsapi.bookmark.parser.BookmarksFileParserService;
+import com.fs.fsapi.bookmark.parser.BookmarksLinkParserService;
 import com.fs.fsapi.exceptions.CustomHtmlParsingException;
 import com.fs.fsapi.exceptions.CustomParameterConstraintException;
 import com.fs.fsapi.helpers.AlbumHelper;
@@ -27,16 +27,16 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest(classes = {
-  BookmarkService.class,
-  HtmlParserService.class,
-  LinkParserService.class
+  BookmarksService.class,
+  BookmarksFileParserService.class,
+  BookmarksLinkParserService.class
 })
-public class BookmarkServiceTest {
+public class BookmarksServiceTest {
 
   private final String name = "file";
 
   @Autowired
-  private BookmarkService service;
+  private BookmarksService service;
 
   @Test
   public void shouldThrowWhenFileElementStructureIsInvalidTest() throws Exception {

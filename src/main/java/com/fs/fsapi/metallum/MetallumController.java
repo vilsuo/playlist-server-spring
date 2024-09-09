@@ -15,13 +15,13 @@ public class MetallumController {
 
   private final MetallumService service;
   
-  @GetMapping("/songs")
+  @GetMapping("/links")
   public ResponseEntity<?> getAll(
     @RequestParam String artist,
     @RequestParam String title
   ) {
 
-    SearchLink s = service.getSearchResultsWeb(artist, title);
+    ArtistTitleSearchResult s = service.searchWithArtistAndTitle(artist, title);
 
     return ResponseEntity
       .ok()

@@ -22,31 +22,31 @@ import com.fs.fsapi.helpers.AlbumHelper;
 import com.fs.fsapi.helpers.ElementHelper;
 import com.fs.fsapi.helpers.FileHelper;
 
-public class LinkParserServiceTest {
+public class BookmarksLinkParserServiceTest {
   
-  private final LinkParserService service = new LinkParserService();
+  private final BookmarksLinkParserService service = new BookmarksLinkParserService();
 
-  private final FolderLink source = FileHelper.VALID_FILE_CONTAINER_LINKS[0];
+  private final BookmarksLinkElement source = FileHelper.VALID_FILE_CONTAINER_LINKS[0];
   private final AlbumBase expected = AlbumHelper.VALID_FILE_CONTAINER_ALBUMBASES[0];
 
-  private final String folderName = FileHelper.ValidHeader.CONTAINER.getTextContent();
+  private final String headerText = FileHelper.ValidHeader.CONTAINER.getTextContent();
   private final String text = source.getText();
   private final String href = source.getHref();
   private final String addDate = source.getAddDate();
 
   private AlbumBase parseSingle(String folderName, String text, String href, String addDate) {
-    Element e = ElementHelper.createLinkElement(text, href, addDate);
-    return service.createAlbumBases(List.of(new FolderLink(e, folderName))).get(0);
+    Element e = ElementHelper.createLinkTypeElement(text, href, addDate);
+    return service.parseElements(List.of(new BookmarksLinkElement(e, folderName))).get(0);
   }
 
   @Test
   public void shouldReturnEmptyListWhenNoFolderLinksTest() {
-    assertTrue(service.createAlbumBases(List.of()).isEmpty());
+    assertTrue(service.parseElements(List.of()).isEmpty());
   }
 
   @Test
   public void shouldReturnParsedAlbumBaseTest() {
-    List<AlbumBase> results = service.createAlbumBases(List.of(source));
+    List<AlbumBase> results = service.parseElements(List.of(source));
 
     assertEquals(1, results.size());
 
@@ -64,7 +64,7 @@ public class LinkParserServiceTest {
   public class Href {
 
     private AlbumBase parseSingleWithHref(String hrefValue) {
-      return parseSingle(folderName, text, hrefValue, addDate);
+      return parseSingle(headerText, text, hrefValue, addDate);
     }
 
     @Test
@@ -147,7 +147,7 @@ public class LinkParserServiceTest {
   public class TextContent {
 
     private AlbumBase parseSingleWithText(String textValue) {
-      return parseSingle(folderName, textValue, href, addDate);
+      return parseSingle(headerText, textValue, href, addDate);
     }
 
     @Test
@@ -209,7 +209,7 @@ public class LinkParserServiceTest {
   public class AddDate {
 
     private AlbumBase parseSingleWithAddDate(String addDateValue) {
-      return parseSingle(folderName, text, href, addDateValue);
+      return parseSingle(headerText, text, href, addDateValue);
     }
 
     @Test

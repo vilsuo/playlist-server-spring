@@ -1,9 +1,10 @@
-package com.fs.fsapi.metallum;
+package com.fs.fsapi.metallum.response;
 
 import java.util.List;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -14,12 +15,20 @@ public class ArtistTitleSearchResponse {
 
   private String error;
 
-  private int iTotalRecords;
+  private int totalRecords;
 
-  private int iTotalDisplayRecords;
+  private int totalDisplayRecords;
 
-  private int sEcho;
+  //private int sEcho;
 
+  @Getter(AccessLevel.NONE)
   private List<AaDataValue> aaData;
 
+  //public boolean empty() {
+  //  return iTotalRecords == 0 || data.isEmpty();
+  //}
+
+  public AaDataValue getFirstDataValue() {
+    return this.aaData.getFirst();
+  }
 }

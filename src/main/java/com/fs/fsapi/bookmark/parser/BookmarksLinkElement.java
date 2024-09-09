@@ -5,13 +5,13 @@ import org.jsoup.nodes.Element;
 import lombok.Getter;
 
 @Getter
-public class FolderLink extends Link {
+public class BookmarksLinkElement extends LinkElement {
 
-  private final String folderName;
+  private final String headerText;
 
-  public FolderLink(Element e, String folderName) {
-    super(e);
-    this.folderName = folderName;
+  public BookmarksLinkElement(Element element, String headerText) {
+    super(element);
+    this.headerText = headerText;
   }
 
   /**

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import com.fs.fsapi.helpers.ElementHelper;
 
-public class FolderLinktTest {
+public class BookmarksLinkElementTest {
 
   private final String text = "Annihilator - Alice In Hell (1989)";
 
@@ -20,8 +20,8 @@ public class FolderLinktTest {
 
   private final String folderName = "Thrash";
 
-  private final FolderLink folderLink = new FolderLink(
-    ElementHelper.createLinkElement(text, href, addDate),
+  private final BookmarksLinkElement folderLink = new BookmarksLinkElement(
+    ElementHelper.createLinkTypeElement(text, href, addDate),
     folderName
   );
 
@@ -36,8 +36,8 @@ public class FolderLinktTest {
 
     @Test
     public void shouldReturnEmptyTextWhenElementTextContentIsEmptyTest() {
-      final FolderLink f = new FolderLink(
-        ElementHelper.createLinkElement("", href, addDate),
+      final BookmarksLinkElement f = new BookmarksLinkElement(
+        ElementHelper.createLinkTypeElement("", href, addDate),
         folderName
       );
 
@@ -46,8 +46,8 @@ public class FolderLinktTest {
 
     @Test
     public void shouldReturnEmptyTextWhenElementDoesNotHaveTextContentTest() {
-      final FolderLink f = new FolderLink(
-        ElementHelper.createLinkElement(null, href, addDate),
+      final BookmarksLinkElement f = new BookmarksLinkElement(
+        ElementHelper.createLinkTypeElement(null, href, addDate),
         folderName
       );
 
@@ -66,8 +66,8 @@ public class FolderLinktTest {
 
     @Test
     public void shouldReturnEmptyWhenElementHrefAttributeIsEmptyTest() {
-      final FolderLink f = new FolderLink(
-        ElementHelper.createLinkElement(text, "", addDate),
+      final BookmarksLinkElement f = new BookmarksLinkElement(
+        ElementHelper.createLinkTypeElement(text, "", addDate),
         folderName
       );
 
@@ -76,8 +76,8 @@ public class FolderLinktTest {
 
     @Test
     public void shouldReturnNullWhenElementDoesNotHaveHrefAttributeTest() {
-      final FolderLink f = new FolderLink(
-        ElementHelper.createLinkElement(text, null, addDate),
+      final BookmarksLinkElement f = new BookmarksLinkElement(
+        ElementHelper.createLinkTypeElement(text, null, addDate),
         folderName
       );
 
@@ -96,8 +96,8 @@ public class FolderLinktTest {
 
     @Test
     public void shouldReturnEmptyWhenElementAddDateAttributeIsEmptyTest() {
-      final FolderLink f = new FolderLink(
-        ElementHelper.createLinkElement(text, href, ""),
+      final BookmarksLinkElement f = new BookmarksLinkElement(
+        ElementHelper.createLinkTypeElement(text, href, ""),
         folderName
       );
 
@@ -106,8 +106,8 @@ public class FolderLinktTest {
 
     @Test
     public void shouldReturnNullWhenElementDoesNotHaveAddDateAttributeTest() {
-      final FolderLink f = new FolderLink(
-        ElementHelper.createLinkElement(text, href, null),
+      final BookmarksLinkElement f = new BookmarksLinkElement(
+        ElementHelper.createLinkTypeElement(text, href, null),
         folderName
       );
 

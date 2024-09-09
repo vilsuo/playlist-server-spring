@@ -16,13 +16,9 @@ import com.fs.fsapi.exceptions.CustomHtmlParsingException;
 import com.fs.fsapi.exceptions.CustomParameterConstraintException;
 
 @Service
-public class HtmlParserService {
+public class BookmarksFileParserService {
 
   private final Pattern HEADER_PATTERN = Pattern.compile("h[1-6]");
-
-  public Link createLink(String html) {
-    return new Link(Jsoup.parse(html).selectFirst("a"));
-  }
 
   /**
    * Find HTML {@code a} elements in a specific block indicated by a header
@@ -52,7 +48,7 @@ public class HtmlParserService {
    * @return the list of link elements with their associated header text content
    * @throws IOException
    */
-  public List<FolderLink> createFolderLinks(InputStream file, String headerText) throws IOException {
+  public List<BookmarksLinkElement> parseFile(InputStream file, String headerText) throws IOException {
     Document doc = Jsoup.parse(file, null, "");
 
     return parseFolder(findHeader(doc, headerText), new ArrayList<>());
@@ -94,7 +90,7 @@ public class HtmlParserService {
    *                     associated header text content
    * @return the passed in list 
    */
-  private List<FolderLink> parseFolder(Element h, List<FolderLink> folderLinks) {
+  private List<BookmarksLinkElement> parseFolder(Element h, List<BookmarksLinkElement> folderLinks) {
     final String text = h.text();
 
     // the next element should be a dl element
@@ -120,7 +116,7 @@ public class HtmlParserService {
         if (isDtSingleElement(element)) {
           // the only child is link element
           Element a = element.child(0);
-          folderLinks.add(new FolderLink(a, text));
+          folderLinks.add(new BookmarksLinkElement(a, text));
 
         } else if (isDtContainerElement(element)) {
           // the first child is header element

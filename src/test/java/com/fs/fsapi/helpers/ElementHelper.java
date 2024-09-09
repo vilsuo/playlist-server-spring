@@ -6,7 +6,7 @@ import org.jsoup.parser.Tag;
 
 public class ElementHelper {
   
-  public static Element createLinkElement(String text, String href, String addDate) {
+  public static Element createLinkTypeElement(String text, String href, String addDate) {
     Attributes attrs = new Attributes();
     if (href != null) { attrs.add("href", href); }
     if (addDate != null) { attrs.add("add_date", addDate); }

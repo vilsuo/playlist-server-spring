@@ -8,22 +8,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fs.fsapi.bookmark.parser.AlbumBase;
-import com.fs.fsapi.bookmark.parser.HtmlParserService;
-import com.fs.fsapi.bookmark.parser.LinkParserService;
+import com.fs.fsapi.bookmark.parser.BookmarksFileParserService;
+import com.fs.fsapi.bookmark.parser.BookmarksLinkParserService;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class BookmarkService {
+public class BookmarksService {
   
-  private final HtmlParserService htmlService;
+  private final BookmarksFileParserService fileParser;
 
-  private final LinkParserService linkService;
+  private final BookmarksLinkParserService linkParser;
 
   public List<AlbumBase> getAlbumBases(MultipartFile file, String name) throws IOException {
     InputStream fileStream = file.getInputStream();
-    return linkService.createAlbumBases(htmlService.createFolderLinks(fileStream, name));
+    return linkParser.parseElements(fileParser.parseFile(fileStream, name));
   }
   
 }

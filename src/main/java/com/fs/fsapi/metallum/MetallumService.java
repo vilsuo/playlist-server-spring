@@ -34,4 +34,44 @@ public class MetallumService {
     return parser.getSearchResult(response, artist, title);
   }
 
+  public byte[] searchCover(String artist, String title) {
+    ArtistTitleSearchResult result = searchWithArtistAndTitle(artist, title);
+    final String path = getCoverPath(result.getTitleHref());
+
+    log.info("cover path: " + path);
+
+    byte[] image = webClient.get()
+      .uri(uriBuilder -> uriBuilder
+        .path(path)
+        .build())
+      .accept(MediaType.IMAGE_JPEG)
+      .retrieve()
+      .bodyToMono(byte[].class)
+      .block();
+
+    return image;
+  }
+
+  private String getCoverPath(String titleHref) {
+    final String baseUrl = "/images";
+
+    // final part of url
+    final String id = titleHref.substring(titleHref.lastIndexOf("/") + 1);
+    
+    // middle part of the url seems to consist of max first four integers
+    // from the last value (id) separated by '/'
+    final int PARTS = Math.min(4, id.length());
+    final int PIECES = 2 * PARTS - 1;
+    final char[] inaArr = id.toCharArray();
+    final char[] outArr = new char[PIECES];
+    for (int i = 0; i < PIECES; i++) {
+      outArr[i] = (i % 2 == 0) ? inaArr[i / 2] : '/';
+    }
+
+    final String middle = new String(outArr);
+
+    // always jpg?
+    final String extension = ".jpg";
+    return String.join("/", new String[]{ baseUrl, middle, id }) + extension;
+  }
 }

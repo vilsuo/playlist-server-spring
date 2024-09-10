@@ -16,8 +16,9 @@ import com.fs.fsapi.metallum.response.ArtistTitleSearchResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-// TODO handle WebClientResponseException
-// handle not found cases
+// TODO
+// - handle WebClientResponseException
+// - handle not found cases, etc...
 
 @Slf4j
 @Service
@@ -31,18 +32,17 @@ public class MetallumService {
   private final ArtistReleaseSearchCache cache;
   
   /**
-   * 
-   * Caches results.
+   * Search basic release information. Caches results.
    * 
    * @param artist  the artist name
    * @param title  the release title
    * @return result containing 
    */
-  public ArtistReleaseSearchResult searchByArtistAndReleaseTitle(String artist, String title) {
+  public ArtistTitleSearchResult searchByArtistAndReleaseTitle(String artist, String title) {
     // check if cached
     var cached = cache.get(artist, title);
     if (cached.isPresent()) {
-      log.info("returned from cache");
+      log.info("Cache hit!");
       return cached.get();
     }
 
@@ -57,7 +57,7 @@ public class MetallumService {
       .bodyToMono(ArtistTitleSearchResponse.class)
       .block();
 
-    ArtistReleaseSearchResult result = parser.getSearchResult(response, artist, title);
+    ArtistTitleSearchResult result = parser.getSearchResult(response, artist, title);
 
     // update cache
     cache.put(artist, title, result);
@@ -73,8 +73,8 @@ public class MetallumService {
    * @return the release cover
    */
   public byte[] searchCover(String artist, String title) {
-    ArtistReleaseSearchResult result = searchByArtistAndReleaseTitle(artist, title);
-    final String path = getCoverPath(result.getReleaseHref());
+    ArtistTitleSearchResult result = searchByArtistAndReleaseTitle(artist, title);
+    final String path = getCoverPath(result.getTitleHref());
 
     byte[] image = webClient.get()
       .uri(uriBuilder -> uriBuilder
@@ -130,8 +130,8 @@ public class MetallumService {
    * @throws URISyntaxException if the search uri is invalid
    */
   public List<SongResult> searchSongs(String artist, String title) throws URISyntaxException {
-    ArtistReleaseSearchResult result = searchByArtistAndReleaseTitle(artist, title);
-    final String path = result.getReleaseHref(); // search from artist album page
+    ArtistTitleSearchResult result = searchByArtistAndReleaseTitle(artist, title);
+    final String path = result.getTitleHref(); // search from release title page
 
     String html = webClient.get()
       .uri(new URI(path)) // ignore baseUrl

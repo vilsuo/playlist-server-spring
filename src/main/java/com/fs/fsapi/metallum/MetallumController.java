@@ -23,7 +23,7 @@ public class MetallumController {
   private final MetallumService service;
   
   @GetMapping("/links")
-  public ResponseEntity<ArtistReleaseSearchResult> getLinks(
+  public ResponseEntity<ArtistTitleSearchResult> getLinks(
     @RequestParam String artist,
     @RequestParam String title
   ) {

@@ -5,7 +5,7 @@ import com.fs.fsapi.bookmark.parser.LinkElement;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class ArtistReleaseSearchResult {
+public class ArtistTitleSearchResult {
 
   private LinkElement artistFolderLink;
 
@@ -21,11 +21,11 @@ public class ArtistReleaseSearchResult {
     return artistFolderLink.getText();
   }
 
-  public String getReleaseHref() {
+  public String getTitleHref() {
     return releaseFolderLink.getHref();
   }
 
-  public String getRelease() {
+  public String getTitle() {
     return releaseFolderLink.getText();
   }
 

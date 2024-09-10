@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.fs.fsapi.metallum.ArtistReleaseSearchResult;
+import com.fs.fsapi.metallum.ArtistTitleSearchResult;
 
 import lombok.RequiredArgsConstructor;
 
@@ -14,12 +14,12 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class ArtistReleaseSearchCache implements DoubleKeyMap<String, String, ArtistReleaseSearchResult> {
+public class ArtistReleaseSearchCache implements DoubleKeyMap<String, String, ArtistTitleSearchResult> {
 
-  private final Map<String, Map<String, ArtistReleaseSearchResult>> cache;
+  private final Map<String, Map<String, ArtistTitleSearchResult>> cache;
 
   @Override
-  public void put(String artist, String title, ArtistReleaseSearchResult result) {
+  public void put(String artist, String title, ArtistTitleSearchResult result) {
     if (!cache.containsKey(artist)) {
       cache.put(artist, new HashMap<>());
     }
@@ -28,7 +28,7 @@ public class ArtistReleaseSearchCache implements DoubleKeyMap<String, String, Ar
   }
 
   @Override
-  public Optional<ArtistReleaseSearchResult> get(String artist, String title) {
+  public Optional<ArtistTitleSearchResult> get(String artist, String title) {
     if (cache.containsKey(artist)) {
       if (cache.get(artist).containsKey(title)) {
         return Optional.of(cache.get(artist).get(title));

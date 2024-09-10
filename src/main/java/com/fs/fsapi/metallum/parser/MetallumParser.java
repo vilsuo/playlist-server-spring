@@ -13,7 +13,7 @@ import com.fs.fsapi.bookmark.parser.LinkElement;
 import com.fs.fsapi.exceptions.CustomDataNotFoundException;
 import com.fs.fsapi.exceptions.CustomHtmlParsingException;
 import com.fs.fsapi.exceptions.CustomMetallumException;
-import com.fs.fsapi.metallum.ArtistReleaseSearchResult;
+import com.fs.fsapi.metallum.ArtistTitleSearchResult;
 import com.fs.fsapi.metallum.response.AaDataValue;
 import com.fs.fsapi.metallum.response.ArtistTitleSearchResponse;
 
@@ -23,7 +23,17 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class MetallumParser {
 
-  public ArtistReleaseSearchResult getSearchResult(
+  /**
+   * Extract the best result from response.
+   * 
+   * @param response  object where to extract details from
+   * @param artist  the artist name used in the response, used for logging
+   *                and error messages only
+   * @param title  the release title used in the response, used for logging
+   *               and error messages only
+   * @return the extracted result
+   */
+  public ArtistTitleSearchResult getSearchResult(
     ArtistTitleSearchResponse response, String artist, String title
   ) {
     if (!response.getError().isBlank()) {
@@ -56,8 +66,8 @@ public class MetallumParser {
     }
   }
 
-  private ArtistReleaseSearchResult createSearchResponse(AaDataValue data) {
-    return new ArtistReleaseSearchResult(
+  private ArtistTitleSearchResult createSearchResponse(AaDataValue data) {
+    return new ArtistTitleSearchResult(
       parseLinkElement(data.getArtistLinkElementString()),
       parseLinkElement(data.getReleaseLinkElementString()),
       data.getReleaseType()
@@ -68,6 +78,12 @@ public class MetallumParser {
     return new LinkElement(Jsoup.parse(html).selectFirst("a"));
   }
 
+  /**
+   * Extract songs from html song table
+   * 
+   * @param html  string where the songs can be found
+   * @return list of songs
+   */
   public List<SongResult> parseSongs(String html) {
     Document doc = Jsoup.parse(html);
 

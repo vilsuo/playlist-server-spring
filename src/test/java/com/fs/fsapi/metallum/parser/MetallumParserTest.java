@@ -12,16 +12,39 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.fs.fsapi.helpers.MetallumFileHelper;
+import com.fs.fsapi.metallum.ArtistTitleSearchResult;
+import com.fs.fsapi.metallum.response.ArtistTitleSearchResponse;
 
 @SpringBootTest(classes = { MetallumParser.class })
 public class MetallumParserTest {
 
   @Autowired
   private MetallumParser parser;
+
+  @Nested
+  @DisplayName("getSearchResult")
+  public class SearchResult {
+
+    private final ArtistTitleSearchResult expected = MetallumFileHelper.searchResult;
+
+    @Test
+    public void shouldReturnSearchResultTest() {
+      ArtistTitleSearchResponse response = MetallumFileHelper.searchResponse;
+      ArtistTitleSearchResult actual = parser.getSearchResult(
+        response, null, null
+      );
+
+      assertEquals(expected.getArtistHref(), actual.getArtistHref());
+      assertEquals(expected.getArtist(), actual.getArtist());
+      assertEquals(expected.getTitleHref(), actual.getTitleHref());
+      assertEquals(expected.getTitle(), actual.getTitle());
+      assertEquals(expected.getReleaseType(), actual.getReleaseType());
+    }
+  }
   
   @Nested
   @DisplayName("parseSongs")
-  public class Songs {
+  public class ParseSongs {
 
     private final List<SongResult> expected = MetallumFileHelper.songsWithLyrics;
 

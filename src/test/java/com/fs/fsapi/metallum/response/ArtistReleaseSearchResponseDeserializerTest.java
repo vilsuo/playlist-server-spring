@@ -19,7 +19,7 @@ public class ArtistReleaseSearchResponseDeserializerTest {
 
   @Test
   public void shouldDeserializeTest() throws IOException {
-    ArtistTitleSearchResponse expected = MetallumFileHelper.r1;
+    ArtistTitleSearchResponse expected = MetallumFileHelper.searchResponse;
 
     ArtistTitleSearchResponse actual = jacksonTester.parseObject(
       MetallumFileHelper.readSearchResponseFile()

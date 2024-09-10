@@ -5,6 +5,10 @@ import org.jsoup.nodes.Element;
 import org.jsoup.parser.Tag;
 
 public class ElementHelper {
+
+  public static Element createLinkTypeElement(String text, String href) {
+    return createLinkTypeElement(text, href, null);
+  }
   
   public static Element createLinkTypeElement(String text, String href, String addDate) {
     Attributes attrs = new Attributes();

@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
+import com.fs.fsapi.bookmark.parser.LinkElement;
+import com.fs.fsapi.metallum.ArtistTitleSearchResult;
 import com.fs.fsapi.metallum.parser.SongResult;
 import com.fs.fsapi.metallum.response.AaDataValue;
 import com.fs.fsapi.metallum.response.ArtistTitleSearchResponse;
@@ -39,7 +41,7 @@ public class MetallumFileHelper {
   }
 
 
-  public static final ArtistTitleSearchResponse r1 = new ArtistTitleSearchResponse(
+  public static final ArtistTitleSearchResponse searchResponse = new ArtistTitleSearchResponse(
     "",
     1,
     1,
@@ -50,6 +52,18 @@ public class MetallumFileHelper {
         "Demo"
       ))
     )
+  );
+
+  public static final ArtistTitleSearchResult searchResult = new ArtistTitleSearchResult(
+    new LinkElement(ElementHelper.createLinkTypeElement(
+      "Adramelech", 
+      "https://www.metal-archives.com/bands/Adramelech/2426"
+    )), 
+    new LinkElement(ElementHelper.createLinkTypeElement(
+      "Human Extermination",
+      "https://www.metal-archives.com/albums/Adramelech/Human_Extermination/73550"
+    )), 
+    "Demo"
   );
 
   public static final List<SongResult> songsWithLyrics = List.of(

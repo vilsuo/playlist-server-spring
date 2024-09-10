@@ -10,9 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.fs.fsapi.bookmark.parser.LinkElement;
-import com.fs.fsapi.helpers.ElementHelper;
-import com.fs.fsapi.metallum.ArtistReleaseSearchResult;
+import com.fs.fsapi.helpers.MetallumFileHelper;
+import com.fs.fsapi.metallum.ArtistTitleSearchResult;
 
 @SpringBootTest(classes = { ArtistReleaseSearchCache.class })
 public class ArtistReleaseSearchCacheTest {
@@ -20,19 +19,9 @@ public class ArtistReleaseSearchCacheTest {
   @Autowired
   private ArtistReleaseSearchCache cache;
 
-  private final String text1 = "Adramelech";
-  private final String href1 = "https://www.metal-archives.com/bands/Adramelech/2426";
-
-  private final String text2 = "Human Extermination";
-  private final String href2 = "https://www.metal-archives.com/albums/Adramelech/Human_Extermination/73550";
-
-  private final String type = "Demo";
-
-  ArtistReleaseSearchResult value = new ArtistReleaseSearchResult(
-    new LinkElement(ElementHelper.createLinkTypeElement(text1, href1, null)), 
-    new LinkElement(ElementHelper.createLinkTypeElement(text2, href2, null)), 
-    type
-  );
+  private final ArtistTitleSearchResult expected = MetallumFileHelper.searchResult;
+  private final String key1 = expected.getArtist();
+  private final String key2 = expected.getTitle();
 
   @BeforeEach
   public void clear() {
@@ -41,33 +30,33 @@ public class ArtistReleaseSearchCacheTest {
 
   @Test
   public void shouldNotContainMappingInitiallyTest() {
-    assertTrue(cache.get(text1, text2).isEmpty());
+    assertTrue(cache.get(key1, key2).isEmpty());
   }
 
   @Test
   public void shouldContainMappingAfterPuttingTest() {
-    cache.put(text1, text2, value);
+    ArtistTitleSearchResult expected = MetallumFileHelper.searchResult;
 
-    Optional<ArtistReleaseSearchResult> opt = cache.get(text1, text2);
+    cache.put(key1, key2, expected);
+
+    Optional<ArtistTitleSearchResult> opt = cache.get(key1, key2);
     assertTrue(opt.isPresent());
 
-    ArtistReleaseSearchResult result = opt.get();
+    ArtistTitleSearchResult actual = opt.get();
 
-    assertEquals(href1, result.getArtistHref());
-    assertEquals(text1, result.getArtist());
-
-    assertEquals(href2, result.getReleaseHref());
-    assertEquals(text2, result.getRelease());
-
-    assertEquals(type, result.getReleaseType());
+    assertEquals(expected.getArtistHref(), actual.getArtistHref());
+    assertEquals(expected.getArtist(), actual.getArtist());
+    assertEquals(expected.getTitleHref(), actual.getTitleHref());
+    assertEquals(expected.getTitle(), actual.getTitle());
+    assertEquals(expected.getReleaseType(), actual.getReleaseType());
   }
 
   @Test
   public void shouldNotContainMappingAfterClearingTest() {
-    cache.put(text1, text2, value);
+    cache.put(key1, key2, expected);
 
     cache.clear();
 
-    assertTrue(cache.get(text1, text2).isEmpty());
+    assertTrue(cache.get(key1, key2).isEmpty());
   }
 }

@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.fs.fsapi.metallum.cache.ArtistTitleSearchCache;
 import com.fs.fsapi.metallum.parser.MetallumParser;
 import com.fs.fsapi.metallum.parser.SongResult;
 import com.fs.fsapi.metallum.response.ArtistTitleSearchResponse;
@@ -23,8 +24,17 @@ public class MetallumService {
   private final WebClient webClient;
 
   private final MetallumParser parser;
+
+  private final ArtistTitleSearchCache cache;
   
   public ArtistTitleSearchResult searchWithArtistAndTitle(String artist, String title) {
+    // check if cached
+    var cached = cache.get(artist, title);
+    if (cached.isPresent()) {
+      log.info("returned from cache");
+      return cached.get();
+    }
+
     ArtistTitleSearchResponse response = webClient.get()
       .uri(uriBuilder -> uriBuilder
         .path("/search/ajax-advanced/searching/albums/")
@@ -36,7 +46,12 @@ public class MetallumService {
       .bodyToMono(ArtistTitleSearchResponse.class)
       .block();
 
-    return parser.getSearchResult(response, artist, title);
+    ArtistTitleSearchResult result = parser.getSearchResult(response, artist, title);
+
+    // update cache
+    cache.put(artist, title, result);
+
+    return result;
   }
 
   public byte[] searchCover(String artist, String title) {

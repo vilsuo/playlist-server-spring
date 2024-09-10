@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ArtistTitleSearchResponseDeserializer extends StdDeserializer<ArtistTitleSearchResponse> {
+public class ArtistReleaseSearchResponseDeserializer extends StdDeserializer<ArtistTitleSearchResponse> {
 
   // response keys
   private final String ERROR_KEY = "error";
@@ -22,11 +22,11 @@ public class ArtistTitleSearchResponseDeserializer extends StdDeserializer<Artis
   private final String DATA_KEY = "aaData";
   //private final String ECHO_KEY = "sEcho"; // unknown value in response...
 
-  public ArtistTitleSearchResponseDeserializer() {
+  public ArtistReleaseSearchResponseDeserializer() {
     this(null);
   }
 
-  public ArtistTitleSearchResponseDeserializer(Class<?> vc) {
+  public ArtistReleaseSearchResponseDeserializer(Class<?> vc) {
     super(vc);
   }
 

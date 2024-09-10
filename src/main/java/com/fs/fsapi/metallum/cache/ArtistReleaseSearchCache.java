@@ -6,29 +6,29 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.fs.fsapi.metallum.ArtistTitleSearchResult;
+import com.fs.fsapi.metallum.ArtistReleaseSearchResult;
 
 import lombok.RequiredArgsConstructor;
 
-// TODO add "time limit"
+// TODO add "time limit"?
 
 @Service
 @RequiredArgsConstructor
-public class ArtistTitleSearchCache implements MetallumCache<ArtistTitleSearchResult>{
+public class ArtistReleaseSearchCache implements DoubleKeyMap<ArtistReleaseSearchResult>{
 
-  private final Map<String, Map<String, ArtistTitleSearchResult>> cache;
+  private final Map<String, Map<String, ArtistReleaseSearchResult>> cache;
 
   @Override
-  public void put(String artist, String title, ArtistTitleSearchResult result) {
+  public void put(String artist, String release, ArtistReleaseSearchResult result) {
     if (!cache.containsKey(artist)) {
       cache.put(artist, new HashMap<>());
     }
 
-    cache.get(artist).put(title, result);
+    cache.get(artist).put(release, result);
   }
 
   @Override
-  public Optional<ArtistTitleSearchResult> get(String artist, String title) {
+  public Optional<ArtistReleaseSearchResult> get(String artist, String title) {
     if (cache.containsKey(artist)) {
       if (cache.get(artist).containsKey(title)) {
         return Optional.of(cache.get(artist).get(title));

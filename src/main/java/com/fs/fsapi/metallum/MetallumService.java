@@ -8,13 +8,16 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.fs.fsapi.metallum.cache.ArtistTitleSearchCache;
+import com.fs.fsapi.metallum.cache.ArtistReleaseSearchCache;
 import com.fs.fsapi.metallum.parser.MetallumParser;
 import com.fs.fsapi.metallum.parser.SongResult;
 import com.fs.fsapi.metallum.response.ArtistTitleSearchResponse;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+// TODO handle WebClientResponseException
+// handle not found cases
 
 @Slf4j
 @Service
@@ -25,9 +28,17 @@ public class MetallumService {
 
   private final MetallumParser parser;
 
-  private final ArtistTitleSearchCache cache;
+  private final ArtistReleaseSearchCache cache;
   
-  public ArtistTitleSearchResult searchWithArtistAndTitle(String artist, String title) {
+  /**
+   * 
+   * Caches results.
+   * 
+   * @param artist  the artist name
+   * @param title  the release title
+   * @return result containing 
+   */
+  public ArtistReleaseSearchResult searchByArtistAndReleaseTitle(String artist, String title) {
     // check if cached
     var cached = cache.get(artist, title);
     if (cached.isPresent()) {
@@ -46,7 +57,7 @@ public class MetallumService {
       .bodyToMono(ArtistTitleSearchResponse.class)
       .block();
 
-    ArtistTitleSearchResult result = parser.getSearchResult(response, artist, title);
+    ArtistReleaseSearchResult result = parser.getSearchResult(response, artist, title);
 
     // update cache
     cache.put(artist, title, result);
@@ -54,9 +65,16 @@ public class MetallumService {
     return result;
   }
 
+  /**
+   * Search release cover image by artist name and release title.
+   * 
+   * @param artist  the artist name
+   * @param title  the release title
+   * @return the release cover
+   */
   public byte[] searchCover(String artist, String title) {
-    ArtistTitleSearchResult result = searchWithArtistAndTitle(artist, title);
-    final String path = getCoverPath(result.getTitleHref());
+    ArtistReleaseSearchResult result = searchByArtistAndReleaseTitle(artist, title);
+    final String path = getCoverPath(result.getReleaseHref());
 
     byte[] image = webClient.get()
       .uri(uriBuilder -> uriBuilder
@@ -70,10 +88,20 @@ public class MetallumService {
     return image;
   }
 
+  /**
+   * Get the path of the release cover image. Example, if {@code titleHref} is
+   * 
+   * <pre>"https://www.metal-archives.com/albums/Adramelech/Psychostasia/6516"</pre>,
+   * then resulting path will be
+   * <pre>"https://www.metal-archives.com/images/6/5/1/6/6516.jpg"</pre>.
+   * 
+   * @param titleHref  the release page uri
+   * @return the path of the release cover image
+   */
   private String getCoverPath(String titleHref) {
-    final String baseUrl = "/images";
+    final String basePathSegment = "/images";
 
-    // final part of url
+    // final path segment
     final String id = titleHref.substring(titleHref.lastIndexOf("/") + 1);
     
     // middle part of the url seems to consist of max first four integers
@@ -86,16 +114,24 @@ public class MetallumService {
       outArr[i] = (i % 2 == 0) ? inaArr[i / 2] : '/';
     }
 
-    final String middle = new String(outArr);
+    final String middlePathSegments = new String(outArr);
 
     // always jpg?
     final String extension = ".jpg";
-    return String.join("/", new String[]{ baseUrl, middle, id }) + extension;
+    return String.join("/", new String[]{ basePathSegment, middlePathSegments, id }) + extension;
   }
 
+  /**
+   * Search songs by artist name and release title.
+   * 
+   * @param artist  the artist name
+   * @param title  the release title
+   * @return  a list containing the details of each song
+   * @throws URISyntaxException if the search uri is invalid
+   */
   public List<SongResult> searchSongs(String artist, String title) throws URISyntaxException {
-    ArtistTitleSearchResult result = searchWithArtistAndTitle(artist, title);
-    final String path = result.getTitleHref();
+    ArtistReleaseSearchResult result = searchByArtistAndReleaseTitle(artist, title);
+    final String path = result.getReleaseHref(); // search from artist album page
 
     String html = webClient.get()
       .uri(new URI(path)) // ignore baseUrl
@@ -104,6 +140,28 @@ public class MetallumService {
       .bodyToMono(String.class)
       .block();
 
-    return parser.getSongs(html);
+    return parser.parseSongs(html);
+  }
+
+  /**
+   * Search song lyrics by song id.
+   * 
+   * @param songId  the song id
+   * @return html string containing the lyrics, or html string describing
+   *         the lyrics were not found
+   */
+  public String searchLyrics(String songId) {
+    final String path = "/release/ajax-view-lyrics/id/" + songId;
+
+    String html = webClient.get()
+      .uri(uriBuilder -> uriBuilder
+        .path(path)
+        .build())
+      .accept(MediaType.TEXT_HTML)
+      .retrieve()
+      .bodyToMono(String.class)
+      .block();
+
+    return html;
   }
 }

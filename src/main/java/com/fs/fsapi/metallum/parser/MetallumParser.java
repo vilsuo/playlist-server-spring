@@ -11,8 +11,9 @@ import org.springframework.stereotype.Service;
 
 import com.fs.fsapi.bookmark.parser.LinkElement;
 import com.fs.fsapi.exceptions.CustomDataNotFoundException;
+import com.fs.fsapi.exceptions.CustomHtmlParsingException;
 import com.fs.fsapi.exceptions.CustomMetallumException;
-import com.fs.fsapi.metallum.ArtistTitleSearchResult;
+import com.fs.fsapi.metallum.ArtistReleaseSearchResult;
 import com.fs.fsapi.metallum.response.AaDataValue;
 import com.fs.fsapi.metallum.response.ArtistTitleSearchResponse;
 
@@ -22,13 +23,13 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class MetallumParser {
 
-  public ArtistTitleSearchResult getSearchResult(
+  public ArtistReleaseSearchResult getSearchResult(
     ArtistTitleSearchResponse response, String artist, String title
   ) {
     if (!response.getError().isBlank()) {
       log.info(
-        "Error " + response.getError() + " in album '"
-        + title + "' by '" + artist + "' search result"
+        "Error '" + response.getError() + "' searching for '"
+        + title + "' by '" + artist + "'"
       );
 
       throw new CustomMetallumException(response.getError());
@@ -37,7 +38,7 @@ public class MetallumParser {
     switch (response.getTotalRecords()) {
       case 0: {
         throw new CustomDataNotFoundException(
-          "Album '" + title + "' by '" + artist + "' was not found"
+          "'" + title + "' by '" + artist + "' was not found"
         );
       }
       case 1: {
@@ -46,7 +47,7 @@ public class MetallumParser {
         return createResponse(data);
       }
       default: {
-        log.info("Found multiple results for album '" + title + "' by '" + artist);
+        log.info("Found multiple results for '" + title + "' by '" + artist);
 
         // return the first result... should do narrowing?
         AaDataValue data = response.getFirstDataValue();
@@ -55,24 +56,27 @@ public class MetallumParser {
     }
   }
 
-  private ArtistTitleSearchResult createResponse(AaDataValue data) {
-    return new ArtistTitleSearchResult(
-      createLinkElement(data.getArtistLinkElementString()),
-      createLinkElement(data.getTitleLinkElementString()),
-      data.getAlbumType()
+  private ArtistReleaseSearchResult createResponse(AaDataValue data) {
+    return new ArtistReleaseSearchResult(
+      parseLinkElement(data.getArtistLinkElementString()),
+      parseLinkElement(data.getReleaseLinkElementString()),
+      data.getReleaseType()
     );
   }
 
-  private LinkElement createLinkElement(String html) {
+  private LinkElement parseLinkElement(String html) {
     return new LinkElement(Jsoup.parse(html).selectFirst("a"));
   }
 
-  public List<SongResult> getSongs(String html) {
+  public List<SongResult> parseSongs(String html) {
     Document doc = Jsoup.parse(html);
 
     Element tbody = doc.select(".table_lyrics > tbody").first();
-    List<SongResult> songs = new ArrayList<>();
+    if (tbody == null) {
+      throw new CustomHtmlParsingException("Release song table was not found");
+    }
 
+    List<SongResult> songs = new ArrayList<>();
     tbody.children().stream()
       .forEach(tr -> {
         if (tr.hasClass("even") || tr.hasClass("odd")) {
@@ -80,9 +84,9 @@ public class MetallumParser {
 
           final String songTitle = tds.get(1).ownText();
           final String songDuration = tds.get(2).ownText();
-          final String songId = getSongId(tds);
+          final String id = extractSongId(tds);
 
-          songs.add(new SongResult(songTitle, songDuration, songId));
+          songs.add(new SongResult(id, songTitle, songDuration));
         }
       });
 
@@ -90,14 +94,14 @@ public class MetallumParser {
   }
 
   /**
-   * Get the song id from album table row elements.
+   * Get the song id from release table row elements. Can contain letters
    * 
-   * @param tds  album table row elements
+   * @param tds  release table row elements
    * @return the song id if it is found, null otherwise
    */
-  private String getSongId(Elements tds) {
+  private String extractSongId(Elements tds) {
     // 4th table data element has a link child element. This link element
-    // has href attribute where the song id is found
+    // has href attribute '#id' where the song id is found
     Element element = tds.get(3);
 
     if (element.childrenSize() > 0) {
@@ -107,6 +111,8 @@ public class MetallumParser {
         if (!href.isEmpty()) {
           return href.substring(1); // remove '#'
         }
+
+        throw new CustomHtmlParsingException("Expected to find song id");
       }
     }
 

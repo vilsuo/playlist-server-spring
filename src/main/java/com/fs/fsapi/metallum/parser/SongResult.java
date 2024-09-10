@@ -7,9 +7,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public class SongResult {
   
+  private String id;
+  
   private String title;
 
   private String duration;
-
-  private String songId;
 }

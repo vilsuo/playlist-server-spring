@@ -10,7 +10,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-@JsonDeserialize(using = ArtistTitleSearchResponseDeserializer.class)
+@JsonDeserialize(using = ArtistReleaseSearchResponseDeserializer.class)
 public class ArtistTitleSearchResponse {
 
   private String error;
@@ -23,10 +23,6 @@ public class ArtistTitleSearchResponse {
 
   @Getter(AccessLevel.NONE)
   private List<AaDataValue> aaData;
-
-  //public boolean empty() {
-  //  return iTotalRecords == 0 || data.isEmpty();
-  //}
 
   public AaDataValue getFirstDataValue() {
     return this.aaData.getFirst();

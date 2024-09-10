@@ -18,10 +18,10 @@ import com.fs.fsapi.bookmark.parser.BookmarksLinkParserService;
 import com.fs.fsapi.exceptions.CustomHtmlParsingException;
 import com.fs.fsapi.exceptions.CustomParameterConstraintException;
 import com.fs.fsapi.helpers.AlbumHelper;
-import com.fs.fsapi.helpers.FileHelper;
-import com.fs.fsapi.helpers.FileHelper.InvalidHeader;
+import com.fs.fsapi.helpers.BookmarksFileHelper;
+import com.fs.fsapi.helpers.BookmarksFileHelper.InvalidHeader;
 
-import static com.fs.fsapi.helpers.FileHelper.ValidHeader;
+import static com.fs.fsapi.helpers.BookmarksFileHelper.ValidHeader;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -40,7 +40,7 @@ public class BookmarksServiceTest {
 
   @Test
   public void shouldThrowWhenFileElementStructureIsInvalidTest() throws Exception {
-    InputStream contentStream = FileHelper.getInvalidFileStruture();
+    InputStream contentStream = BookmarksFileHelper.readFileWithInvalidStruture();
     MockMultipartFile file = new MockMultipartFile(name, contentStream);
 
     final InvalidHeader header = InvalidHeader.STRUCTURE;
@@ -64,7 +64,7 @@ public class BookmarksServiceTest {
 
     @BeforeEach
     public void setUpMockFile() throws IOException {
-      final InputStream contentStream = FileHelper.getInvalidFileLink();
+      final InputStream contentStream = BookmarksFileHelper.readFileWithInvalidLink();
       file = new MockMultipartFile(name, contentStream);
     }
 
@@ -123,7 +123,7 @@ public class BookmarksServiceTest {
 
     @BeforeEach
     public void setUpMockFile() throws IOException {
-      final InputStream contentStream = FileHelper.getValidFile();
+      final InputStream contentStream = BookmarksFileHelper.readValidFile();
       file = new MockMultipartFile(name, contentStream);
     }
 

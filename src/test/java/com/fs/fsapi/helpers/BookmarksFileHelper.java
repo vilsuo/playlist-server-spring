@@ -7,31 +7,31 @@ import java.io.InputStream;
 
 import com.fs.fsapi.bookmark.parser.BookmarksLinkElement;
 
-public class FileHelper {
+public class BookmarksFileHelper {
 
-  public static InputStream getValidFile() throws FileNotFoundException {
-    return getFileAsInputStream(VALID_FILE);
-  }
-
-  public static InputStream getInvalidFileStruture() throws FileNotFoundException {
-    return getFileAsInputStream(INVALID_FILE_STRUCTURE);
-  }
-
-  public static InputStream getInvalidFileLink() throws FileNotFoundException {
-    return getFileAsInputStream(INVALID_FILE_LINK);
-  }
-
-  private static InputStream getFileAsInputStream(String filename) throws FileNotFoundException {
-    File initialFile = new File(TEST_FILES_LOCATION + "/" + filename);
-    return new FileInputStream(initialFile);
-  }
-
-  private static final String TEST_FILES_LOCATION = "src/test/data";
+  private static final String TEST_FILES_LOCATION = "src/test/data/bookmarks";
 
   // files
   private static final String VALID_FILE = "bookmarks.html";
   private static final String INVALID_FILE_STRUCTURE = "bookmarks-invalid-structure.html";
   private static final String INVALID_FILE_LINK = "bookmarks-invalid-links.html";
+
+  public static InputStream readValidFile() throws FileNotFoundException {
+    return readFile(VALID_FILE);
+  }
+
+  public static InputStream readFileWithInvalidStruture() throws FileNotFoundException {
+    return readFile(INVALID_FILE_STRUCTURE);
+  }
+
+  public static InputStream readFileWithInvalidLink() throws FileNotFoundException {
+    return readFile(INVALID_FILE_LINK);
+  }
+
+  private static InputStream readFile(String filename) throws FileNotFoundException {
+    File initialFile = new File(TEST_FILES_LOCATION + "/" + filename);
+    return new FileInputStream(initialFile);
+  }
 
   public enum ValidHeader {
     ROOT ("Bookmarks"),

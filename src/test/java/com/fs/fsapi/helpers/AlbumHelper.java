@@ -9,7 +9,7 @@ public class AlbumHelper {
     "Annihilator",
     "Alice In Hell",
     1989,
-    FileHelper.ValidHeader.CONTAINER.getTextContent(),
+    BookmarksFileHelper.ValidHeader.CONTAINER.getTextContent(),
     "2022-05-21T09:53:56Z"
   );
 
@@ -18,7 +18,7 @@ public class AlbumHelper {
     "A.O.D",
     "Altars of Destruction",
     1988,
-    FileHelper.ValidHeader.PARENT.getTextContent(),
+    BookmarksFileHelper.ValidHeader.PARENT.getTextContent(),
     "2024-03-25T14:53:53Z"
   );
 
@@ -27,7 +27,7 @@ public class AlbumHelper {
     "Nuclear Assault",
     "Survive",
     1988,
-    FileHelper.ValidHeader.PARENT.getTextContent(),
+    BookmarksFileHelper.ValidHeader.PARENT.getTextContent(),
     "2024-03-25T14:57:16Z"
   );
 
@@ -36,7 +36,7 @@ public class AlbumHelper {
     "Exodus",
     "Fabulous Disaster",
     1989,
-    FileHelper.ValidHeader.PARENT.getTextContent(),
+    BookmarksFileHelper.ValidHeader.PARENT.getTextContent(),
     "2024-03-25T14:58:02Z"
   );
 
@@ -45,7 +45,7 @@ public class AlbumHelper {
     "Angel Dust",
     "Into the Dark Past",
     1986,
-    FileHelper.ValidHeader.CHILD.getTextContent(),
+    BookmarksFileHelper.ValidHeader.CHILD.getTextContent(),
     "2024-03-25T14:56:57Z"
   );
 
@@ -54,7 +54,7 @@ public class AlbumHelper {
     "Paradox",
     "Product of Imagination",
     1987,
-    FileHelper.ValidHeader.PARENT.getTextContent(),
+    BookmarksFileHelper.ValidHeader.PARENT.getTextContent(),
     "2024-03-25T14:57:36Z"
   );
 

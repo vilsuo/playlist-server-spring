@@ -13,10 +13,10 @@ import org.junit.jupiter.api.Test;
 
 import com.fs.fsapi.exceptions.CustomHtmlParsingException;
 import com.fs.fsapi.exceptions.CustomParameterConstraintException;
-import com.fs.fsapi.helpers.FileHelper;
+import com.fs.fsapi.helpers.BookmarksFileHelper;
 
-import static com.fs.fsapi.helpers.FileHelper.InvalidHeader;
-import static com.fs.fsapi.helpers.FileHelper.ValidHeader;;
+import static com.fs.fsapi.helpers.BookmarksFileHelper.InvalidHeader;
+import static com.fs.fsapi.helpers.BookmarksFileHelper.ValidHeader;;
 
 public class BookmarksFileParserServiceTest {
 
@@ -24,14 +24,14 @@ public class BookmarksFileParserServiceTest {
 
   private List<BookmarksLinkElement> createWithValidFile(ValidHeader header) throws Exception {
     return service.parseFile(
-      FileHelper.getValidFile(), 
+      BookmarksFileHelper.readValidFile(), 
       header.getTextContent()
     );
   }
 
   private List<BookmarksLinkElement> createWithInValidFile(InvalidHeader header) throws Exception {
     return service.parseFile(
-      FileHelper.getInvalidFileStruture(), 
+      BookmarksFileHelper.readFileWithInvalidStruture(), 
       header.getTextContent()
     );
   }
@@ -84,7 +84,7 @@ public class BookmarksFileParserServiceTest {
     private List<BookmarksLinkElement> results;
     private BookmarksLinkElement result;
 
-    private final BookmarksLinkElement expected = FileHelper.VALID_FILE_CHILD_LINKS[0];
+    private final BookmarksLinkElement expected = BookmarksFileHelper.VALID_FILE_CHILD_LINKS[0];
 
     @BeforeEach
     public void create() throws Exception {
@@ -125,7 +125,7 @@ public class BookmarksFileParserServiceTest {
     private ValidHeader header = ValidHeader.PARENT;
 
     private List<BookmarksLinkElement> results;
-    private BookmarksLinkElement[] expectations = FileHelper.VALID_FILE_PARENT_LINKS;
+    private BookmarksLinkElement[] expectations = BookmarksFileHelper.VALID_FILE_PARENT_LINKS;
 
     @BeforeEach
     public void create() throws Exception {

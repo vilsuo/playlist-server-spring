@@ -20,16 +20,16 @@ import org.junit.jupiter.params.provider.ValueSource;
 import com.fs.fsapi.exceptions.CustomHtmlParsingException;
 import com.fs.fsapi.helpers.AlbumHelper;
 import com.fs.fsapi.helpers.ElementHelper;
-import com.fs.fsapi.helpers.FileHelper;
+import com.fs.fsapi.helpers.BookmarksFileHelper;
 
 public class BookmarksLinkParserServiceTest {
   
   private final BookmarksLinkParserService service = new BookmarksLinkParserService();
 
-  private final BookmarksLinkElement source = FileHelper.VALID_FILE_CONTAINER_LINKS[0];
+  private final BookmarksLinkElement source = BookmarksFileHelper.VALID_FILE_CONTAINER_LINKS[0];
   private final AlbumBase expected = AlbumHelper.VALID_FILE_CONTAINER_ALBUMBASES[0];
 
-  private final String headerText = FileHelper.ValidHeader.CONTAINER.getTextContent();
+  private final String headerText = BookmarksFileHelper.ValidHeader.CONTAINER.getTextContent();
   private final String text = source.getText();
   private final String href = source.getHref();
   private final String addDate = source.getAddDate();

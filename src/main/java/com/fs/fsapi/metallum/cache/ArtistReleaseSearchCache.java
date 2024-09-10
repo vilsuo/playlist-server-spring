@@ -14,17 +14,17 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class ArtistReleaseSearchCache implements DoubleKeyMap<ArtistReleaseSearchResult>{
+public class ArtistReleaseSearchCache implements DoubleKeyMap<String, String, ArtistReleaseSearchResult> {
 
   private final Map<String, Map<String, ArtistReleaseSearchResult>> cache;
 
   @Override
-  public void put(String artist, String release, ArtistReleaseSearchResult result) {
+  public void put(String artist, String title, ArtistReleaseSearchResult result) {
     if (!cache.containsKey(artist)) {
       cache.put(artist, new HashMap<>());
     }
 
-    cache.get(artist).put(release, result);
+    cache.get(artist).put(title, result);
   }
 
   @Override
@@ -36,5 +36,10 @@ public class ArtistReleaseSearchCache implements DoubleKeyMap<ArtistReleaseSearc
     }
 
     return Optional.empty();
+  }
+
+  @Override
+  public void clear() {
+    cache.clear();
   }
 }

@@ -80,11 +80,36 @@ public class MetallumParser {
 
           final String songTitle = tds.get(1).ownText();
           final String songDuration = tds.get(2).ownText();
+          final String songId = getSongId(tds);
 
-          songs.add(new SongResult(songTitle, songDuration));
+          songs.add(new SongResult(songTitle, songDuration, songId));
         }
       });
 
     return songs;
+  }
+
+  /**
+   * Get the song id from album table row elements.
+   * 
+   * @param tds  album table row elements
+   * @return the song id if it is found, null otherwise
+   */
+  private String getSongId(Elements tds) {
+    // 4th table data element has a link child element. This link element
+    // has href attribute where the song id is found
+    Element element = tds.get(3);
+
+    if (element.childrenSize() > 0) {
+      Element child = element.child(0);
+      if (child.tagName().equals("a")) {
+        String href = child.attr("href");
+        if (!href.isEmpty()) {
+          return href.substring(1); // remove '#'
+        }
+      }
+    }
+
+    return null;
   }
 }

@@ -10,4 +10,6 @@ public class SongResult {
   private String title;
 
   private String duration;
+
+  private String songId;
 }

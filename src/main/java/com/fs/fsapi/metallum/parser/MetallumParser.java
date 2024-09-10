@@ -44,19 +44,19 @@ public class MetallumParser {
       case 1: {
         // return the only result
         AaDataValue data = response.getFirstDataValue();
-        return createResponse(data);
+        return createSearchResponse(data);
       }
       default: {
         log.info("Found multiple results for '" + title + "' by '" + artist);
 
         // return the first result... should do narrowing?
         AaDataValue data = response.getFirstDataValue();
-        return createResponse(data);
+        return createSearchResponse(data);
       }
     }
   }
 
-  private ArtistReleaseSearchResult createResponse(AaDataValue data) {
+  private ArtistReleaseSearchResult createSearchResponse(AaDataValue data) {
     return new ArtistReleaseSearchResult(
       parseLinkElement(data.getArtistLinkElementString()),
       parseLinkElement(data.getReleaseLinkElementString()),
@@ -100,22 +100,19 @@ public class MetallumParser {
    * @return the song id if it is found, null otherwise
    */
   private String extractSongId(Elements tds) {
-    // 4th table data element has a link child element. This link element
-    // has href attribute '#id' where the song id is found
-    Element element = tds.get(3);
+    // 1st table data element has a link child element. This link element
+    // has 'name' attribute where the song id is found
+    Element element = tds.get(0);
 
     if (element.childrenSize() > 0) {
       Element child = element.child(0);
       if (child.tagName().equals("a")) {
-        String href = child.attr("href");
-        if (!href.isEmpty()) {
-          return href.substring(1); // remove '#'
-        }
-
-        throw new CustomHtmlParsingException("Expected to find song id");
+        return child.attr("name");
       }
     }
 
-    return null;
+    throw new CustomHtmlParsingException(
+      "Expected to find song id"
+    );
   }
 }

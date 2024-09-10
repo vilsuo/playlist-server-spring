@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.jsoup.nodes.Element;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import com.fs.fsapi.exceptions.response.ApiValidationError;
-import com.fs.fsapi.exceptions.response.ErrorDataResponse;
 import com.fs.fsapi.exceptions.response.ErrorResponse;
 import com.fs.fsapi.exceptions.response.ValidationErrorResponse;
 
@@ -152,7 +150,7 @@ public class CustomControllerAdvice {
   }
 
   @ExceptionHandler(CustomHtmlParsingException.class)
-  public ResponseEntity<ErrorDataResponse<String>> handleCustomHtmlParsingExceptions(
+  public ResponseEntity<ErrorResponse> handleCustomHtmlParsingExceptions(
     CustomHtmlParsingException e
   ) {
     HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY;
@@ -160,10 +158,8 @@ public class CustomControllerAdvice {
     
     log.info("CustomHtmlParsingException: " + message);
 
-    Element element = e.getElement();
-
     return new ResponseEntity<>(
-      new ErrorDataResponse<>(status, message, element.toString()),
+      new ErrorResponse(status, message),
       status
     );
   }

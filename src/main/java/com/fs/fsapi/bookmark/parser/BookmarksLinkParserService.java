@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import com.fs.fsapi.DateTimeString;
 import com.fs.fsapi.exceptions.CustomHtmlParsingException;
-import com.fs.fsapi.exceptions.CustomLinkParsingException;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -49,24 +48,16 @@ public class BookmarksLinkParserService {
   public List<AlbumBase> parseElements(List<BookmarksLinkElement> bookmarkLinks) {
     return bookmarkLinks.stream()
       .map(bookmarkLink -> {
-        try {
-          final TextDetails details = extractTextContentDetails(bookmarkLink.getText());
+        final TextDetails details = extractTextContentDetails(bookmarkLink.getText());
 
-          return new AlbumBase(
-            extractVideoId(bookmarkLink.getHref()),
-            details.getArtist(),
-            details.getTitle(),
-            details.getPublished(),
-            bookmarkLink.getHeaderText(),
-            parseAddDate(bookmarkLink.getAddDate())
-          );
-          
-        } catch (CustomLinkParsingException ex) {
-          throw new CustomHtmlParsingException(
-            ex.getMessage(),
-            bookmarkLink.getElement()
-          );
-        }
+        return new AlbumBase(
+          extractVideoId(bookmarkLink.getHref()),
+          details.getArtist(),
+          details.getTitle(),
+          details.getPublished(),
+          bookmarkLink.getHeaderText(),
+          parseAddDate(bookmarkLink.getAddDate())
+        );
       })
       .collect(Collectors.toList());
   }
@@ -80,13 +71,13 @@ public class BookmarksLinkParserService {
    */
   private String extractVideoId (String href) {
     if (href == null) {
-      throw new CustomLinkParsingException(
+      throw new CustomHtmlParsingException(
         "Link 'href' attribute is missing"
       );
     }
   
     if (!href.startsWith(HREF_PREFIX)) {
-      throw new CustomLinkParsingException(
+      throw new CustomHtmlParsingException(
         "Link href attribute '" + href
         + "' must start with the prefix '" + HREF_PREFIX + "'"
       );
@@ -98,7 +89,7 @@ public class BookmarksLinkParserService {
     String keyAndValue = Arrays.stream(keyValuePairs)
       .filter(pair -> pair.startsWith(VIDEO_ID_KEY_NAME + "="))
       .findFirst()
-      .orElseThrow(() -> new CustomLinkParsingException(
+      .orElseThrow(() -> new CustomHtmlParsingException(
         "Link href attribute '" + href
         + "' is missing a required query parameter '" + VIDEO_ID_KEY_NAME + "'"
       ));
@@ -115,7 +106,7 @@ public class BookmarksLinkParserService {
    */
   private String parseAddDate(String addDate) {
     if (addDate == null) {
-      throw new CustomLinkParsingException(
+      throw new CustomHtmlParsingException(
         "Link 'add_date' attribute is missing"
       );
     }
@@ -124,7 +115,7 @@ public class BookmarksLinkParserService {
       return DateTimeString.parse(addDate);
 
     } catch (NumberFormatException | DateTimeException e) {
-      throw new CustomLinkParsingException(
+      throw new CustomHtmlParsingException(
         "Link add date attribute '" + addDate + "' is not a valid number"
       );
     }
@@ -139,7 +130,7 @@ public class BookmarksLinkParserService {
    */
   private TextDetails extractTextContentDetails (String text) {
     if (text == null) {
-      throw new CustomLinkParsingException(
+      throw new CustomHtmlParsingException(
         "Link text content is missing"
       );
     }
@@ -154,7 +145,7 @@ public class BookmarksLinkParserService {
       );
     }
 
-    throw new CustomLinkParsingException(
+    throw new CustomHtmlParsingException(
       "Link text content '" + text + "' is in incorrect format"
     );
   };

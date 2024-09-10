@@ -99,14 +99,14 @@ public class BookmarksFileParserService {
     if (next == null) {
       throw new CustomHtmlParsingException(
         "Header with the text content '" + text
-        + "' does not have a next sibling", h
+        + "' does not have a next sibling"
       );
 
     } else if (!elementHasTag(next, Tag.DL)) {
       throw new CustomHtmlParsingException(
         "Expected the next sibling element of header with text content '"
         + text + "' to be '" + Tag.DL.name + "' element, instead found '"
-        + getElementName(next) + "' element", next
+        + getElementName(next) + "' element"
       );
     }
 
@@ -126,7 +126,7 @@ public class BookmarksFileParserService {
         } else {
           throw new CustomHtmlParsingException(
             "A child element of '" + Tag.DL.name
-            + "' has unexpected structure", element
+            + "' has unexpected structure"
           );
         }
       });

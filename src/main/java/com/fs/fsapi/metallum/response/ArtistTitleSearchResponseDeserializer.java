@@ -10,10 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
-public class ArtistReleaseSearchResponseDeserializer extends StdDeserializer<ArtistTitleSearchResponse> {
+public class ArtistTitleSearchResponseDeserializer extends StdDeserializer<ArtistTitleSearchResponse> {
 
   // response keys
   private final String ERROR_KEY = "error";
@@ -22,11 +19,11 @@ public class ArtistReleaseSearchResponseDeserializer extends StdDeserializer<Art
   private final String DATA_KEY = "aaData";
   //private final String ECHO_KEY = "sEcho"; // unknown value in response...
 
-  public ArtistReleaseSearchResponseDeserializer() {
+  public ArtistTitleSearchResponseDeserializer() {
     this(null);
   }
 
-  public ArtistReleaseSearchResponseDeserializer(Class<?> vc) {
+  public ArtistTitleSearchResponseDeserializer(Class<?> vc) {
     super(vc);
   }
 

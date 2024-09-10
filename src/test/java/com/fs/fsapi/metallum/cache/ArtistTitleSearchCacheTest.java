@@ -13,11 +13,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.fs.fsapi.helpers.MetallumFileHelper;
 import com.fs.fsapi.metallum.ArtistTitleSearchResult;
 
-@SpringBootTest(classes = { ArtistReleaseSearchCache.class })
-public class ArtistReleaseSearchCacheTest {
+@SpringBootTest(classes = { ArtistTitleSearchCache.class })
+public class ArtistTitleSearchCacheTest {
   
   @Autowired
-  private ArtistReleaseSearchCache cache;
+  private ArtistTitleSearchCache cache;
 
   private final ArtistTitleSearchResult expected = MetallumFileHelper.searchResult;
   private final String key1 = expected.getArtist();

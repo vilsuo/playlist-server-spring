@@ -10,7 +10,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-@JsonDeserialize(using = ArtistReleaseSearchResponseDeserializer.class)
+@JsonDeserialize(using = ArtistTitleSearchResponseDeserializer.class)
 public class ArtistTitleSearchResponse {
 
   private String error;

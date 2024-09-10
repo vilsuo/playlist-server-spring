@@ -12,7 +12,7 @@ import org.springframework.boot.test.json.JacksonTester;
 import com.fs.fsapi.helpers.MetallumFileHelper;
 
 @JsonTest
-public class ArtistReleaseSearchResponseDeserializerTest {
+public class ArtistTitleSearchResponseDeserializerTest {
   
   @Autowired
   private JacksonTester<ArtistTitleSearchResponse> jacksonTester;

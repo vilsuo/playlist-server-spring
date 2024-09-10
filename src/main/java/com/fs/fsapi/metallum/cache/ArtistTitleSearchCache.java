@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class ArtistReleaseSearchCache implements DoubleKeyMap<String, String, ArtistTitleSearchResult> {
+public class ArtistTitleSearchCache implements DoubleKeyMap<String, String, ArtistTitleSearchResult> {
 
   private final Map<String, Map<String, ArtistTitleSearchResult>> cache;
 

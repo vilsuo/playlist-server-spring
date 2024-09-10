@@ -8,7 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.fs.fsapi.metallum.cache.ArtistReleaseSearchCache;
+import com.fs.fsapi.metallum.cache.ArtistTitleSearchCache;
 import com.fs.fsapi.metallum.parser.MetallumParser;
 import com.fs.fsapi.metallum.parser.SongResult;
 import com.fs.fsapi.metallum.response.ArtistTitleSearchResponse;
@@ -29,7 +29,7 @@ public class MetallumService {
 
   private final MetallumParser parser;
 
-  private final ArtistReleaseSearchCache cache;
+  private final ArtistTitleSearchCache cache;
   
   /**
    * Search basic release information. Caches results.
@@ -108,10 +108,10 @@ public class MetallumService {
     // from the last value (id) separated by '/'
     final int PARTS = Math.min(4, id.length());
     final int PIECES = 2 * PARTS - 1;
-    final char[] inaArr = id.toCharArray();
+    final char[] inArr = id.toCharArray();
     final char[] outArr = new char[PIECES];
     for (int i = 0; i < PIECES; i++) {
-      outArr[i] = (i % 2 == 0) ? inaArr[i / 2] : '/';
+      outArr[i] = (i % 2 == 0) ? inArr[i / 2] : '/';
     }
 
     final String middlePathSegments = new String(outArr);

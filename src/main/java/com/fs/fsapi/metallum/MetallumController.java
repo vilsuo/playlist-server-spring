@@ -22,8 +22,8 @@ public class MetallumController {
 
   private final MetallumService service;
   
-  @GetMapping("/links")
-  public ResponseEntity<ArtistTitleSearchResult> getLinks(
+  @GetMapping("/search")
+  public ResponseEntity<ArtistTitleSearchResult> search(
     @RequestParam String artist,
     @RequestParam String title
   ) {
@@ -32,30 +32,24 @@ public class MetallumController {
       .body(service.searchByArtistAndReleaseTitle(artist, title));
   }
 
-  @GetMapping("/logo")
-  public ResponseEntity<byte[]> getArtistLogo(
-    @RequestParam String artist,
-    @RequestParam String title
-  ) {
+  @GetMapping("/logo/{artistId}")
+  public ResponseEntity<byte[]> searchArtistLogo(@PathVariable String artistId) {
     return ResponseEntity
       .ok()
       .contentType(MediaType.IMAGE_JPEG)
-      .body(service.searchArtistLogo(artist, title));
+      .body(service.searchArtistLogo(artistId));
   }
 
-  @GetMapping("/cover")
-  public ResponseEntity<byte[]> getReleaseCover(
-    @RequestParam String artist,
-    @RequestParam String title
-  ) {
+  @GetMapping("/cover/{releaseId}")
+  public ResponseEntity<byte[]> searchReleaseCover(@PathVariable String releaseId) {
     return ResponseEntity
       .ok()
       .contentType(MediaType.IMAGE_JPEG)
-      .body(service.searchReleaseCover(artist, title));
+      .body(service.searchReleaseCover(releaseId));
   }
 
   @GetMapping("/songs")
-  public ResponseEntity<List<SongResult>> getSongs(
+  public ResponseEntity<List<SongResult>> searchSongs(
     @RequestParam String artist,
     @RequestParam String title
   ) throws URISyntaxException {
@@ -65,7 +59,7 @@ public class MetallumController {
   }
 
   @GetMapping("/songs/{id}/lyrics")
-  public ResponseEntity<String> getSongLyrics(@PathVariable String id) {
+  public ResponseEntity<String> searchSongLyrics(@PathVariable String id) {
     return ResponseEntity
       .ok()
       .body(service.searchSongLyrics(id));

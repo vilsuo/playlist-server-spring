@@ -9,7 +9,7 @@ public class ArtistTitleSearchResult {
 
   private LinkElement artistFolderLink;
 
-  private LinkElement releaseFolderLink;
+  private LinkElement titleFolderLink;
 
   private String releaseType;
 
@@ -22,11 +22,11 @@ public class ArtistTitleSearchResult {
   }
 
   public String getTitleHref() {
-    return releaseFolderLink.getHref();
+    return titleFolderLink.getHref();
   }
 
   public String getTitle() {
-    return releaseFolderLink.getText();
+    return titleFolderLink.getText();
   }
 
   public String getArtistId() {

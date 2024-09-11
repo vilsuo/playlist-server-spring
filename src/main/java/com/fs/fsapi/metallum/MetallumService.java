@@ -69,31 +69,23 @@ public class MetallumService {
   }
 
   /**
-   * Search release cover image by artist name and release title.
+   * Search release cover image.
    * 
-   * @param artist  the artist name
-   * @param title  the release title
-   * @return the release cover
+   * @param id  the release id
+   * @return the release cover image
    */
-  public byte[] searchReleaseCover(String artist, String title) {
-    ArtistTitleSearchResult result = searchByArtistAndReleaseTitle(artist, title);
-    final String path = getReleaseCoverPath(result.getTitleHref());
-
-    return searchImage(path);
+  public byte[] searchReleaseCover(String id) {
+    return searchImage(getReleaseCoverPath(id));
   }
 
   /**
-   * Search artist logo image by artist name and release title.
+   * Search artist logo image.
    * 
-   * @param artist  the artist name
-   * @param title  the release title
-   * @return the release cover
+   * @param id  the artist id
+   * @return the release cover image
    */
-  public byte[] searchArtistLogo(String artist, String title) {
-    ArtistTitleSearchResult result = searchByArtistAndReleaseTitle(artist, title);
-    final String path = getArtistLogoPath(result.getArtistHref());
-
-    return searchImage(path);
+  public byte[] searchArtistLogo(String id) {
+    return searchImage(getArtistLogoPath(id));
   }
 
   private byte[] searchImage(String imagePath) {
@@ -110,26 +102,20 @@ public class MetallumService {
   /**
    * Get the path of the release cover image. 
    * 
-   * @param titleHref  the release page uri
+   * @param id  the release title id
    * @return the path of the release cover image
    */
-  private String getReleaseCoverPath(String titleHref) {
-    // the id is expected to equal to the final segment of the path
-    final String id = titleHref.substring(titleHref.lastIndexOf("/") + 1);
-    
+  private String getReleaseCoverPath(String id) {
     return constructImagePath(id) + IMAGE_EXTENSION;
   }
 
   /**
    * Get the path of the artist logo image. 
    * 
-   * @param artistHref  the artist page uri
+   * @param id  the artist id
    * @return the path of the artist logo image
    */
-  private String getArtistLogoPath(String artistHref) {
-    // the id is expected to equal to the final segment of the path
-    final String id = artistHref.substring(artistHref.lastIndexOf("/") + 1);
-    
+  private String getArtistLogoPath(String id) {
     return constructImagePath(id) + "_logo" + IMAGE_EXTENSION;
   }
 

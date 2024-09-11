@@ -29,6 +29,16 @@ public class ArtistTitleSearchResult {
     return releaseFolderLink.getText();
   }
 
+  public String getArtistId() {
+    String artistHref = getArtistHref();
+    return artistHref.substring(artistHref.lastIndexOf("/") + 1);
+  }
+
+  public String getReleaseId() {
+    String titleHref = getTitleHref();
+    return titleHref.substring(titleHref.lastIndexOf("/") + 1);
+  }
+
   public String getReleaseType() {
     return releaseType;
   }

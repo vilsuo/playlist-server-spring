@@ -70,26 +70,32 @@ public class MetallumParser {
 
   private ArtistTitleSearchResult parseSearchData(AaDataValue data) {
     return new ArtistTitleSearchResult(
-      parseLinkElementString(data.getArtistLinkElementString()),
-      parseLinkElementString(data.getReleaseLinkElementString()),
+      parseSearchDataElementOuterHtml(data.getArtistLinkElementOuterHtml()),
+      parseSearchDataElementOuterHtml(data.getReleaseLinkElementOuterHtml()),
       data.getReleaseType()
     );
   }
 
-  private LinkElement parseLinkElementString(String html) {
+  private LinkElement parseSearchDataElementOuterHtml(String html) {
     final Element e = Jsoup.parse(html).selectFirst("a");
+
     if (e == null) {
       throw new CustomMetallumScrapingException(
         "Expected data '" + html + "' to contain a 'a' element"
       );
+    } else if (!e.hasAttr("href")) {
+      throw new CustomMetallumScrapingException(
+        "Expected data element '" + e.toString() + "' to have 'href' attribute"
+      );
     }
+
     return new LinkElement(e);
   }
 
   /**
-   * Extract songs from html song table.
+   * Extract songs from the song table.
    * 
-   * @param html  string where the songs can be found
+   * @param html  string where the song table can be found
    * @return list of songs
    */
   public List<SongResult> parseSongs(String html) {
@@ -122,7 +128,7 @@ public class MetallumParser {
   /**
    * Get the song id from release table row data element.
    * 
-   * @param tds  release table row data element
+   * @param tds  release table row data element (single song row)
    * @return the song id
    * @throws CustomMetallumScrapingException if id can not be found
    */

@@ -34,12 +34,12 @@ public class ArtistTitleSearchResponseDeserializerTest {
     AaDataValue actualFirst = actual.getFirstDataValue();
 
     assertEquals(
-      expectedFirst.getArtistLinkElementString(),
-      actualFirst.getArtistLinkElementString()
+      expectedFirst.getArtistLinkElementOuterHtml(),
+      actualFirst.getArtistLinkElementOuterHtml()
     );
     assertEquals(
-      expectedFirst.getReleaseLinkElementString(),
-      actualFirst.getReleaseLinkElementString()
+      expectedFirst.getReleaseLinkElementOuterHtml(),
+      actualFirst.getReleaseLinkElementOuterHtml()
     );
     assertEquals(
       expectedFirst.getReleaseType(),

@@ -12,15 +12,15 @@ import lombok.ToString;
 @NoArgsConstructor
 public class AaDataValue {
 
-  private String artistLinkElementString;
+  private String artistLinkElementOuterHtml;
 
-  private String releaseLinkElementString;
+  private String releaseLinkElementOuterHtml;
 
   private String releaseType;
 
   public AaDataValue(List<String> args) {
-    this.artistLinkElementString = args.get(0);
-    this.releaseLinkElementString = args.get(1);
+    this.artistLinkElementOuterHtml = args.get(0);
+    this.releaseLinkElementOuterHtml = args.get(1);
     this.releaseType = args.get(2);
   }
 }

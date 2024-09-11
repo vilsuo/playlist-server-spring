@@ -102,11 +102,11 @@ public class BookmarksFileParserService {
         + "' does not have a next sibling"
       );
 
-    } else if (!elementHasTag(next, Tag.DL)) {
+    } else if (!elementHasTag(next, "dl")) {
       throw new CustomHtmlParsingException(
         "Expected the next sibling element of header with text content '"
-        + text + "' to be '" + Tag.DL.name + "' element, instead found '"
-        + getElementName(next) + "' element"
+        + text + "' to be 'dl' element, instead found '"
+        + getElementTagName(next) + "' element"
       );
     }
 
@@ -125,8 +125,7 @@ public class BookmarksFileParserService {
 
         } else {
           throw new CustomHtmlParsingException(
-            "A child element of '" + Tag.DL.name
-            + "' has unexpected structure"
+            "A child element of 'dl' has unexpected structure"
           );
         }
       });
@@ -134,12 +133,12 @@ public class BookmarksFileParserService {
     return folderLinks;
   }
 
-  private String getElementName(Element e) {
+  private String getElementTagName(Element e) {
     return e.normalName();
   }
 
-  private boolean elementHasTag(Element e, Tag tag) {
-    return tag.name.equals(getElementName(e));
+  private boolean elementHasTag(Element e, String tagName) {
+    return tagName.equals(getElementTagName(e));
   }
 
   /**
@@ -154,9 +153,9 @@ public class BookmarksFileParserService {
    * @return true if element has the structure
    */
   private boolean isDtSingleElement(Element e) {
-    return elementHasTag(e, Tag.DT)
+    return elementHasTag(e, "dt")
       && (e.childrenSize() == 1)
-      && elementHasTag(e.child(0), Tag.LINK);
+      && elementHasTag(e.child(0), "a");
   }
 
   /**
@@ -164,59 +163,19 @@ public class BookmarksFileParserService {
    * {@code
    *  <dt>
    *    <h? />
-   *    <dl>
-   *      ...
-   *    </dl>
+   *    <dl />
    *    <p />
    *  </dt>
-   * }. 
+   * }. The tag {@code h?} is a html header element of any level.
    * 
    * @param e  the element to check
    * @return true if element has the structure
    */
   private boolean isDtContainerElement(Element e) {
-    return elementHasTag(e, Tag.DT)
+    return elementHasTag(e, "dt")
       && (e.childrenSize() == 3)
-      && HEADER_PATTERN.matcher(getElementName(e.child(0))).matches()
-      && elementHasTag(e.child(1), Tag.DL)
-      && elementHasTag(e.child(2), Tag.P);
+      && HEADER_PATTERN.matcher(getElementTagName(e.child(0))).matches()
+      && elementHasTag(e.child(1), "dl")
+      && elementHasTag(e.child(2), "p");
   }
-
-  private enum Tag {
-    P ("p"),
-    LINK ("a"),
-
-    /**
-     * HTML-element with the tag {@code dt}. The child structure is
-     * one of the following
-     * 
-     * <ol>
-     *  <li>Just a single html link element {@code <a />}.
-     *  <li>
-     *    Exactly three elements in the order {@code <h? /> <dl /> <p />}.
-     *    The tag {@code h?} is a html header element of any level and
-     *    {@code dl} has structure specified by {@link Tag#DL}. The header
-     *    indicates the beginning of a subfolder structure and the {@code dl}
-     *    element the contents of that folder.
-     * </ol>
-     * 
-     * @see {@link HtmlParserService#isDtSingleElement}
-     * @see {@link HtmlParserService#isDtContainerElement}
-     */
-    DT ("dt"),
-
-    /**
-     * HTML-element with the tag {@code dl}. The child structure is
-     * {@code <p /> <dt /> ... <dt />}, where each {@code dt} is a 
-     * structure specified by {@link Tag#DT}.
-     */
-    DL ("dl");
-
-    private final String name;
-
-    Tag(String name) {
-      this.name = name;
-    }
-  };
-
 }

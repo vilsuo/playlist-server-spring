@@ -27,6 +27,8 @@ import lombok.extern.slf4j.Slf4j;
 @ControllerAdvice
 public class CustomControllerAdvice {
 
+  private final String FALL_BACK_MESSAGE = "Something went wrong";
+
   // Exception to be thrown when validation on (controller method?) an argument 
   // annotated with @Valid fails
   @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -179,16 +181,29 @@ public class CustomControllerAdvice {
     );
   }
 
+  @ExceptionHandler(CustomMetallumScrapingException.class)
+  public ResponseEntity<ErrorResponse> handleCustomMetallumScrapingExceptions(
+    CustomMetallumScrapingException e
+  ) {
+    HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+    
+    log.error("CustomMetallumScrapingException", e);
+
+    return new ResponseEntity<>(
+      new ErrorResponse(status, FALL_BACK_MESSAGE),
+      status
+    );
+  }
+
   // fallback method
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponse> handleExceptions(Exception e) {
     HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-    String message = e.getMessage();
     
-    log.error("Fallback error handler: " + message, e);
+    log.error("Fallback error handler", e);
 
     return new ResponseEntity<>(
-      new ErrorResponse(status, message),
+      new ErrorResponse(status, FALL_BACK_MESSAGE),
       status
     );
   }

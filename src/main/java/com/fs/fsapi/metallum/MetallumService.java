@@ -1,7 +1,5 @@
 package com.fs.fsapi.metallum;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 
 import org.springframework.http.MediaType;
@@ -51,7 +49,7 @@ public class MetallumService {
 
     ArtistTitleSearchResponse response = webClient.get()
       .uri(uriBuilder -> uriBuilder
-        .path("/search/ajax-advanced/searching/albums/")
+        .path("/search/ajax-advanced/searching/albums")
         .queryParam("bandName", artist)
         .queryParam("releaseTitle", title)
         .build())
@@ -148,17 +146,18 @@ public class MetallumService {
   /**
    * Search songs by artist name and release title.
    * 
-   * @param artist  the artist name
-   * @param title  the release title
+   * @param titleId  the release title id
    * @return  a list containing the details of each song
-   * @throws URISyntaxException if the search uri is invalid
+   * @implNote {@code path} songs are search from release title page, same as
+   * {@link ArtistTitleSearchResult#getTitleHref()}
    */
-  public List<SongResult> searchSongs(String artist, String title) throws URISyntaxException {
-    ArtistTitleSearchResult result = searchByArtistAndTitle(artist, title);
-    final String path = result.getTitleHref(); // search from release title page
-
+  public List<SongResult> searchSongs(String titleId) {
+    // only title id required seems to be required,
+    // artist and title can be empty...
     String html = webClient.get()
-      .uri(new URI(path)) // ignore baseUrl
+      .uri(uriBuilder -> uriBuilder
+        .path("/albums/{artist}/{title}/{titleId}") 
+        .build("", "", titleId))
       .accept(MediaType.TEXT_HTML)
       .retrieve()
       .bodyToMono(String.class)

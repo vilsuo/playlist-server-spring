@@ -48,21 +48,18 @@ public class MetallumController {
       .body(service.searchTitleCover(titleId));
   }
 
-  @GetMapping("/songs")
-  public ResponseEntity<List<SongResult>> searchSongs(
-    @RequestParam String artist,
-    @RequestParam String title
-  ) throws URISyntaxException {
+  @GetMapping("/songs/{titleId}")
+  public ResponseEntity<List<SongResult>> searchSongs(@PathVariable String titleId) {
     return ResponseEntity
       .ok()
-      .body(service.searchSongs(artist, title));
+      .body(service.searchSongs(titleId));
   }
 
-  @GetMapping("/songs/{id}/lyrics")
-  public ResponseEntity<String> searchSongLyrics(@PathVariable String id) {
+  @GetMapping("/lyrics/{songId}")
+  public ResponseEntity<String> searchSongLyrics(@PathVariable String songId) {
     return ResponseEntity
       .ok()
-      .body(service.searchSongLyrics(id));
+      .body(service.searchSongLyrics(songId));
   }
   
 }

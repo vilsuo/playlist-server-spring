@@ -18,7 +18,7 @@ import com.fs.fsapi.exceptions.CustomParameterConstraintException;
 @Service
 public class BookmarksFileParserService {
 
-  private final Pattern HEADER_PATTERN = Pattern.compile("h[1-6]");
+  private final Pattern ANY_HEADER_PATTERN = Pattern.compile("h[1-6]");
 
   /**
    * Find HTML {@code a} elements in a specific block indicated by a header
@@ -46,7 +46,8 @@ public class BookmarksFileParserService {
    *                    the search for links is limited in the following
    *                    {@code <folder>}
    * @return the list of link elements with their associated header text content
-   * @throws IOException
+   * @throws IOException if the file could not be found, or read, or if the
+   *                     charsetName is invalid
    */
   public List<BookmarksLinkElement> parseFile(InputStream file, String headerText) throws IOException {
     Document doc = Jsoup.parse(file, null, "");
@@ -69,12 +70,12 @@ public class BookmarksFileParserService {
 
     if (headers.isEmpty()) {
       throw new CustomParameterConstraintException(
-        "Could not find a header with the text content '" + headerText + "'"
+        "Could not find a header element with the text content '" + headerText + "'"
       );
 
     } else if (headers.size() > 1) {
       throw new CustomParameterConstraintException(
-        "Found multiple headers with the text content '" + headerText + "'"
+        "Found multiple header elements with the text content '" + headerText + "'"
       );
     }
 
@@ -98,23 +99,23 @@ public class BookmarksFileParserService {
 
     if (next == null) {
       throw new CustomHtmlParsingException(
-        "Header with the text content '" + text
-        + "' does not have a next sibling"
+        "Expected the header element with the text content '" + text
+        + "' to have a next sibling element"
       );
 
-    } else if (!elementHasTag(next, "dl")) {
+    } else if (!next.nameIs("dl")) {
       throw new CustomHtmlParsingException(
         "Expected the next sibling element of header with text content '"
-        + text + "' to be 'dl' element, instead found '"
-        + getElementTagName(next) + "' element"
+        + text + "' to be a 'dl' element, instead found a '"
+        + next.normalName() + "' element"
       );
     }
 
     next.children().stream()
-      .skip(1) // first element is expected to be paragraph, so skip it
+      .skip(1) // first element is expected to be 'p' element
       .forEach(element -> {
         if (isDtSingleElement(element)) {
-          // the only child is link element
+          // the only child is 'a' element
           Element a = element.child(0);
           folderLinks.add(new BookmarksLinkElement(a, text));
 
@@ -123,22 +124,18 @@ public class BookmarksFileParserService {
           Element hSub = element.child(0);
           parseFolder(hSub, folderLinks);
 
+        } else  if (element.nameIs("dt")) {
+          throw new CustomHtmlParsingException(
+            "A 'dl' element has a child element 'dt' with invalid structure"
+          );
         } else {
           throw new CustomHtmlParsingException(
-            "A child element of 'dl' has unexpected structure"
+            "A 'dl' element has unexpected child element '" + element.normalName() + "'"
           );
         }
       });
 
     return folderLinks;
-  }
-
-  private String getElementTagName(Element e) {
-    return e.normalName();
-  }
-
-  private boolean elementHasTag(Element e, String tagName) {
-    return tagName.equals(getElementTagName(e));
   }
 
   /**
@@ -153,9 +150,9 @@ public class BookmarksFileParserService {
    * @return true if element has the structure
    */
   private boolean isDtSingleElement(Element e) {
-    return elementHasTag(e, "dt")
+    return e.nameIs("dt")
       && (e.childrenSize() == 1)
-      && elementHasTag(e.child(0), "a");
+      && e.child(0).nameIs("a");
   }
 
   /**
@@ -172,10 +169,10 @@ public class BookmarksFileParserService {
    * @return true if element has the structure
    */
   private boolean isDtContainerElement(Element e) {
-    return elementHasTag(e, "dt")
+    return e.nameIs("dt")
       && (e.childrenSize() == 3)
-      && HEADER_PATTERN.matcher(getElementTagName(e.child(0))).matches()
-      && elementHasTag(e.child(1), "dl")
-      && elementHasTag(e.child(2), "p");
+      && ANY_HEADER_PATTERN.matcher(e.child(0).normalName()).matches()
+      && e.child(1).nameIs("dl")
+      && e.child(2).nameIs("p");
   }
 }

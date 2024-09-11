@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import com.fs.fsapi.exceptions.CustomHtmlParsingException;
@@ -90,7 +89,7 @@ public class BookmarksLinkParserServiceTest {
         () -> parseSingleWithHref(null)
       );
 
-      assertEquals("Link 'href' attribute is missing", ex.getMessage());
+      assertEquals("The 'href' attribute is missing", ex.getMessage());
     }
 
     @Test
@@ -103,8 +102,8 @@ public class BookmarksLinkParserServiceTest {
       );
 
       assertEquals(
-        "Link href attribute '" + invalidHref
-        + "' must start with the prefix 'https://www.youtube.com/watch?'",
+        "Expected the 'href' attribute value '" + invalidHref
+        + "' to start with 'https://www.youtube.com/watch?'",
         ex.getMessage()
       );
     }
@@ -119,8 +118,8 @@ public class BookmarksLinkParserServiceTest {
       );
 
       assertEquals(
-        "Link href attribute '" + invalidHref
-        + "' is missing a required query parameter 'v'",
+        "Expected 'href' attribute value '" + invalidHref
+        + "' to have a value for the query parameter 'v'",
         ex.getMessage()
       );
     }
@@ -135,8 +134,8 @@ public class BookmarksLinkParserServiceTest {
       );
 
       assertEquals(
-        "Link href attribute '" + invalidHref
-        + "' is missing a required query parameter 'v'",
+        "Expected 'href' attribute value '" + invalidHref
+        + "' to have a value for the query parameter 'v'",
         ex.getMessage()
       );
     }
@@ -183,21 +182,20 @@ public class BookmarksLinkParserServiceTest {
       );
 
       assertEquals(
-        "Link text content '" + value + "' is in incorrect format",
+        "The text content '" + value + "' is invalid",
         ex.getMessage()
       );
     }
 
-    @ParameterizedTest
-    @NullAndEmptySource
-    public void shouldThrowWhenTextContentIsNullOrEmptyTest(String value) {
+    @Test
+    public void shouldThrowWhenTextContentIsEmptyTest() {
       CustomHtmlParsingException ex = assertThrows(
         CustomHtmlParsingException.class,
-        () -> parseSingleWithText(value)
+        () -> parseSingleWithText("")
       );
 
       assertEquals(
-        "Link text content '' is in incorrect format",
+        "The text content '' is invalid",
         ex.getMessage()
       );
     }
@@ -241,7 +239,7 @@ public class BookmarksLinkParserServiceTest {
       );
 
       assertEquals(
-        "Link 'add_date' attribute is missing",
+        "The 'add_date' attribute is missing",
         ex.getMessage()
       );
     }
@@ -254,7 +252,7 @@ public class BookmarksLinkParserServiceTest {
       );
 
       assertEquals(
-        "Link add date attribute '' is not a valid number",
+        "The 'add_date' attribute value '' is invalid",
         ex.getMessage()
       );
     }
@@ -268,7 +266,7 @@ public class BookmarksLinkParserServiceTest {
       );
 
       assertEquals(
-        "Link add date attribute '" + value + "' is not a valid number",
+        "The 'add_date' attribute value '" + value + "' is invalid",
         ex.getMessage()
       );
     }

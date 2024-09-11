@@ -72,14 +72,14 @@ public class BookmarksLinkParserService {
   private String extractVideoId (String href) {
     if (href == null) {
       throw new CustomHtmlParsingException(
-        "Link 'href' attribute is missing"
+        "The 'href' attribute is missing"
       );
     }
   
     if (!href.startsWith(HREF_PREFIX)) {
       throw new CustomHtmlParsingException(
-        "Link href attribute '" + href
-        + "' must start with the prefix '" + HREF_PREFIX + "'"
+        "Expected the 'href' attribute value '" + href
+        + "' to start with '"  + HREF_PREFIX + "'"
       );
     }
 
@@ -90,8 +90,8 @@ public class BookmarksLinkParserService {
       .filter(pair -> pair.startsWith(VIDEO_ID_KEY_NAME + "="))
       .findFirst()
       .orElseThrow(() -> new CustomHtmlParsingException(
-        "Link href attribute '" + href
-        + "' is missing a required query parameter '" + VIDEO_ID_KEY_NAME + "'"
+        "Expected 'href' attribute value '" + href
+        + "' to have a value for the query parameter '" + VIDEO_ID_KEY_NAME + "'"
       ));
 
     // return the value of the key and value pair
@@ -107,7 +107,7 @@ public class BookmarksLinkParserService {
   private String parseAddDate(String addDate) {
     if (addDate == null) {
       throw new CustomHtmlParsingException(
-        "Link 'add_date' attribute is missing"
+        "The 'add_date' attribute is missing"
       );
     }
   
@@ -116,14 +116,14 @@ public class BookmarksLinkParserService {
 
     } catch (NumberFormatException | DateTimeException e) {
       throw new CustomHtmlParsingException(
-        "Link add date attribute '" + addDate + "' is not a valid number"
+        "The 'add_date' attribute value '" + addDate + "' is invalid"
       );
     }
   };
 
   /**
    * Extract details from the text according to the formula
-   * {@code artist_name - album_title (publish_year)}.
+   * {@code artist_name - release_title (publish_year)}.
    * 
    * @param text  the text to extract details from
    * @return the extracted details
@@ -131,7 +131,7 @@ public class BookmarksLinkParserService {
   private TextDetails extractTextContentDetails (String text) {
     if (text == null) {
       throw new CustomHtmlParsingException(
-        "Link text content is missing"
+        "The text content is missing"
       );
     }
 
@@ -146,7 +146,7 @@ public class BookmarksLinkParserService {
     }
 
     throw new CustomHtmlParsingException(
-      "Link text content '" + text + "' is in incorrect format"
+      "The text content '" + text + "' is invalid"
     );
   };
 

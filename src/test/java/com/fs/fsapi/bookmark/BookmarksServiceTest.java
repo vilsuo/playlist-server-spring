@@ -51,8 +51,8 @@ public class BookmarksServiceTest {
     );
 
     assertEquals(
-      "Expected the next sibling element of header with text content '"
-        + header.getTextContent() + "' to be 'dl' element, instead found 'p' element",
+      "Expected the next sibling element of header with text content '" 
+      + header.getTextContent() + "' to be a 'dl' element, instead found a 'p' element",
       ex.getMessage()
     );
   }
@@ -78,7 +78,7 @@ public class BookmarksServiceTest {
       );
 
       assertEquals(
-        "Link 'add_date' attribute is missing",
+        "The 'add_date' attribute is missing",
         ex.getMessage()
       );
     }
@@ -93,8 +93,8 @@ public class BookmarksServiceTest {
       );
 
       assertEquals(
-        "Link href attribute 'https://www.youtub.com/watch?v=DopHEl-BCGQ'"
-        + " must start with the prefix 'https://www.youtube.com/watch?'",
+        "Expected the 'href' attribute value 'https://www.youtub.com/watch?v=DopHEl-BCGQ'"
+        + " to start with 'https://www.youtube.com/watch?'",
         ex.getMessage()
       );
     }
@@ -109,8 +109,7 @@ public class BookmarksServiceTest {
       );
 
       assertEquals(
-        "Link text content 'Angel Dust Into the Dark Past (1986)' "
-        + "is in incorrect format",
+        "The text content 'Angel Dust Into the Dark Past (1986)' is invalid",
         ex.getMessage()
       );
     }
@@ -137,7 +136,8 @@ public class BookmarksServiceTest {
       );
 
       assertEquals(
-        "Could not find a header with the text content '" + header.getTextContent() + "'",
+        "Could not find a header element with the text content '"
+        + header.getTextContent() + "'",
         ex.getMessage()
       );
     }

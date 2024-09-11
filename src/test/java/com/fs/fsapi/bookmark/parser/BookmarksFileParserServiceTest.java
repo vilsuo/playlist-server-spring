@@ -46,7 +46,7 @@ public class BookmarksFileParserServiceTest {
     );
 
     assertEquals(
-      "Could not find a header with the text content '" + header.getTextContent() + "'",
+      "Could not find a header element with the text content '" + header.getTextContent() + "'",
       ex.getMessage()
     );
   }
@@ -70,7 +70,7 @@ public class BookmarksFileParserServiceTest {
 
     assertEquals(
       "Expected the next sibling element of header with text content '"
-        + header.getTextContent() + "' to be 'dl' element, instead found 'p' element",
+      + header.getTextContent() + "' to be a 'dl' element, instead found a 'p' element",
       ex.getMessage()
     );
   }

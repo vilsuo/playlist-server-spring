@@ -2,6 +2,7 @@ package com.fs.fsapi.metallum.response;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -9,15 +10,19 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fs.fsapi.exceptions.CustomMetallumScrapingException;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class ArtistTitleSearchResponseDeserializer extends StdDeserializer<ArtistTitleSearchResponse> {
 
-  // response keys
-  private final String ERROR_KEY = "error";
-  private final String TOTAL_RECORDS_KEY = "iTotalRecords";
-  private final String TOTAL_DISPLAY_RECORDS_KEY = "iTotalRecords";
-  private final String DATA_KEY = "aaData";
-  //private final String ECHO_KEY = "sEcho"; // unknown value in response...
+  // response properties
+  private final String ERROR_PROPERTY = "error"; 
+  private final String TOTAL_RECORDS_PROPERTY = "iTotalRecords";
+  private final String TOTAL_DISPLAY_RECORDS_PROPERTY = "iTotalRecords";
+  private final String DATA_PROPERTY = "aaData";
+  //private final String ECHO_PROPERTY = "sEcho"; // unknown int value in response...
 
   public ArtistTitleSearchResponseDeserializer() {
     this(null);
@@ -32,30 +37,75 @@ public class ArtistTitleSearchResponseDeserializer extends StdDeserializer<Artis
     JsonNode node = jp.getCodec().readTree(jp);
     ObjectNode obj = (ObjectNode) node;
 
-    final String error = obj.get(ERROR_KEY).asText();
-    final int totalRecords = obj.get(TOTAL_RECORDS_KEY).asInt();
-    final int totalDisplayRecords = obj.get(TOTAL_DISPLAY_RECORDS_KEY).asInt();
-    //final int echo = obj.get("ECHO_KEY").asInt();
-
-    List<AaDataValue> parsedData = new ArrayList<>();
+    JsonNode x = getProperty(obj, DATA_PROPERTY);
+    if (!x.isArray()) {
+      throw new CustomMetallumScrapingException(
+        "Expected property '" + DATA_PROPERTY + "' value '"
+        + x.toPrettyString() + "' to be an array"
+      );
+    }
 
     // 2d array
-    obj.get(DATA_KEY).elements().forEachRemaining(x -> {
-      List<String> values = new ArrayList<>();
+    Iterator<JsonNode> xItr = x.iterator();
+    List<AaDataValue> dataList = new ArrayList<>();
+    while (xItr.hasNext()) {
+      JsonNode y = xItr.next();
+      if (!y.isArray() || y.size() != 3) {
+        throw new CustomMetallumScrapingException(
+          "Expected the value '" + y.toPrettyString() + "' of property '"
+          + DATA_PROPERTY + "' be an array of length of 3"
+        );
+      }
 
-      x.elements().forEachRemaining(y -> {
-        values.add(y.asText());
-      });
+      Iterator<JsonNode> yItr = y.iterator();
+      List<String> dataRow = new ArrayList<>();
+      while (yItr.hasNext()) {
+        JsonNode dataNode = yItr.next();
+        dataRow.add(dataNode.asText());
+      }
 
-      parsedData.add(new AaDataValue(values));
-    });
+      dataList.add(new AaDataValue(dataRow));
+    }
     
     return new ArtistTitleSearchResponse(
-      error,
-      totalRecords,
-      totalDisplayRecords,
-      //echo,
-      parsedData
+      asText(obj, ERROR_PROPERTY),
+      asInt(obj, TOTAL_RECORDS_PROPERTY),
+      asInt(obj, TOTAL_DISPLAY_RECORDS_PROPERTY),
+      dataList
     );
+  }
+
+  private String asText(ObjectNode obj, String propertyName) {
+    final JsonNode node = getProperty(obj, propertyName);
+    if (!node.isTextual()) {
+      throw new CustomMetallumScrapingException(
+        "Expected the property '" + propertyName + "' value '"
+        + node.toPrettyString() + "' to be a basic string value"
+      );
+    }
+
+    return node.asText();
+  }
+
+  private int asInt(ObjectNode obj, String propertyName) {
+    final JsonNode node = getProperty(obj, propertyName);
+    if (!node.isInt()) {
+      throw new CustomMetallumScrapingException(
+        "Expected the property '" + propertyName + "' value '"
+        + node.toPrettyString() + "' to be presentable as int"
+      );
+    }
+
+    return node.asInt();
+  }
+
+  private JsonNode getProperty(ObjectNode obj, String propertyName) {
+    if (!obj.has(propertyName)) {
+      throw new CustomMetallumScrapingException(
+        "Expected the object '" + obj.toPrettyString()
+        + "' to have property '" + propertyName + "'"
+      );
+    }
+    return obj.get(propertyName);
   }
 }

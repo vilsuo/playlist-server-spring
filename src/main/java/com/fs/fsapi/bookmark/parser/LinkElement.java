@@ -1,19 +1,29 @@
 package com.fs.fsapi.bookmark.parser;
 
-import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Element;
+import org.springframework.lang.Nullable;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
 public class LinkElement {
 
   private final Element element;
 
   public final String getText() {
     return element.wholeText();
+  }
+
+  public LinkElement(Element element) {
+    // attached element must be a tag 'a'
+    final String tag = element.normalName();
+    if (!tag.equals("a")) {
+      throw new IllegalArgumentException(
+        "Expected element '" + tag + "' to be 'a' element"
+      );
+    }
+
+    this.element = element;
   }
 
   /**
@@ -24,8 +34,12 @@ public class LinkElement {
     return getAttributeValue("href");
   }
 
+  @Nullable
   protected final String getAttributeValue(String name) {
-    Attribute attr = element.attribute(name);
-    return (attr != null) ? attr.getValue() : null;
+    if (element.hasAttr(name)) {
+      return element.attr(name);
+    }
+
+    return null;
   }
 }

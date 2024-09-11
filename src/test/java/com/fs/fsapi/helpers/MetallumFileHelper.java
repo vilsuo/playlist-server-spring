@@ -77,7 +77,7 @@ public class MetallumFileHelper {
     new SongResult("57367", "Across the Gray Waters", "03:59")
   );
 
-  public static final List<SongResult> songsWithouLyrics = List.of(
+  public static final List<SongResult> songsWithoutLyrics = List.of(
     new SongResult("160574A", "Mortal God", "02:37"),
     new SongResult("160575A", "Grip of Darkness", "03:23"),
     new SongResult("160576A", "Ancestral Souls", "02:51"),

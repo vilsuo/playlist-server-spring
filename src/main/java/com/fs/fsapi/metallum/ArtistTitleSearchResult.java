@@ -13,25 +13,25 @@ public class ArtistTitleSearchResult {
 
   private String releaseType;
 
-  public String getArtistHref() {
-    return artistFolderLink.getHref();
-  }
-
   public String getArtist() {
     return artistFolderLink.getText();
   }
 
-  public String getTitleHref() {
-    return titleFolderLink.getHref();
-  }
-
-  public String getTitle() {
-    return titleFolderLink.getText();
+  public String getArtistHref() {
+    return artistFolderLink.getHref();
   }
 
   public String getArtistId() {
     String artistHref = getArtistHref();
     return artistHref.substring(artistHref.lastIndexOf("/") + 1);
+  }
+
+  public String getTitle() {
+    return titleFolderLink.getText();
+  }
+  
+  public String getTitleHref() {
+    return titleFolderLink.getHref();
   }
 
   public String getReleaseId() {

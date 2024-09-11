@@ -44,11 +44,7 @@ public class ArtistTitleSearchCacheTest {
 
     ArtistTitleSearchResult actual = opt.get();
 
-    assertEquals(expected.getArtistHref(), actual.getArtistHref());
-    assertEquals(expected.getArtist(), actual.getArtist());
-    assertEquals(expected.getTitleHref(), actual.getTitleHref());
-    assertEquals(expected.getTitle(), actual.getTitle());
-    assertEquals(expected.getReleaseType(), actual.getReleaseType());
+    assertEquals(expected, actual);
   }
 
   @Test

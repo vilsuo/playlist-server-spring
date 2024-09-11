@@ -32,15 +32,26 @@ public class MetallumController {
       .body(service.searchByArtistAndReleaseTitle(artist, title));
   }
 
-  @GetMapping("/cover")
-  public ResponseEntity<byte[]> getCover(
+  @GetMapping("/logo")
+  public ResponseEntity<byte[]> getArtistLogo(
     @RequestParam String artist,
     @RequestParam String title
   ) {
     return ResponseEntity
       .ok()
       .contentType(MediaType.IMAGE_JPEG)
-      .body(service.searchCover(artist, title));
+      .body(service.searchArtistLogo(artist, title));
+  }
+
+  @GetMapping("/cover")
+  public ResponseEntity<byte[]> getReleaseCover(
+    @RequestParam String artist,
+    @RequestParam String title
+  ) {
+    return ResponseEntity
+      .ok()
+      .contentType(MediaType.IMAGE_JPEG)
+      .body(service.searchReleaseCover(artist, title));
   }
 
   @GetMapping("/songs")
@@ -54,10 +65,10 @@ public class MetallumController {
   }
 
   @GetMapping("/songs/{id}/lyrics")
-  public ResponseEntity<String> getLyrics(@PathVariable String id) {
+  public ResponseEntity<String> getSongLyrics(@PathVariable String id) {
     return ResponseEntity
       .ok()
-      .body(service.searchLyrics(id));
+      .body(service.searchSongLyrics(id));
   }
   
 }

@@ -30,20 +30,23 @@ public class MetallumService {
   private final MetallumParser parser;
 
   private final ArtistTitleSearchCache cache;
+
+  private final String IMAGE_EXTENSION = ".jpg"; // always?
   
   /**
-   * Search basic release information. Caches results.
+   * Search basic release information. Contains links for the artist page and
+   * the release title page. Caches results to increase performance.
    * 
    * @param artist  the artist name
    * @param title  the release title
-   * @return result containing 
+   * @return basic search result
    */
   public ArtistTitleSearchResult searchByArtistAndReleaseTitle(String artist, String title) {
     // check if cached
     var cached = cache.get(artist, title);
     if (cached.isPresent()) {
-      log.info("Cache hit!");
-      return cached.get();
+      //log.info("Cache hit!");
+      //return cached.get();
     }
 
     ArtistTitleSearchResponse response = webClient.get()
@@ -72,37 +75,74 @@ public class MetallumService {
    * @param title  the release title
    * @return the release cover
    */
-  public byte[] searchCover(String artist, String title) {
+  public byte[] searchReleaseCover(String artist, String title) {
     ArtistTitleSearchResult result = searchByArtistAndReleaseTitle(artist, title);
-    final String path = getCoverPath(result.getTitleHref());
+    final String path = getReleaseCoverPath(result.getTitleHref());
 
-    byte[] image = webClient.get()
+    return searchImage(path);
+  }
+
+  /**
+   * Search artist logo image by artist name and release title.
+   * 
+   * @param artist  the artist name
+   * @param title  the release title
+   * @return the release cover
+   */
+  public byte[] searchArtistLogo(String artist, String title) {
+    ArtistTitleSearchResult result = searchByArtistAndReleaseTitle(artist, title);
+    final String path = getArtistLogoPath(result.getArtistHref());
+
+    return searchImage(path);
+  }
+
+  private byte[] searchImage(String imagePath) {
+    return webClient.get()
       .uri(uriBuilder -> uriBuilder
-        .path(path)
+        .path(imagePath)
         .build())
       .accept(MediaType.IMAGE_JPEG)
       .retrieve()
       .bodyToMono(byte[].class)
       .block();
-
-    return image;
   }
 
   /**
-   * Get the path of the release cover image. Example, if {@code titleHref} is
-   * 
-   * <pre>"https://www.metal-archives.com/albums/Adramelech/Psychostasia/6516"</pre>,
-   * then resulting path will be
-   * <pre>"https://www.metal-archives.com/images/6/5/1/6/6516.jpg"</pre>.
+   * Get the path of the release cover image. 
    * 
    * @param titleHref  the release page uri
    * @return the path of the release cover image
    */
-  private String getCoverPath(String titleHref) {
-    final String basePathSegment = "/images";
-
-    // final path segment
+  private String getReleaseCoverPath(String titleHref) {
+    // the id is expected to equal to the final segment of the path
     final String id = titleHref.substring(titleHref.lastIndexOf("/") + 1);
+    
+    return constructImagePath(id) + IMAGE_EXTENSION;
+  }
+
+  /**
+   * Get the path of the artist logo image. 
+   * 
+   * @param artistHref  the artist page uri
+   * @return the path of the artist logo image
+   */
+  private String getArtistLogoPath(String artistHref) {
+    // the id is expected to equal to the final segment of the path
+    final String id = artistHref.substring(artistHref.lastIndexOf("/") + 1);
+    
+    return constructImagePath(id) + "_logo" + IMAGE_EXTENSION;
+  }
+
+  /**
+   * Construct base image path. Example for {@code id}
+   * <pre>"528471"</pre> the resulting path will be
+   * <pre>"https://www.metal-archives.com/images/5/2/8/4/528471"</pre>.
+   * 
+   * @param id  resource id
+   * @return the base path of a image resource
+   */
+  private String constructImagePath(String id) {
+    final String basePathSegment = "/images";
     
     // middle part of the url seems to consist of max first four integers
     // from the last value (id) separated by '/'
@@ -116,9 +156,7 @@ public class MetallumService {
 
     final String middlePathSegments = new String(outArr);
 
-    // always jpg?
-    final String extension = ".jpg";
-    return String.join("/", new String[]{ basePathSegment, middlePathSegments, id }) + extension;
+    return String.join("/", new String[]{ basePathSegment, middlePathSegments, id });
   }
 
   /**
@@ -150,7 +188,7 @@ public class MetallumService {
    * @return html string containing the lyrics, or html string describing
    *         the lyrics were not found
    */
-  public String searchLyrics(String songId) {
+  public String searchSongLyrics(String songId) {
     final String path = "/release/ajax-view-lyrics/id/" + songId;
 
     String html = webClient.get()

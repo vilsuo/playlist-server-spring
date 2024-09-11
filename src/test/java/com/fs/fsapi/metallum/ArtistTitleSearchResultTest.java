@@ -37,8 +37,8 @@ public class ArtistTitleSearchResultTest {
   }
 
   @Test
-  public void shouldHaveExpectedReleaseIdTest() {
-    assertEquals("73550", searchResult.getReleaseId());
+  public void shouldHaveExpectedTitleIdTest() {
+    assertEquals("73550", searchResult.getTitleId());
   }
 
   @Test
@@ -48,6 +48,6 @@ public class ArtistTitleSearchResultTest {
 
   @Test
   public void shouldHaveExpectedReleaseTyTest() {
-    assertEquals("Demo", searchResult.getArtistId());
+    assertEquals("Demo", searchResult.getReleaseType());
   }
 }

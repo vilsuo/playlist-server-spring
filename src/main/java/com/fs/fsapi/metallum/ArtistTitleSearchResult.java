@@ -34,7 +34,7 @@ public class ArtistTitleSearchResult {
     return titleFolderLink.getHref();
   }
 
-  public String getReleaseId() {
+  public String getTitleId() {
     String titleHref = getTitleHref();
     return titleHref.substring(titleHref.lastIndexOf("/") + 1);
   }

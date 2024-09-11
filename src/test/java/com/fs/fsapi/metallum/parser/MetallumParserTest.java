@@ -34,10 +34,14 @@ public class MetallumParserTest {
         response, null, null
       );
 
-      assertEquals(expected.getArtistHref(), actual.getArtistHref());
       assertEquals(expected.getArtist(), actual.getArtist());
-      assertEquals(expected.getTitleHref(), actual.getTitleHref());
+      assertEquals(expected.getArtistHref(), actual.getArtistHref());
+      assertEquals(expected.getArtistId(), actual.getArtistId());
+      
       assertEquals(expected.getTitle(), actual.getTitle());
+      assertEquals(expected.getTitleHref(), actual.getTitleHref());
+      assertEquals(expected.getTitleId(), actual.getTitleId());
+
       assertEquals(expected.getReleaseType(), actual.getReleaseType());
     }
   }
@@ -49,7 +53,7 @@ public class MetallumParserTest {
     private final List<SongResult> expected = MetallumFileHelper.songsWithLyrics;
 
     @Test
-    public void shoulParseSongsTest() throws IOException {
+    public void shouldParseSongsTest() throws IOException {
       List<SongResult> actual = parser.parseSongs(
         MetallumFileHelper.readTitleWithLyricsFile()
       );

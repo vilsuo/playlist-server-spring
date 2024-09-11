@@ -14,13 +14,13 @@ public class AaDataValue {
 
   private String artistLinkElementOuterHtml;
 
-  private String releaseLinkElementOuterHtml;
+  private String titleLinkElementOuterHtml;
 
   private String releaseType;
 
   public AaDataValue(List<String> args) {
     this.artistLinkElementOuterHtml = args.get(0);
-    this.releaseLinkElementOuterHtml = args.get(1);
+    this.titleLinkElementOuterHtml = args.get(1);
     this.releaseType = args.get(2);
   }
 }

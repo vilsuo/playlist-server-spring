@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MetallumParser {
 
   /**
-   * Extract the best result from response.
+   * Extract the best result from the response.
    * 
    * @param response  object where to extract details from
    * @param artist  the artist name used in the response, used for logging
@@ -71,7 +71,7 @@ public class MetallumParser {
   private ArtistTitleSearchResult parseSearchData(AaDataValue data) {
     return new ArtistTitleSearchResult(
       parseSearchDataElementOuterHtml(data.getArtistLinkElementOuterHtml()),
-      parseSearchDataElementOuterHtml(data.getReleaseLinkElementOuterHtml()),
+      parseSearchDataElementOuterHtml(data.getTitleLinkElementOuterHtml()),
       data.getReleaseType()
     );
   }

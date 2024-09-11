@@ -38,8 +38,8 @@ public class ArtistTitleSearchResponseDeserializerTest {
       actualFirst.getArtistLinkElementOuterHtml()
     );
     assertEquals(
-      expectedFirst.getReleaseLinkElementOuterHtml(),
-      actualFirst.getReleaseLinkElementOuterHtml()
+      expectedFirst.getTitleLinkElementOuterHtml(),
+      actualFirst.getTitleLinkElementOuterHtml()
     );
     assertEquals(
       expectedFirst.getReleaseType(),

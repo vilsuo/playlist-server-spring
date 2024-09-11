@@ -29,7 +29,7 @@ public class MetallumController {
   ) {
     return ResponseEntity
       .ok()
-      .body(service.searchByArtistAndReleaseTitle(artist, title));
+      .body(service.searchByArtistAndTitle(artist, title));
   }
 
   @GetMapping("/logo/{artistId}")
@@ -40,12 +40,12 @@ public class MetallumController {
       .body(service.searchArtistLogo(artistId));
   }
 
-  @GetMapping("/cover/{releaseId}")
-  public ResponseEntity<byte[]> searchReleaseCover(@PathVariable String releaseId) {
+  @GetMapping("/cover/{titleId}")
+  public ResponseEntity<byte[]> searchTitleCover(@PathVariable String titleId) {
     return ResponseEntity
       .ok()
       .contentType(MediaType.IMAGE_JPEG)
-      .body(service.searchReleaseCover(releaseId));
+      .body(service.searchTitleCover(titleId));
   }
 
   @GetMapping("/songs")

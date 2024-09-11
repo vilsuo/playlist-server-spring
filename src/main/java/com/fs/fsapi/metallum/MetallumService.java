@@ -41,7 +41,7 @@ public class MetallumService {
    * @param title  the release title
    * @return basic search result
    */
-  public ArtistTitleSearchResult searchByArtistAndReleaseTitle(String artist, String title) {
+  public ArtistTitleSearchResult searchByArtistAndTitle(String artist, String title) {
     // check if cached
     var cached = cache.get(artist, title);
     if (cached.isPresent()) {
@@ -69,20 +69,20 @@ public class MetallumService {
   }
 
   /**
-   * Search release cover image.
+   * Search release title cover image.
    * 
-   * @param id  the release id
-   * @return the release cover image
+   * @param id  the release title id
+   * @return the image
    */
-  public byte[] searchReleaseCover(String id) {
-    return searchImage(getReleaseCoverPath(id));
+  public byte[] searchTitleCover(String id) {
+    return searchImage(getTitleCoverPath(id));
   }
 
   /**
    * Search artist logo image.
    * 
    * @param id  the artist id
-   * @return the release cover image
+   * @return the image
    */
   public byte[] searchArtistLogo(String id) {
     return searchImage(getArtistLogoPath(id));
@@ -105,7 +105,7 @@ public class MetallumService {
    * @param id  the release title id
    * @return the path of the release cover image
    */
-  private String getReleaseCoverPath(String id) {
+  private String getTitleCoverPath(String id) {
     return constructImagePath(id) + IMAGE_EXTENSION;
   }
 
@@ -154,7 +154,7 @@ public class MetallumService {
    * @throws URISyntaxException if the search uri is invalid
    */
   public List<SongResult> searchSongs(String artist, String title) throws URISyntaxException {
-    ArtistTitleSearchResult result = searchByArtistAndReleaseTitle(artist, title);
+    ArtistTitleSearchResult result = searchByArtistAndTitle(artist, title);
     final String path = result.getTitleHref(); // search from release title page
 
     String html = webClient.get()

@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 
 import com.fs.fsapi.bookmark.parser.LinkElement;
 import com.fs.fsapi.exceptions.CustomDataNotFoundException;
-import com.fs.fsapi.exceptions.CustomHtmlParsingException;
 import com.fs.fsapi.exceptions.CustomMetallumException;
+import com.fs.fsapi.exceptions.CustomMetallumScrapingException;
 import com.fs.fsapi.metallum.ArtistTitleSearchResult;
 import com.fs.fsapi.metallum.response.AaDataValue;
 import com.fs.fsapi.metallum.response.ArtistTitleSearchResponse;
@@ -38,7 +38,7 @@ public class MetallumParser {
   ) {
     if (!response.getError().isBlank()) {
       log.info(
-        "Error '" + response.getError() + "' searching for '"
+        "Error '" + response.getError() + "' while searching for '"
         + title + "' by '" + artist + "'"
       );
 
@@ -48,38 +48,46 @@ public class MetallumParser {
     switch (response.getTotalRecords()) {
       case 0: {
         throw new CustomDataNotFoundException(
-          "'" + title + "' by '" + artist + "' was not found"
+          "No results for '" + title + "' by '" + artist + "'"
         );
       }
       case 1: {
         // return the only result
         AaDataValue data = response.getFirstDataValue();
-        return createSearchResponse(data);
+        return parseSearchData(data);
       }
       default: {
         log.info("Found multiple results for '" + title + "' by '" + artist);
 
-        // return the first result... should do narrowing?
+        // return the first result...
+        // - implement narrowing by release type?
+        // - return a list of results?
         AaDataValue data = response.getFirstDataValue();
-        return createSearchResponse(data);
+        return parseSearchData(data);
       }
     }
   }
 
-  private ArtistTitleSearchResult createSearchResponse(AaDataValue data) {
+  private ArtistTitleSearchResult parseSearchData(AaDataValue data) {
     return new ArtistTitleSearchResult(
-      parseLinkElement(data.getArtistLinkElementString()),
-      parseLinkElement(data.getReleaseLinkElementString()),
+      parseLinkElementString(data.getArtistLinkElementString()),
+      parseLinkElementString(data.getReleaseLinkElementString()),
       data.getReleaseType()
     );
   }
 
-  private LinkElement parseLinkElement(String html) {
-    return new LinkElement(Jsoup.parse(html).selectFirst("a"));
+  private LinkElement parseLinkElementString(String html) {
+    final Element e = Jsoup.parse(html).selectFirst("a");
+    if (e == null) {
+      throw new CustomMetallumScrapingException(
+        "Expected data '" + html + "' to contain a 'a' element"
+      );
+    }
+    return new LinkElement(e);
   }
 
   /**
-   * Extract songs from html song table
+   * Extract songs from html song table.
    * 
    * @param html  string where the songs can be found
    * @return list of songs
@@ -89,7 +97,9 @@ public class MetallumParser {
 
     Element tbody = doc.select(".table_lyrics > tbody").first();
     if (tbody == null) {
-      throw new CustomHtmlParsingException("Release song table was not found");
+      throw new CustomMetallumScrapingException(
+        "Song table was not found"
+      );
     }
 
     List<SongResult> songs = new ArrayList<>();
@@ -98,9 +108,9 @@ public class MetallumParser {
         if (tr.hasClass("even") || tr.hasClass("odd")) {
           Elements tds = tr.children();
 
+          final String id = extractSongId(tds.get(0));
           final String songTitle = tds.get(1).ownText();
           final String songDuration = tds.get(2).ownText();
-          final String id = extractSongId(tds);
 
           songs.add(new SongResult(id, songTitle, songDuration));
         }
@@ -110,25 +120,22 @@ public class MetallumParser {
   }
 
   /**
-   * Get the song id from release table row elements. Can contain letters
+   * Get the song id from release table row data element.
    * 
-   * @param tds  release table row elements
-   * @return the song id if it is found, null otherwise
+   * @param tds  release table row data element
+   * @return the song id
+   * @throws CustomMetallumScrapingException if id can not be found
    */
-  private String extractSongId(Elements tds) {
-    // 1st table data element has a link child element. This link element
-    // has 'name' attribute where the song id is found
-    Element element = tds.get(0);
-
+  private String extractSongId(Element element) {
     if (element.childrenSize() > 0) {
       Element child = element.child(0);
-      if (child.tagName().equals("a")) {
+      if (child.hasAttr("name")) {
         return child.attr("name");
       }
     }
 
-    throw new CustomHtmlParsingException(
-      "Expected to find song id"
+    throw new CustomMetallumScrapingException(
+      "Song id was not found"
     );
   }
 }

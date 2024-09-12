@@ -61,7 +61,7 @@ public class AlbumService {
       );
     }
 
-    Album album = mapper.albumCreationToAlbum(value);
+    final Album album = mapper.albumCreationToAlbum(value);
     album.setAddDate(DateTimeString.create());
 
     return repository.save(album);
@@ -87,7 +87,7 @@ public class AlbumService {
       return Optional.empty();
     }
 
-    Album album = mapper.albumParseResultToAlbum(value);
+    final Album album = mapper.albumParseResultToAlbum(value);
     return Optional.of(repository.save(album));
   }
 
@@ -105,7 +105,7 @@ public class AlbumService {
       throw new IllegalArgumentException("Expected update value to be present");
     }
 
-    Album album = findOne(id);
+    final Album album = findOne(id);
 
     mapper.updateAlbumFromAlbumCreation(value, album);
     return repository.save(album);

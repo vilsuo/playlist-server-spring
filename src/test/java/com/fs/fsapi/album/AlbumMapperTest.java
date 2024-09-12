@@ -11,23 +11,20 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import static com.fs.fsapi.helpers.AlbumHelper.*;
+
 @SpringBootTest(classes = AlbumMapperImpl.class)
 public class AlbumMapperTest {
 
   @Autowired
   private AlbumMapper mapper;
 
-  private static final AlbumCreation source = new AlbumCreation(
-    "JMAbKMSuVfI",
-    "Massacra",
-    "Signs of the Decline",
-    1992,
-    "Death"
-  );
-
   @Nested
   @DisplayName("albumCreationToAlbum")
   public class AlbumCreationToAlbumTest {
+
+    private final AlbumCreation value = ALBUM_CREATION_VALUE_1();
+    private final Album result = mapper.albumCreationToAlbum(value);
 
     @Test
     public void shouldReturnNullWhenNullTest() {
@@ -36,9 +33,9 @@ public class AlbumMapperTest {
 
     @Test
     public void shouldReturnNullPropertiesWhenNewPropertiesAreNullTest() {
-      AlbumCreation values = new AlbumCreation();
+      final AlbumCreation value = new AlbumCreation();
+      final Album result = mapper.albumCreationToAlbum(value);
 
-      Album result = mapper.albumCreationToAlbum(values);
       assertNull(result.getVideoId());
       assertNull(result.getArtist());
       assertNull(result.getTitle());
@@ -48,23 +45,20 @@ public class AlbumMapperTest {
 
     @Test
     public void shouldReturnNewPropertiesTest() {
-      Album result = mapper.albumCreationToAlbum(source);
-      assertEquals(source.getVideoId(), result.getVideoId());
-      assertEquals(source.getArtist(), result.getArtist());
-      assertEquals(source.getTitle(), result.getTitle());
-      assertEquals(source.getPublished(), result.getPublished());
-      assertEquals(source.getCategory(), result.getCategory());
+      assertEquals(value.getVideoId(), result.getVideoId());
+      assertEquals(value.getArtist(), result.getArtist());
+      assertEquals(value.getTitle(), result.getTitle());
+      assertEquals(value.getPublished(), result.getPublished());
+      assertEquals(value.getCategory(), result.getCategory());
     }
 
     @Test
     public void shouldReturnNullIdTest() {
-      Album result = mapper.albumCreationToAlbum(source);
       assertNull(result.getId());
     }
 
     @Test
     public void shouldReturnNullAddDateTest() {
-      Album result = mapper.albumCreationToAlbum(source);
       assertNull(result.getAddDate());
     }
   }
@@ -73,28 +67,21 @@ public class AlbumMapperTest {
   @DisplayName("updateAlbumFromAlbumCreation")
   public class UpdateAlbumFromAlbumCreationTest {
 
-    private final Integer id = 1947;
-    private final String addDate = "2024-08-14T10:33:57.604056616Z";
+    private final AlbumCreation source = ALBUM_CREATION_VALUE_2();
 
     private Album target;
 
     @BeforeEach
-    public void setUpTarget() {
-      this.target = new Album(
-        id,
-        "qJVktESKhKY",
-        "Devastation",
-        "Idolatry",
-        1991,
-        "Thrash",
-        addDate
-      );
+    public void setUp() {
+      // need to recreate, gets assigned new property values
+      target = MOCK_ALBUM_1();
     }
 
     @Test
     public void shouldNotUpdatePropertiesWhenSourceIsNullTest() {
-      AlbumCreation values = null;
-      mapper.updateAlbumFromAlbumCreation(values, target);
+      final AlbumCreation source = null;
+
+      mapper.updateAlbumFromAlbumCreation(source, target);
 
       assertNotNull(target.getVideoId());
       assertNotNull(target.getArtist());
@@ -116,9 +103,9 @@ public class AlbumMapperTest {
 
     @Test
     public void shouldUpdatePropertiesToNullWhenNewPropertiesAreNullTest() {
-      AlbumCreation values = new AlbumCreation();
+      final AlbumCreation source = new AlbumCreation();
 
-      mapper.updateAlbumFromAlbumCreation(values, target);
+      mapper.updateAlbumFromAlbumCreation(source, target);
       
       assertNull(target.getVideoId());
       assertNull(target.getArtist());
@@ -131,14 +118,14 @@ public class AlbumMapperTest {
     public void shouldNotUpdateIdTest() {
       mapper.updateAlbumFromAlbumCreation(source, target);
 
-      assertEquals(id, target.getId());
+      assertEquals(MOCK_ID_1, target.getId());
     }
 
     @Test
     public void shouldNotUpdateAddDateTest() {
       mapper.updateAlbumFromAlbumCreation(source, target);
 
-      assertEquals(addDate, target.getAddDate());
+      assertEquals(MOCK_ADD_DATE_1, target.getAddDate());
     }
   }
 }

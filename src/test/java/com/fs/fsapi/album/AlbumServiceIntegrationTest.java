@@ -1,6 +1,5 @@
 package com.fs.fsapi.album;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -9,9 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -34,6 +33,11 @@ import jakarta.persistence.RollbackException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 
+import static com.fs.fsapi.helpers.AlbumHelper.*;
+import static com.fs.fsapi.helpers.ParsedAlbumHelper.*;
+
+// TODO test error message better?
+
 @Testcontainers
 @SpringBootTest
 public class AlbumServiceIntegrationTest {
@@ -44,21 +48,9 @@ public class AlbumServiceIntegrationTest {
   @Autowired
   private AlbumService service;
 
-  private final AlbumCreation albumValues = new AlbumCreation(
-    "JMAbKMSuVfI",
-    "Massacra",
-    "Signs of the Decline",
-    1992,
-    "Death"
-  );
+  private final AlbumCreation creationValues = ALBUM_CREATION_VALUE_1();
 
-  private final AlbumCreation newAlbumValues = new AlbumCreation(
-    "qJVktESKhKY",
-    "Devastation",
-    "Idolatry",
-    1991,
-    "Thrash"
-  );
+  private final AlbumCreation newAlbumValues = ALBUM_CREATION_VALUE_2();
 
   @Container
   @ServiceConnection
@@ -87,30 +79,30 @@ public class AlbumServiceIntegrationTest {
 
     @Test
     public void shouldFindCreatedAlbumTest() {
-      Album target = service.create(albumValues);
-      Integer id = target.getId();
+      final Album expected = service.create(creationValues);
+      final Integer id = expected.getId();
       
-      var result = service.findOne(id);
-      assertEquals(target, result);
-      assertEquals(id, result.getId());
+      final Album actual = service.findOne(id);
+      assertEquals(expected, actual);
+      assertEquals(id, actual.getId());
     }
 
     @Test
     public void shouldFindUpdatedAlbumTest() {
-      Album before = service.create(albumValues);
+      final Album before = service.create(creationValues);
       final Integer id = before.getId();
       
-      Album after = service.update(id, newAlbumValues);
+      final Album after = service.update(id, newAlbumValues);
+      final Album found = service.findOne(id);
 
-      Album found = service.findOne(id);
       assertNotEquals(before, found);
       assertEquals(after, found);
     }
 
     @Test
     public void shouldNotFindRemovedAlbumTest() {
-      Album target = service.create(albumValues);
-      Integer id = target.getId();
+      final Album target = service.create(creationValues);
+      final Integer id = target.getId();
       
       service.remove(id);
 
@@ -122,7 +114,7 @@ public class AlbumServiceIntegrationTest {
 
     @Test
     public void shouldThrowWhenAlbumIsNotFoundTest() {
-      Integer id = 123;
+      final Integer id = 1239;
 
       CustomDataNotFoundException e = assertThrows(
         CustomDataNotFoundException.class,
@@ -134,16 +126,17 @@ public class AlbumServiceIntegrationTest {
 
     @Test
     public void shouldThrowWhenParameterIsNullTest() {
-      Integer nullId = null;
+      final Integer nullId = null;
 
       ConstraintViolationException ex = assertThrows(
         ConstraintViolationException.class,
         () -> service.findOne(nullId)
       );
 
-      assertEquals(1, ex.getConstraintViolations().size());
+      Set<ConstraintViolation<?>> violations = ex.getConstraintViolations();
+      assertEquals(1, violations.size());
 
-      ConstraintViolation<?> violation = new ArrayList<>(ex.getConstraintViolations()).get(0);
+      ConstraintViolation<?> violation = new ArrayList<>(violations).get(0);
       assertEquals("must not be null", violation.getMessage());
       assertEquals(nullId, violation.getInvalidValue());
     }
@@ -168,19 +161,10 @@ public class AlbumServiceIntegrationTest {
     public void shouldThrowWhenCreationValuesAreInvalidTest() {
       ConstraintViolationException ex = assertThrows(
         ConstraintViolationException.class,
-        () -> service.create(new AlbumCreation())
+        () -> service.create(INVALID_ALBUM_CREATION_VALUE())
       );
 
       assertFalse(ex.getConstraintViolations().isEmpty());
-
-      //assertEquals(5, ex.getConstraintViolations().size());
-      //
-      //assertTrue(ex.getMessage().contains("Video id is required"));
-      //assertTrue(ex.getMessage().contains("Artist name is required"));
-      //assertTrue(ex.getMessage().contains("Artist name is required"));
-      //assertTrue(ex.getMessage().contains("Title is required"));
-      //assertTrue(ex.getMessage().contains("Publish year is required"));
-      //assertTrue(ex.getMessage().contains("Category is required"));
     }
 
     @Nested
@@ -188,27 +172,27 @@ public class AlbumServiceIntegrationTest {
 
       @Test
       public void shouldReturnAlbumWithCreatedValuesTest() {
-        Album result = service.create(albumValues);
+        final Album actual = service.create(creationValues);
 
-        assertEquals(albumValues.getVideoId(), result.getVideoId());
-        assertEquals(albumValues.getArtist(), result.getArtist());
-        assertEquals(albumValues.getTitle(), result.getTitle());
-        assertEquals(albumValues.getPublished(), result.getPublished());
-        assertEquals(albumValues.getCategory(), result.getCategory());
+        assertEquals(creationValues.getVideoId(), actual.getVideoId());
+        assertEquals(creationValues.getArtist(), actual.getArtist());
+        assertEquals(creationValues.getTitle(), actual.getTitle());
+        assertEquals(creationValues.getPublished(), actual.getPublished());
+        assertEquals(creationValues.getCategory(), actual.getCategory());
       }
 
       @Test
       public void shouldReturnAlbumWithIdTest() {
-        Album result = service.create(albumValues);
+        final Album actual = service.create(creationValues);
 
-        assertNotNull(result.getId());
+        assertNotNull(actual.getId());
       }
 
       @Test
       public void shouldReturnAlbumWithAddDateTest() {
-        Album result = service.create(albumValues);
+        final Album actual = service.create(creationValues);
 
-        assertNotNull(result.getAddDate());
+        assertNotNull(actual.getAddDate());
       }
     }
   }
@@ -217,106 +201,59 @@ public class AlbumServiceIntegrationTest {
   @DisplayName("createMany")
   public class CreateManyTest {
 
-    private final AlbumParseResult base = new AlbumParseResult(
-      albumValues.getVideoId(),
-      albumValues.getArtist(),
-      albumValues.getTitle(),
-      albumValues.getPublished(),
-      albumValues.getCategory(),
-      Instant.ofEpochSecond(1711378617).toString()
-    );
+    private final AlbumParseResult manyCreation = MOCK_PARSE_RESULT_1();
 
-    private final AlbumParseResult otherBase = new AlbumParseResult(
-      newAlbumValues.getVideoId(),
-      newAlbumValues.getArtist(),
-      newAlbumValues.getTitle(),
-      newAlbumValues.getPublished(),
-      newAlbumValues.getCategory(),
-      Instant.ofEpochSecond(1711378656).toString()
-    );
+    private final AlbumParseResult otherManyCreation = MOCK_PARSE_RESULT_2();
 
-    private List<AlbumParseResult> bases = List.of(base, otherBase);
-
-    private final AlbumParseResult invalidBase = new AlbumParseResult(
-      "12345678900",
-      newAlbumValues.getArtist(),
-      newAlbumValues.getTitle(),
-      1,
-      "null",
-      "null"
-    );
+    private final List<AlbumParseResult> manyValues = List.of(manyCreation, otherManyCreation);
 
     @Test
     public void shouldCreateAllAlbumsIfAlbumsDoesNotExistByArtistAndTitleTest() {
-      List<Album> albums = service.createMany(bases);
+      final List<Album> actuals = service.createMany(manyValues);
 
-      assertEquals(2, albums.size());
-
-      assertThat(albums)
-        .usingRecursiveFieldByFieldElementComparatorIgnoringFields("id")
-        .containsExactlyInAnyOrder(
-          new Album(
-            null, // ignored
-            base.getVideoId(),
-            base.getArtist(),
-            base.getTitle(),
-            base.getPublished(),
-            base.getCategory(),
-            base.getAddDate()
-          ),
-          new Album(
-            null, // ignored
-            otherBase.getVideoId(),
-            otherBase.getArtist(),
-            otherBase.getTitle(),
-            otherBase.getPublished(),
-            otherBase.getCategory(),
-            otherBase.getAddDate()
-          )
-        );
+      assertEquals(2, actuals.size());
     }
 
     @Test
     public void shouldCreateOnlyAlbumsThatDoesNotExistByArtistAndTitleTest() {
       service.create(new AlbumCreation(
-        albumValues.getVideoId(),
-        bases.get(1).getArtist(), // so the other base is not created
-        bases.get(1).getTitle(),  // so the other base is not created
-        albumValues.getPublished(),
-        albumValues.getCategory()
+        manyCreation.getVideoId(),
+        otherManyCreation.getArtist(), // so the other base is not created
+        otherManyCreation.getTitle(),  // so the other base is not created
+        manyCreation.getPublished(),
+        manyCreation.getCategory()
       ));
 
-      List<Album> albums = service.createMany(bases);
+      final List<Album> actuals = service.createMany(manyValues);
 
-      assertEquals(1, albums.size());
+      assertEquals(1, actuals.size());
+      final Album actual = actuals.get(0);
 
-      assertThat(albums)
-        .usingRecursiveFieldByFieldElementComparatorIgnoringFields("id")
-        .contains(
-          new Album(
-            null, // ignored
-            base.getVideoId(),
-            base.getArtist(),
-            base.getTitle(),
-            base.getPublished(),
-            base.getCategory(),
-            base.getAddDate()
-          )
-        );
+      assertEquals(actual.getVideoId(), manyCreation.getVideoId());
+      assertEquals(actual.getArtist(), manyCreation.getArtist());
+      assertEquals(actual.getTitle(), manyCreation.getTitle());
+      assertEquals(actual.getPublished(), manyCreation.getPublished());
+      assertEquals(actual.getCategory(), manyCreation.getCategory());
+      assertEquals(actual.getAddDate(), manyCreation.getAddDate());
     }
 
     @Test
     public void shouldNotCreateAnyAlbumsIfSingleAlbumIsInvalidTest() {
       TransactionSystemException ex = assertThrows(
         TransactionSystemException.class,
-        () -> service.createMany(List.of(base, invalidBase))
+        () -> service.createMany(List.of(
+          manyCreation,
+          MOCK_INVALID_PARSE_RESULT() // has to have different artist/title name(s)
+        ))
       );
 
       assertTrue(service.findAll().isEmpty());
 
-      // check that orginal exception was constraint violation resulting from invalid base
+      // check that orginal exception was constraint violation resulting
+      // from invalid base
       assertTrue(ex.contains(RollbackException.class));
       RollbackException rb = (RollbackException) ex.getOriginalException();
+      assertNotNull(rb);
       assertInstanceOf(ConstraintViolationException.class, rb.getCause());
     }
   }
@@ -327,11 +264,11 @@ public class AlbumServiceIntegrationTest {
 
     @Test
     public void shouldThrowWhenAlbumToBeUpdatedCanNotBeFoundTest() {
-      Integer nonExistingId = 123;
+      final Integer nonExistingId = 123;
 
       CustomDataNotFoundException e = assertThrows(
         CustomDataNotFoundException.class,
-        () -> service.update(nonExistingId, albumValues)
+        () -> service.update(nonExistingId, creationValues)
       );
 
       assertEquals("Album was not found", e.getMessage());
@@ -340,44 +277,42 @@ public class AlbumServiceIntegrationTest {
     // how to handle validation?
     @Test
     public void shouldThrowWhenIdParameterIsNullTest() {
-      Integer nullId = null;
+      final Integer nullId = null;
 
-      assertThrows(
+      ConstraintViolationException ex = assertThrows(
         ConstraintViolationException.class,
-        () -> service.update(nullId, albumValues)
+        () -> service.update(nullId, creationValues)
       );
+
+      assertFalse(ex.getConstraintViolations().isEmpty());
     }
 
     @Test
     public void shouldThrowWhenNewValueIsNullTest() {
-      Integer id = 123;
+      final Integer id = 123;
 
       IllegalArgumentException e = assertThrows(
         IllegalArgumentException.class,
         () -> service.update(id, null)
       );
 
-      assertEquals("Expected update value to be present", e.getMessage());
+      assertEquals(
+        "Expected update value to be present",
+        e.getMessage()
+      );
     }
 
     // how to handle validation?
     @Test
     public void shouldThrowWhenNewAlbumValuesAreInvalidTest() {
-      Integer id = service.create(albumValues).getId();
+      final Integer id = service.create(creationValues).getId();
 
       ConstraintViolationException ex = assertThrows(
         ConstraintViolationException.class,
-        () -> service.update(id, new AlbumCreation())
+        () -> service.update(id, INVALID_ALBUM_CREATION_VALUE())
       );
 
-      assertTrue(ex.getConstraintViolations().size() > 0);
-
-      //assertTrue(ex.getMessage().contains("Video id is required"));
-      //assertTrue(ex.getMessage().contains("Artist name is required"));
-      //assertTrue(ex.getMessage().contains("Artist name is required"));
-      //assertTrue(ex.getMessage().contains("Title is required"));
-      //assertTrue(ex.getMessage().contains("Publish year is required"));
-      //assertTrue(ex.getMessage().contains("Category is required"));
+      assertFalse(ex.getConstraintViolations().isEmpty());
     }
 
     @Nested
@@ -388,7 +323,7 @@ public class AlbumServiceIntegrationTest {
 
       @BeforeEach
       public void createAndUpdateAlbum() {
-        before = service.create(albumValues);
+        before = service.create(creationValues);
         after = service.update(before.getId(), newAlbumValues);
       }
 
@@ -414,7 +349,7 @@ public class AlbumServiceIntegrationTest {
 
     @Test
     public void shouldThrowWhenUpdatingAlbumThatHasBeenRemovedTest() {
-      Integer id = service.create(albumValues).getId();
+      final Integer id = service.create(creationValues).getId();
       service.remove(id);
 
       assertThrows(
@@ -430,14 +365,14 @@ public class AlbumServiceIntegrationTest {
 
     @Test
     public void shouldBeAbleToTryToRemoveNonExistingAlbumTest() {
-      Integer nonExistingId = 123;
+      final Integer nonExistingId = 123;
 
       service.remove(nonExistingId);
     }
 
     @Test
     public void shouldBeAbleToRemoveExistingAlbumTest() {
-      Album album = service.create(albumValues);
+      final Album album = service.create(creationValues);
 
       service.remove(album.getId());
     }

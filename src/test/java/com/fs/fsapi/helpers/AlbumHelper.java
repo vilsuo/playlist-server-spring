@@ -26,125 +26,191 @@ public class AlbumHelper {
    */
   public static final String MOCK_ADD_DATE_2 = "2024-09-05T22:26:40.701123555Z";
 
-  public static final AlbumCreation ALBUM_CREATION_VALUE_1 = new AlbumCreation(
-    "JMAbKMSuVfI",
-    "Massacra",
-    "Signs of the Decline",
-    1992,
-    "Death"
-  );
+  /**
+   * Mocked invalid add video id value
+   */
+  public static final String MOCK_INVALID_VIDEO_ID = "InVaLiD";
 
-  public static final AlbumCreation ALBUM_CREATION_VALUE_2 = new AlbumCreation(
-    "qJVktESKhKY",
-    "Devastation",
-    "Idolatry",
-    1991,
-    "Thrash"
-  );
+  public static AlbumCreation ALBUM_CREATION_VALUE_1() {
+    return new AlbumCreation(
+      "JMAbKMSuVfI",
+      "Massacra",
+      "Signs of the Decline",
+      1992,
+      "Death"
+    );
+  }
+
+  public static final AlbumCreation ALBUM_CREATION_VALUE_2() {
+    return new AlbumCreation(
+      "qJVktESKhKY",
+      "Devastation",
+      "Idolatry",
+      1991,
+      "Thrash"
+    );
+  }
+
+  /**
+   * Has invalid video id {@link AlbumHelper#MOCK_INVALID_VIDEO_ID}.
+   * @return
+   */
+  public static final AlbumCreation INVALID_ALBUM_CREATION_VALUE() {
+    return new AlbumCreation(
+      MOCK_INVALID_VIDEO_ID,
+      "Black Crucifixion",
+      "The Fallen One of Flames",
+      1992,
+      "Black"
+    );
+  }
 
   /**
    * Mock mapper result for mapping album creation value
    * {@link AlbumHelper#ALBUM_CREATION_VALUE_1} to album.
+   * 
+   * @return 
    */
-  public static final Album MOCK_MAPPED_ALBUM_CREATION_VALUE_1 = new Album(
-    null,
-    ALBUM_CREATION_VALUE_1.getVideoId(),
-    ALBUM_CREATION_VALUE_1.getArtist(),
-    ALBUM_CREATION_VALUE_1.getTitle(),
-    ALBUM_CREATION_VALUE_1.getPublished(),
-    ALBUM_CREATION_VALUE_1.getCategory(),
-    null
-  );
+  public static Album MOCK_MAPPED_ALBUM_CREATION_VALUE_1() {
+    final AlbumCreation value = ALBUM_CREATION_VALUE_1();
+
+    return new Album(
+      null,
+      value.getVideoId(),
+      value.getArtist(),
+      value.getTitle(),
+      value.getPublished(),
+      value.getCategory(),
+      null
+    );
+  }
 
   /**
    * Mock mapper result for mapping album creation value
    * {@link AlbumHelper#ALBUM_CREATION_VALUE_2} to album.
+   * 
+   * @return 
    */
-  public static final Album MOCK_MAPPED_ALBUM_CREATION_VALUE_2 = new Album(
-    null,
-    ALBUM_CREATION_VALUE_2.getVideoId(),
-    ALBUM_CREATION_VALUE_2.getArtist(),
-    ALBUM_CREATION_VALUE_2.getTitle(),
-    ALBUM_CREATION_VALUE_2.getPublished(),
-    ALBUM_CREATION_VALUE_2.getCategory(),
-    null
-  );
+  public static Album MOCK_MAPPED_ALBUM_CREATION_VALUE_2() {
+    final AlbumCreation value = ALBUM_CREATION_VALUE_2();
+    
+    return new Album(
+      null,
+      value.getVideoId(),
+      value.getArtist(),
+      value.getTitle(),
+      value.getPublished(),
+      value.getCategory(),
+      null
+    );
+  }
 
   /**
    * Mock mapper result {@link AlbumHelper#MOCK_MAPPED_ALBUM_CREATION_VALUE_1}
    * with added add date {@link AlbumHelper#MOCK_ADD_DATE_1} value to album.
+   * 
+   * @return 
    */
-  public static final Album MOCK_MAPPED_ALBUM_CREATION_VALUE_WITH_ADD_DATE_1
-    = new Album(
-      MOCK_MAPPED_ALBUM_CREATION_VALUE_1.getId(),
-      MOCK_MAPPED_ALBUM_CREATION_VALUE_1.getVideoId(),
-      MOCK_MAPPED_ALBUM_CREATION_VALUE_1.getArtist(),
-      MOCK_MAPPED_ALBUM_CREATION_VALUE_1.getTitle(),
-      MOCK_MAPPED_ALBUM_CREATION_VALUE_1.getPublished(),
-      MOCK_MAPPED_ALBUM_CREATION_VALUE_1.getCategory(),
+  public static Album MOCK_MAPPED_ALBUM_CREATION_VALUE_WITH_ADD_DATE_1() {
+    final Album value = MOCK_MAPPED_ALBUM_CREATION_VALUE_1();
+
+    return new Album(
+      value.getId(),
+      value.getVideoId(),
+      value.getArtist(),
+      value.getTitle(),
+      value.getPublished(),
+      value.getCategory(),
       MOCK_ADD_DATE_1
     );
+  }
 
   /**
    * Mock mapper result {@link AlbumHelper#MOCK_MAPPED_ALBUM_CREATION_VALUE_2}
    * with added add date {@link AlbumHelper#MOCK_ADD_DATE_2} value to album.
+   * 
+   * @return 
    */
-  public static final Album MOCK_MAPPED_ALBUM_CREATION_VALUE_WITH_ADD_DATE_2
-    = new Album(
-      MOCK_MAPPED_ALBUM_CREATION_VALUE_2.getId(),
-      MOCK_MAPPED_ALBUM_CREATION_VALUE_2.getVideoId(),
-      MOCK_MAPPED_ALBUM_CREATION_VALUE_2.getArtist(),
-      MOCK_MAPPED_ALBUM_CREATION_VALUE_2.getTitle(),
-      MOCK_MAPPED_ALBUM_CREATION_VALUE_2.getPublished(),
-      MOCK_MAPPED_ALBUM_CREATION_VALUE_2.getCategory(),
+  public static Album MOCK_MAPPED_ALBUM_CREATION_VALUE_WITH_ADD_DATE_2() {
+    final Album value = MOCK_MAPPED_ALBUM_CREATION_VALUE_2();
+
+    return new Album(
+      value.getId(),
+      value.getVideoId(),
+      value.getArtist(),
+      value.getTitle(),
+      value.getPublished(),
+      value.getCategory(),
       MOCK_ADD_DATE_2
     );
+  }
 
   /**
    * Mock created album from
    * {@link AlbumHelper#MOCK_MAPPED_ALBUM_CREATION_VALUE_WITH_ADD_DATE_1}
    * with id {@link AlbumHelper#MOCK_ID_1}.
+   * 
+   * @return 
    */
-  public static final Album MOCK_ALBUM_1 = new Album(
-    MOCK_ID_1,
-    MOCK_MAPPED_ALBUM_CREATION_VALUE_WITH_ADD_DATE_1.getVideoId(),
-    MOCK_MAPPED_ALBUM_CREATION_VALUE_WITH_ADD_DATE_1.getArtist(),
-    MOCK_MAPPED_ALBUM_CREATION_VALUE_WITH_ADD_DATE_1.getTitle(),
-    MOCK_MAPPED_ALBUM_CREATION_VALUE_WITH_ADD_DATE_1.getPublished(),
-    MOCK_MAPPED_ALBUM_CREATION_VALUE_WITH_ADD_DATE_1.getCategory(),
-    MOCK_MAPPED_ALBUM_CREATION_VALUE_WITH_ADD_DATE_1.getAddDate()
-  );
+  public static Album MOCK_ALBUM_1() {
+    final Album value = MOCK_MAPPED_ALBUM_CREATION_VALUE_WITH_ADD_DATE_1();
+
+    return new Album(
+      MOCK_ID_1,
+      value.getVideoId(),
+      value.getArtist(),
+      value.getTitle(),
+      value.getPublished(),
+      value.getCategory(),
+      value.getAddDate()
+    );
+  }
 
   /**
    * Mock created album from
    * {@link AlbumHelper#MOCK_MAPPED_ALBUM_CREATION_VALUE_WITH_ADD_DATE_2}
    * with id {@link AlbumHelper#MOCK_ID_2}.
+   * 
+   * @return 
    */
-  public static final Album MOCK_ALBUM_2 = new Album(
-    MOCK_ID_2,
-    MOCK_MAPPED_ALBUM_CREATION_VALUE_WITH_ADD_DATE_2.getVideoId(),
-    MOCK_MAPPED_ALBUM_CREATION_VALUE_WITH_ADD_DATE_2.getArtist(),
-    MOCK_MAPPED_ALBUM_CREATION_VALUE_WITH_ADD_DATE_2.getTitle(),
-    MOCK_MAPPED_ALBUM_CREATION_VALUE_WITH_ADD_DATE_2.getPublished(),
-    MOCK_MAPPED_ALBUM_CREATION_VALUE_WITH_ADD_DATE_2.getCategory(),
-    MOCK_MAPPED_ALBUM_CREATION_VALUE_WITH_ADD_DATE_2.getAddDate()
-  );
+  public static Album MOCK_ALBUM_2() {
+    final Album value = MOCK_MAPPED_ALBUM_CREATION_VALUE_WITH_ADD_DATE_2();
+
+    return new Album(
+      MOCK_ID_2,
+      value.getVideoId(),
+      value.getArtist(),
+      value.getTitle(),
+      value.getPublished(),
+      value.getCategory(),
+      value.getAddDate()
+    );
+  }
 
   /**
    * Mock result for updating {@link AlbumHelper#MOCK_ALBUM_1}
    * with {@link AlbumHelper#ALBUM_CREATION_VALUE_2} values.
+   * 
+   * @return 
    */
-  public static final Album MOCK_UPDATED_ALBUM = new Album(
-    MOCK_ALBUM_1.getId(),
-    ALBUM_CREATION_VALUE_2.getVideoId(),
-    ALBUM_CREATION_VALUE_2.getArtist(),
-    ALBUM_CREATION_VALUE_2.getTitle(),
-    ALBUM_CREATION_VALUE_2.getPublished(),
-    ALBUM_CREATION_VALUE_2.getCategory(),
-    MOCK_ALBUM_1.getAddDate()
-  );
+  public static Album MOCK_UPDATED_ALBUM() {
+    final Album oldValue = MOCK_ALBUM_1();
+    final AlbumCreation newValue = ALBUM_CREATION_VALUE_2();
+
+    return new Album(
+      oldValue.getId(),
+      newValue.getVideoId(),
+      newValue.getArtist(),
+      newValue.getTitle(),
+      newValue.getPublished(),
+      newValue.getCategory(),
+      oldValue.getAddDate()
+    );
+  }
+
 
   // TODO MOVE TO A NEW FILE 'BookmarksHelper'
+
 
   private static final AlbumParseResult a1 = new AlbumParseResult(
     "IdRn9IYWuaQ",

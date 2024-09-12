@@ -1,7 +1,9 @@
 package com.fs.fsapi.helpers;
 
 import com.fs.fsapi.album.Album;
+import com.fs.fsapi.album.AlbumCreation;
 import com.fs.fsapi.bookmark.parser.AlbumParseResult;
+import static com.fs.fsapi.helpers.AlbumHelper.*;
 
 public class ParsedAlbumHelper {
 
@@ -9,57 +11,105 @@ public class ParsedAlbumHelper {
    * Mock album bookmark parse result with values from 
    * {@link AlbumHelper#ALBUM_CREATION_VALUE_1} and add date
    * {@link AlbumHelper#MOCK_ADD_DATE_1}.
+   * 
+   * @return 
    */
-  public static final AlbumParseResult MOCK_PARSE_RESULT_1 = new AlbumParseResult(
-    AlbumHelper.ALBUM_CREATION_VALUE_1.getVideoId(),
-    AlbumHelper.ALBUM_CREATION_VALUE_1.getArtist(),
-    AlbumHelper.ALBUM_CREATION_VALUE_1.getTitle(),
-    AlbumHelper.ALBUM_CREATION_VALUE_1.getPublished(),
-    AlbumHelper.ALBUM_CREATION_VALUE_1.getCategory(),
-    AlbumHelper.MOCK_ADD_DATE_1
-  );
+  public static final AlbumParseResult MOCK_PARSE_RESULT_1() {
+    final AlbumCreation value = ALBUM_CREATION_VALUE_1();
+
+    return new AlbumParseResult(
+      value.getVideoId(),
+      value.getArtist(),
+      value.getTitle(),
+      value.getPublished(),
+      value.getCategory(),
+      MOCK_ADD_DATE_1
+    );
+  }
   
   /**
    * Mock album bookmark parse result with values from 
    * {@link AlbumHelper#ALBUM_CREATION_VALUE_2} and add date
    * {@link AlbumHelper#MOCK_ADD_DATE_2}.
+   * 
+   * @return 
    */
-  public static final AlbumParseResult MOCK_PARSE_RESULT_2 = new AlbumParseResult(
-    AlbumHelper.ALBUM_CREATION_VALUE_2.getVideoId(),
-    AlbumHelper.ALBUM_CREATION_VALUE_2.getArtist(),
-    AlbumHelper.ALBUM_CREATION_VALUE_2.getTitle(),
-    AlbumHelper.ALBUM_CREATION_VALUE_2.getPublished(),
-    AlbumHelper.ALBUM_CREATION_VALUE_2.getCategory(),
-    AlbumHelper.MOCK_ADD_DATE_2
-  );
+  public static final AlbumParseResult MOCK_PARSE_RESULT_2() {
+    final AlbumCreation value = ALBUM_CREATION_VALUE_2();
+
+    return new AlbumParseResult(
+      value.getVideoId(),
+      value.getArtist(),
+      value.getTitle(),
+      value.getPublished(),
+      value.getCategory(),
+      MOCK_ADD_DATE_2
+    );
+  }
+
+  /**
+   * Mock invalid album bookmark parse result with the invalid values
+   * from {@link AlbumHelper#INVALID_ALBUM_CREATION_VALUE} with the
+   * add date value {@link AlbumHelper#MOCK_ADD_DATE_1}.
+   * <code>
+   *  <strong>
+   *    CHECK THAT AN ALBUM IS NOT ALREADY CREATED WITH THE ARTIST AND TITLE!
+   *  </strong>
+   * </code>
+   * @return 
+   */
+  public static final AlbumParseResult MOCK_INVALID_PARSE_RESULT() {
+    final AlbumCreation value = INVALID_ALBUM_CREATION_VALUE();
+
+    return new AlbumParseResult(
+      value.getVideoId(),
+      value.getArtist(),
+      value.getTitle(),
+      value.getPublished(),
+      value.getCategory(),
+      MOCK_ADD_DATE_1
+    );
+  }
 
   /**
    * Mock mapper result for mapping album creation value
    * {@link ParsedAlbumHelper#MOCK_PARSE_RESULT_1} to album.
+   * 
+   * @return 
    */
-  public static final Album MOCK_MAPPED_PARSE_RESULT_1 = new Album(
-    null,
-    MOCK_PARSE_RESULT_1.getVideoId(),
-    MOCK_PARSE_RESULT_1.getArtist(),
-    MOCK_PARSE_RESULT_1.getTitle(),
-    MOCK_PARSE_RESULT_1.getPublished(),
-    MOCK_PARSE_RESULT_1.getCategory(),
-    MOCK_PARSE_RESULT_1.getAddDate()
-  );
+  public static final Album MOCK_MAPPED_PARSE_RESULT_1() {
+    final AlbumParseResult value = MOCK_PARSE_RESULT_1();
+
+    return new Album(
+      null,
+      value.getVideoId(),
+      value.getArtist(),
+      value.getTitle(),
+      value.getPublished(),
+      value.getCategory(),
+      value.getAddDate()
+    );
+  }
 
   /**
    * Mock mapper result for mapping album creation value
    * {@link ParsedAlbumHelper#MOCK_PARSE_RESULT_2} to album.
+   * 
+   * @return 
    */
-  public static final Album MOCK_MAPPED_PARSE_RESULT_2 = new Album(
-    null,
-    MOCK_PARSE_RESULT_2.getVideoId(),
-    MOCK_PARSE_RESULT_2.getArtist(),
-    MOCK_PARSE_RESULT_2.getTitle(),
-    MOCK_PARSE_RESULT_2.getPublished(),
-    MOCK_PARSE_RESULT_2.getCategory(),
-    MOCK_PARSE_RESULT_2.getAddDate()
-  );
+  public static final Album MOCK_MAPPED_PARSE_RESULT_2() {
+    final AlbumParseResult value = MOCK_PARSE_RESULT_2();
+
+    return new Album(
+      null,
+      value.getVideoId(),
+      value.getArtist(),
+      value.getTitle(),
+      value.getPublished(),
+      value.getCategory(),
+      value.getAddDate()
+    );
+  }
 
 
   private static final AlbumParseResult a1 = new AlbumParseResult(

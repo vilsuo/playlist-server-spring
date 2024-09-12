@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.fs.fsapi.config.CustomWebClientConfig;
 import com.fs.fsapi.metallum.cache.ArtistTitleSearchCache;
 import com.fs.fsapi.metallum.parser.MetallumParser;
 import com.fs.fsapi.metallum.parser.SongResult;
@@ -67,23 +68,43 @@ public class MetallumService {
   }
 
   /**
-   * Search release title cover image.
-   * 
-   * @param id  the release title id
-   * @return the image
-   */
-  public byte[] searchTitleCover(String id) {
-    return searchImage(constructImagePath(id) + IMAGE_EXTENSION);
-  }
-
-  /**
    * Search artist logo image.
    * 
    * @param id  the artist id
    * @return the image
    */
   public byte[] searchArtistLogo(String id) {
-    return searchImage(constructImagePath(id) + "_logo" + IMAGE_EXTENSION);
+    return searchImage(getArtistLogoPath(id));
+  }
+
+  /**
+   * Create url where the artist logo image can be found.
+   * 
+   * @param id  the artist id
+   * @return the image url
+   */
+  public String createArtistLogoUrl(String id) {
+    return CustomWebClientConfig.METALLUM_BASE_URL + getArtistLogoPath(id);
+  }
+
+  /**
+   * Search release title cover image.
+   * 
+   * @param id  the release title id
+   * @return the image
+   */
+  public byte[] searchTitleCover(String id) {
+    return searchImage(getTitleCoverPath(id));
+  }
+
+  /**
+   * Create url where the release title cover image can be found.
+   * 
+   * @param id  the release title id
+   * @return the image url
+   */
+  public String createTitleCoverUrl(String id) {
+    return CustomWebClientConfig.METALLUM_BASE_URL + getTitleCoverPath(id);
   }
 
   private byte[] searchImage(String imagePath) {
@@ -98,9 +119,29 @@ public class MetallumService {
   }
 
   /**
-   * Construct base image path. Example for {@code id}
-   * <pre>"528471"</pre> the resulting path will be
-   * <pre>"https://www.metal-archives.com/images/5/2/8/4/528471"</pre>.
+   * Get the path of the artist logo image. 
+   * 
+   * @param id  the artist id
+   * @return the image
+   */
+  private String getArtistLogoPath(String id) {
+    return constructImagePath(id) + "_logo" + IMAGE_EXTENSION;
+  }
+
+  /**
+   * Get the path of the release title cover image. 
+   * 
+   * @param id  the release title id
+   * @return the path image
+   */
+  private String getTitleCoverPath(String id) {
+    return constructImagePath(id) + IMAGE_EXTENSION;
+  }
+
+  /**
+   * Construct base image path with missing extension. Example for
+   * {@code id} <pre>"528471"</pre> the resulting path will be
+   * <pre>"/images/5/2/8/4/528471"</pre>.
    * 
    * @param id  resource id
    * @return the base path of a image resource

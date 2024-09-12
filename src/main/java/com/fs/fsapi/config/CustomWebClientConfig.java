@@ -7,7 +7,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class CustomWebClientConfig {
 
-  private final String METALLUM_BASE_URL = "https://www.metal-archives.com";
+  public static final String METALLUM_BASE_URL = "https://www.metal-archives.com";
 
   @Bean
   public WebClient webClient() {

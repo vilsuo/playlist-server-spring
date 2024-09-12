@@ -1,6 +1,5 @@
 package com.fs.fsapi.metallum;
 
-import java.net.URISyntaxException;
 import java.util.List;
 
 import org.springframework.http.MediaType;
@@ -32,6 +31,7 @@ public class MetallumController {
       .body(service.searchByArtistAndTitle(artist, title));
   }
 
+  // needed?
   @GetMapping("/logo/{artistId}")
   public ResponseEntity<byte[]> searchArtistLogo(@PathVariable String artistId) {
     return ResponseEntity
@@ -40,12 +40,27 @@ public class MetallumController {
       .body(service.searchArtistLogo(artistId));
   }
 
+  @GetMapping("/logo/{artistId}/url")
+  public ResponseEntity<String> createArtistLogoUrl(@PathVariable String artistId) {
+    return ResponseEntity
+      .ok()
+      .body(service.createArtistLogoUrl(artistId));
+  }
+
+  // needed?
   @GetMapping("/cover/{titleId}")
   public ResponseEntity<byte[]> searchTitleCover(@PathVariable String titleId) {
     return ResponseEntity
       .ok()
       .contentType(MediaType.IMAGE_JPEG)
       .body(service.searchTitleCover(titleId));
+  }
+
+  @GetMapping("/cover/{titleId}/url")
+  public ResponseEntity<String> createTitleCoverUrl(@PathVariable String titleId) {
+    return ResponseEntity
+      .ok()
+      .body(service.createTitleCoverUrl(titleId));
   }
 
   @GetMapping("/songs/{titleId}")

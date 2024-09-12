@@ -27,7 +27,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.fs.fsapi.bookmark.parser.AlbumBase;
+import com.fs.fsapi.bookmark.parser.AlbumResult;
 import com.fs.fsapi.exceptions.CustomDataNotFoundException;
 
 import jakarta.persistence.RollbackException;
@@ -217,7 +217,7 @@ public class AlbumServiceIntegrationTest {
   @DisplayName("createMany")
   public class CreateManyTest {
 
-    private final AlbumBase base = new AlbumBase(
+    private final AlbumResult base = new AlbumResult(
       albumValues.getVideoId(),
       albumValues.getArtist(),
       albumValues.getTitle(),
@@ -226,7 +226,7 @@ public class AlbumServiceIntegrationTest {
       Instant.ofEpochSecond(1711378617).toString()
     );
 
-    private final AlbumBase otherBase = new AlbumBase(
+    private final AlbumResult otherBase = new AlbumResult(
       newAlbumValues.getVideoId(),
       newAlbumValues.getArtist(),
       newAlbumValues.getTitle(),
@@ -235,9 +235,9 @@ public class AlbumServiceIntegrationTest {
       Instant.ofEpochSecond(1711378656).toString()
     );
 
-    private List<AlbumBase> bases = List.of(base, otherBase);
+    private List<AlbumResult> bases = List.of(base, otherBase);
 
-    private final AlbumBase invalidBase = new AlbumBase(
+    private final AlbumResult invalidBase = new AlbumResult(
       "12345678900",
       newAlbumValues.getArtist(),
       newAlbumValues.getTitle(),

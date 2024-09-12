@@ -5,7 +5,7 @@ import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
 
-import com.fs.fsapi.bookmark.parser.AlbumBase;
+import com.fs.fsapi.bookmark.parser.AlbumResult;
 
 @Mapper(
   componentModel = MappingConstants.ComponentModel.SPRING,
@@ -15,7 +15,7 @@ public interface AlbumMapper {
   
   public Album albumCreationToAlbum(AlbumCreation source);
 
-  public Album albumBaseToAlbum(AlbumBase base);
+  public Album albumResultToAlbum(AlbumResult result);
 
   public void updateAlbumFromAlbumCreation(AlbumCreation source, @MappingTarget Album target);
 }

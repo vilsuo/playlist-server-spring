@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import com.fs.fsapi.DateTimeString;
-import com.fs.fsapi.bookmark.parser.AlbumBase;
+import com.fs.fsapi.bookmark.parser.AlbumResult;
 import com.fs.fsapi.exceptions.CustomDataNotFoundException;
 import com.fs.fsapi.exceptions.CustomParameterConstraintException;
 
@@ -41,18 +41,18 @@ public class AlbumService {
   /**
    * Create an album.
    * 
-   * @param values  values to use for album creation
+   * @param value  values to use for album creation
    * @return the created album
    * @throws CustomParameterConstraintException if album with given artist and 
    * title already exists
    */
-  public Album create(@Valid AlbumCreation values) {
-    if (values == null) {
+  public Album create(@Valid AlbumCreation value) {
+    if (value == null) {
       throw new IllegalArgumentException("Expected creation value to be present");
     }
 
-    final String artist = values.getArtist();
-    final String title = values.getTitle();
+    final String artist = value.getArtist();
+    final String title = value.getTitle();
 
     boolean checkDublicate = (artist != null) && (title != null);
     if (checkDublicate && repository.existsByArtistAndTitle(artist, title)) {
@@ -61,54 +61,54 @@ public class AlbumService {
       );
     }
 
-    Album album = mapper.albumCreationToAlbum(values);
+    Album album = mapper.albumCreationToAlbum(value);
     album.setAddDate(DateTimeString.create());
 
     return repository.save(album);
   }
 
   /**
-   * Create album from base value. Album is created iff such album does not exist 
+   * Create album from parsed album value. Album is created iff such album does not exist 
    * by artist and title. 
    * 
-   * @param base  values for the album to be created
+   * @param value  parsed album value
    * @return Optional containing the created album unless such album already 
    *         exists
    */
-  private Optional<Album> create(@Valid AlbumBase base) {
-    if (base == null) {
+  private Optional<Album> create(@Valid AlbumResult value) {
+    if (value == null) {
       throw new IllegalArgumentException("Expected creation value to be present");
     }
 
-    final String artist = base.getArtist();
-    final String title = base.getTitle();
+    final String artist = value.getArtist();
+    final String title = value.getTitle();
 
     boolean checkForDublicate = (artist != null) && (title != null);
     if (checkForDublicate && repository.existsByArtistAndTitle(artist, title)) {
       return Optional.empty();
     }
 
-    Album album = mapper.albumBaseToAlbum(base);
+    Album album = mapper.albumResultToAlbum(value);
     return Optional.of(repository.save(album));
   }
 
   @Transactional
-  public List<Album> createMany(List<AlbumBase> bases) {
-    return bases.stream()
-      .map(base -> this.create(base))
+  public List<Album> createMany(List<AlbumResult> values) {
+    return values.stream()
+      .map(value -> this.create(value))
       .filter(Optional::isPresent)
       .map(opt -> opt.get())
       .collect(Collectors.toList());
   }
 
-  public Album update(@NotNull Integer id, @Valid AlbumCreation values) {
-    if (values == null) {
+  public Album update(@NotNull Integer id, @Valid AlbumCreation value) {
+    if (value == null) {
       throw new IllegalArgumentException("Expected update value to be present");
     }
 
     Album album = findOne(id);
 
-    mapper.updateAlbumFromAlbumCreation(values, album);
+    mapper.updateAlbumFromAlbumCreation(value, album);
     return repository.save(album);
   }
 

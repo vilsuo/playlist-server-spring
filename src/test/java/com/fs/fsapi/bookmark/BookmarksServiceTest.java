@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 
-import com.fs.fsapi.bookmark.parser.AlbumBase;
+import com.fs.fsapi.bookmark.parser.AlbumResult;
 import com.fs.fsapi.bookmark.parser.BookmarksFileParserService;
 import com.fs.fsapi.bookmark.parser.BookmarksLinkParserService;
 import com.fs.fsapi.exceptions.CustomHtmlParsingException;
@@ -145,7 +145,7 @@ public class BookmarksServiceTest {
     @Test
     public void shouldNotCreateAnyWhenThereAreNoLinksTest() throws IOException {
       final ValidHeader header = ValidHeader.EMPTY;
-      List<AlbumBase> results = service.getAlbumBases(file, header.getTextContent());
+      List<AlbumResult> results = service.getAlbumBases(file, header.getTextContent());
 
       assertTrue(results.isEmpty());
     }
@@ -156,10 +156,10 @@ public class BookmarksServiceTest {
 
       private final ValidHeader header = ValidHeader.CHILD;
 
-      private List<AlbumBase> results;
-      private AlbumBase result;
+      private List<AlbumResult> results;
+      private AlbumResult result;
 
-      private final AlbumBase expected = AlbumHelper.VALID_FILE_CHILD_ALBUMBASES[0];
+      private final AlbumResult expected = AlbumHelper.VALID_FILE_CHILD_RESULTS[0];
 
       @BeforeEach
       public void create() throws Exception {
@@ -197,8 +197,8 @@ public class BookmarksServiceTest {
 
       private ValidHeader header = ValidHeader.PARENT;
 
-      private List<AlbumBase> results;
-      private AlbumBase[] expectations = AlbumHelper.VALID_FILE_PARENT_ALBUMBASES;
+      private List<AlbumResult> results;
+      private AlbumResult[] expectations = AlbumHelper.VALID_FILE_PARENT_RESULTS;
 
       @BeforeEach
       public void create() throws IOException  {
@@ -212,8 +212,8 @@ public class BookmarksServiceTest {
 
       @Test
       public void shouldCreateFromLinksBeforeSubFolderTest() {
-        AlbumBase result = results.get(2);
-        AlbumBase expected = expectations[2];
+        AlbumResult result = results.get(2);
+        AlbumResult expected = expectations[2];
 
         assertEquals(expected.getVideoId(), result.getVideoId());
         assertEquals(expected.getArtist(), result.getArtist());
@@ -225,8 +225,8 @@ public class BookmarksServiceTest {
 
       @Test
       public void shouldCreateFromLinksInSubFolderTest() {
-        AlbumBase result = results.get(3);
-        AlbumBase expected = expectations[3];
+        AlbumResult result = results.get(3);
+        AlbumResult expected = expectations[3];
 
         assertEquals(expected.getVideoId(), result.getVideoId());
         assertEquals(expected.getArtist(), result.getArtist());
@@ -238,8 +238,8 @@ public class BookmarksServiceTest {
 
       @Test
       public void shouldCreateFromLinksAfterSubFolderTest() {
-        AlbumBase result = results.get(4);
-        AlbumBase expected = expectations[4];
+        AlbumResult result = results.get(4);
+        AlbumResult expected = expectations[4];
 
         assertEquals(expected.getVideoId(), result.getVideoId());
         assertEquals(expected.getArtist(), result.getArtist());

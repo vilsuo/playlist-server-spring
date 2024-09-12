@@ -35,8 +35,8 @@ public class AlbumController {
   }
   
   @PostMapping
-  public ResponseEntity<Album> postAlbum(@Valid @RequestBody AlbumCreation values) {
-    Album album = service.create(values);
+  public ResponseEntity<Album> postAlbum(@Valid @RequestBody AlbumCreation value) {
+    Album album = service.create(value);
 
     URI uri = ServletUriComponentsBuilder
       .fromCurrentRequest()
@@ -58,11 +58,11 @@ public class AlbumController {
   @PutMapping("/{id}")
   public ResponseEntity<Album> putAlbum(
     @PathVariable Integer id,
-    @Valid @RequestBody AlbumCreation values
+    @Valid @RequestBody AlbumCreation value
   ) {
     return ResponseEntity
       .ok()
-      .body(service.update(id, values));
+      .body(service.update(id, value));
   }
 
   @DeleteMapping("/{id}")

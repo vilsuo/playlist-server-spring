@@ -15,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fs.fsapi.album.Album;
 import com.fs.fsapi.album.AlbumService;
-import com.fs.fsapi.bookmark.parser.AlbumBase;
+import com.fs.fsapi.bookmark.parser.AlbumResult;
 import com.fs.fsapi.exceptions.CustomInvalidMediaTypeException;
 
 import jakarta.validation.constraints.NotEmpty;
@@ -53,11 +53,11 @@ public class BookmarksController {
       );
     }
 
-    List<AlbumBase> bases = bookmarkService.getAlbumBases(file, name);
+    List<AlbumResult> values = bookmarkService.getAlbumBases(file, name);
 
     return ResponseEntity
       .ok()
-      .body(albumService.createMany(bases));
+      .body(albumService.createMany(values));
   }
 
   private MediaType detectMediaType(MultipartFile file) {

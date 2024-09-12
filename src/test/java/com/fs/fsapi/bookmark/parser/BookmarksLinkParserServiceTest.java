@@ -26,14 +26,14 @@ public class BookmarksLinkParserServiceTest {
   private final BookmarksLinkParserService service = new BookmarksLinkParserService();
 
   private final BookmarksLinkElement source = BookmarksFileHelper.VALID_FILE_CONTAINER_LINKS[0];
-  private final AlbumBase expected = AlbumHelper.VALID_FILE_CONTAINER_ALBUMBASES[0];
+  private final AlbumResult expected = AlbumHelper.VALID_FILE_CONTAINER_RESULTS[0];
 
   private final String headerText = BookmarksFileHelper.ValidHeader.CONTAINER.getTextContent();
   private final String text = source.getText();
   private final String href = source.getHref();
   private final String addDate = source.getAddDate();
 
-  private AlbumBase parseSingle(String folderName, String text, String href, String addDate) {
+  private AlbumResult parseSingle(String folderName, String text, String href, String addDate) {
     Element e = ElementHelper.createLinkTypeElement(text, href, addDate);
     return service.parseElements(List.of(new BookmarksLinkElement(e, folderName))).get(0);
   }
@@ -45,11 +45,11 @@ public class BookmarksLinkParserServiceTest {
 
   @Test
   public void shouldReturnParsedAlbumBaseTest() {
-    List<AlbumBase> results = service.parseElements(List.of(source));
+    List<AlbumResult> results = service.parseElements(List.of(source));
 
     assertEquals(1, results.size());
 
-    AlbumBase result = results.get(0);
+    AlbumResult result = results.get(0);
     assertEquals(expected.getVideoId(), result.getVideoId());
     assertEquals(expected.getArtist(), result.getArtist());
     assertEquals(expected.getTitle(), result.getTitle());
@@ -62,7 +62,7 @@ public class BookmarksLinkParserServiceTest {
   @DisplayName("extractVideoId")
   public class Href {
 
-    private AlbumBase parseSingleWithHref(String hrefValue) {
+    private AlbumResult parseSingleWithHref(String hrefValue) {
       return parseSingle(headerText, text, hrefValue, addDate);
     }
 
@@ -70,7 +70,7 @@ public class BookmarksLinkParserServiceTest {
     public void shouldReturnEmptyWhenRequiredHrefQueryParameterValueIsEmptyTest() {
       String withEmptyParam = "https://www.youtube.com/watch?v=";
 
-      AlbumBase base = parseSingleWithHref(withEmptyParam);
+      AlbumResult base = parseSingleWithHref(withEmptyParam);
       assertTrue(base.getVideoId().isEmpty());
     }
 
@@ -78,7 +78,7 @@ public class BookmarksLinkParserServiceTest {
     public void shouldReturnCorrectQueryParameterValueWhenHrefHasMultipleQueryParametersTest() {
       String withMultipleParams = "https://www.youtube.com/watch?g=aspiasdihd&v=IdRn9IYWuaQ";
 
-      AlbumBase base = parseSingleWithHref(withMultipleParams);
+      AlbumResult base = parseSingleWithHref(withMultipleParams);
       assertEquals("IdRn9IYWuaQ", base.getVideoId());
     }
     
@@ -145,7 +145,7 @@ public class BookmarksLinkParserServiceTest {
   @DisplayName("extractTextContentDetails")
   public class TextContent {
 
-    private AlbumBase parseSingleWithText(String textValue) {
+    private AlbumResult parseSingleWithText(String textValue) {
       return parseSingle(headerText, textValue, href, addDate);
     }
 
@@ -206,27 +206,27 @@ public class BookmarksLinkParserServiceTest {
   @DisplayName("parseAddDate")
   public class AddDate {
 
-    private AlbumBase parseSingleWithAddDate(String addDateValue) {
+    private AlbumResult parseSingleWithAddDate(String addDateValue) {
       return parseSingle(headerText, text, href, addDateValue);
     }
 
     @Test
     public void shouldConvertWhenAddDateAttributeIsPositiveTest() {
-      AlbumBase result = parseSingleWithAddDate(addDate);
+      AlbumResult result = parseSingleWithAddDate(addDate);
 
       assertEquals(expected.getAddDate(), result.getAddDate());
     }
 
     @Test
     public void shouldConvertWhenAddDateAttributeIsNegativeTest() {
-      AlbumBase result = parseSingleWithAddDate("-1653126836");
+      AlbumResult result = parseSingleWithAddDate("-1653126836");
       
       assertEquals("1917-08-13T14:06:04Z", result.getAddDate());
     }
 
     @Test
     public void shouldReturnUnixExpochZeroWhenAddDateAttributeIsZeroTest() {
-      AlbumBase result = parseSingleWithAddDate("0");
+      AlbumResult result = parseSingleWithAddDate("0");
 
       assertEquals("1970-01-01T00:00:00Z", result.getAddDate());
     }

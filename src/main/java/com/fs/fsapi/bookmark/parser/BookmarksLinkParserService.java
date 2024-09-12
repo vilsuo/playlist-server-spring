@@ -41,22 +41,22 @@ public class BookmarksLinkParserService {
    *    The value is expected to be in Unix Epoch seconds
    * </ul>
    * 
-   * @param bookmarkLinks  list of html elements with their associated folder name
+   * @param values  list of html elements with their associated folder name
    * @return the created list of album base objects
    * 
    */
-  public List<AlbumBase> parseElements(List<BookmarksLinkElement> bookmarkLinks) {
-    return bookmarkLinks.stream()
-      .map(bookmarkLink -> {
-        final TextDetails details = extractTextContentDetails(bookmarkLink.getText());
+  public List<AlbumResult> parseElements(List<BookmarksLinkElement> values) {
+    return values.stream()
+      .map(value -> {
+        final TextDetails details = extractTextContentDetails(value.getText());
 
-        return new AlbumBase(
-          extractVideoId(bookmarkLink.getHref()),
+        return new AlbumResult(
+          extractVideoId(value.getHref()),
           details.getArtist(),
           details.getTitle(),
           details.getPublished(),
-          bookmarkLink.getHeaderText(),
-          parseAddDate(bookmarkLink.getAddDate())
+          value.getHeaderText(),
+          parseAddDate(value.getAddDate())
         );
       })
       .collect(Collectors.toList());

@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class AlbumBase {
+public class AlbumResult {
   
   private String videoId;
 

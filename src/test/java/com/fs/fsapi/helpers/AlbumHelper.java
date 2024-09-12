@@ -1,10 +1,10 @@
 package com.fs.fsapi.helpers;
 
-import com.fs.fsapi.bookmark.parser.AlbumBase;
+import com.fs.fsapi.bookmark.parser.AlbumResult;
 
 public class AlbumHelper {
   
-  private static final AlbumBase a1 = new AlbumBase(
+  private static final AlbumResult a1 = new AlbumResult(
     "IdRn9IYWuaQ",
     "Annihilator",
     "Alice In Hell",
@@ -13,7 +13,7 @@ public class AlbumHelper {
     "2022-05-21T09:53:56Z"
   );
 
-  private static final AlbumBase a2 = new AlbumBase(
+  private static final AlbumResult a2 = new AlbumResult(
     "5av2oGfw34g",
     "A.O.D",
     "Altars of Destruction",
@@ -22,7 +22,7 @@ public class AlbumHelper {
     "2024-03-25T14:53:53Z"
   );
 
-  private static final AlbumBase a3 = new AlbumBase(
+  private static final AlbumResult a3 = new AlbumResult(
     "zopfZLQibWw",
     "Nuclear Assault",
     "Survive",
@@ -31,7 +31,7 @@ public class AlbumHelper {
     "2024-03-25T14:57:16Z"
   );
 
-  private static final AlbumBase a4 = new AlbumBase(
+  private static final AlbumResult a4 = new AlbumResult(
     "Zof79HxNpMs",
     "Exodus",
     "Fabulous Disaster",
@@ -40,7 +40,7 @@ public class AlbumHelper {
     "2024-03-25T14:58:02Z"
   );
 
-  private static final AlbumBase a5 = new AlbumBase(
+  private static final AlbumResult a5 = new AlbumResult(
     "DopHEl-BCGQ",
     "Angel Dust",
     "Into the Dark Past",
@@ -49,7 +49,7 @@ public class AlbumHelper {
     "2024-03-25T14:56:57Z"
   );
 
-  private static final AlbumBase a6 = new AlbumBase(
+  private static final AlbumResult a6 = new AlbumResult(
     "MV3yQFU3Z6s",
     "Paradox",
     "Product of Imagination",
@@ -58,9 +58,9 @@ public class AlbumHelper {
     "2024-03-25T14:57:36Z"
   );
 
-  public static final AlbumBase[] VALID_FILE_ROOT_ALBUMBASES = { a1, a2, a3, a4, a5, a6 };
-  public static final AlbumBase[] VALID_FILE_CONTAINER_ALBUMBASES = { a1, a2, a3, a4, a5, a6 };
-  public static final AlbumBase[] VALID_FILE_PARENT_ALBUMBASES = { a2, a3, a4, a5, a6 };
-  public static final AlbumBase[] VALID_FILE_CHILD_ALBUMBASES = { a5 };
-  public static final AlbumBase[] VALID_FILE_EMPTY_ALBUMBASES = { };
+  public static final AlbumResult[] VALID_FILE_ROOT_RESULTS = { a1, a2, a3, a4, a5, a6 };
+  public static final AlbumResult[] VALID_FILE_CONTAINER_RESULTS = { a1, a2, a3, a4, a5, a6 };
+  public static final AlbumResult[] VALID_FILE_PARENT_RESULTS = { a2, a3, a4, a5, a6 };
+  public static final AlbumResult[] VALID_FILE_CHILD_RESULTS = { a5 };
+  public static final AlbumResult[] VALID_FILE_EMPTY_RESULTS = { };
 }

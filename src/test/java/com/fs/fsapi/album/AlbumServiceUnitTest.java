@@ -27,7 +27,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.fs.fsapi.bookmark.parser.AlbumBase;
+import com.fs.fsapi.bookmark.parser.AlbumResult;
 import com.fs.fsapi.exceptions.CustomDataNotFoundException;
 import com.fs.fsapi.exceptions.CustomParameterConstraintException;
 
@@ -281,7 +281,7 @@ public class AlbumServiceUnitTest {
     Integer id1 = 124;
     Integer id2 = 125;
 
-    private final AlbumBase base = new AlbumBase(
+    private final AlbumResult base = new AlbumResult(
       source.getVideoId(),
       source.getArtist(),
       source.getTitle(),
@@ -310,7 +310,7 @@ public class AlbumServiceUnitTest {
       mappedBase.getAddDate()
     );
 
-    private final AlbumBase otherBase = new AlbumBase(
+    private final AlbumResult otherBase = new AlbumResult(
       newValues.getVideoId(),
       newValues.getArtist(),
       newValues.getTitle(),
@@ -339,7 +339,7 @@ public class AlbumServiceUnitTest {
       mappedOtherBase.getAddDate()
     );
 
-    private List<AlbumBase> bases = List.of(base, otherBase);
+    private List<AlbumResult> bases = List.of(base, otherBase);
 
     @Test
     public void shouldCreateAllWhenTheAlbumsDoesNotAlreadyExistByArtistAndTitleTest() {
@@ -347,8 +347,8 @@ public class AlbumServiceUnitTest {
       when(repository.existsByArtistAndTitle(any(), any()))
         .thenReturn(false);
       
-      when(mapper.albumBaseToAlbum(base)).thenReturn(mappedBase);
-      when(mapper.albumBaseToAlbum(otherBase)).thenReturn(mappedOtherBase);
+      when(mapper.albumResultToAlbum(base)).thenReturn(mappedBase);
+      when(mapper.albumResultToAlbum(otherBase)).thenReturn(mappedOtherBase);
 
       when(repository.save(mappedBase)).thenReturn(albumFromMappedBase);
       when(repository.save(mappedOtherBase)).thenReturn(albumFromOtherMappedBase);
@@ -377,7 +377,7 @@ public class AlbumServiceUnitTest {
       when(repository.existsByArtistAndTitle(otherBase.getArtist(), otherBase.getTitle()))
         .thenReturn(true);
       
-      when(mapper.albumBaseToAlbum(base)).thenReturn(mappedBase);
+      when(mapper.albumResultToAlbum(base)).thenReturn(mappedBase);
       when(repository.save(mappedBase)).thenReturn(albumFromMappedBase);
 
       // call method

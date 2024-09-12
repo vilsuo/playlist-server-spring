@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.fs.fsapi.helpers.MetallumFileHelper;
-import com.fs.fsapi.metallum.ArtistTitleSearchResult;
+import com.fs.fsapi.metallum.parser.ArtistTitleSearchResult;
 
 @SpringBootTest(classes = { ArtistTitleSearchCache.class })
 public class ArtistTitleSearchCacheTest {

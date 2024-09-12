@@ -8,6 +8,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.fs.fsapi.config.CustomWebClientConfig;
 import com.fs.fsapi.metallum.cache.ArtistTitleSearchCache;
+import com.fs.fsapi.metallum.parser.ArtistTitleSearchResult;
 import com.fs.fsapi.metallum.parser.LyricsResult;
 import com.fs.fsapi.metallum.parser.MetallumParser;
 import com.fs.fsapi.metallum.parser.SongResult;

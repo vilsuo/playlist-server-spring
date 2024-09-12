@@ -15,7 +15,6 @@ import com.fs.fsapi.bookmark.parser.LinkElement;
 import com.fs.fsapi.exceptions.CustomDataNotFoundException;
 import com.fs.fsapi.exceptions.CustomMetallumException;
 import com.fs.fsapi.exceptions.CustomMetallumScrapingException;
-import com.fs.fsapi.metallum.ArtistTitleSearchResult;
 import com.fs.fsapi.metallum.response.AaDataValue;
 import com.fs.fsapi.metallum.response.ArtistTitleSearchResponse;
 

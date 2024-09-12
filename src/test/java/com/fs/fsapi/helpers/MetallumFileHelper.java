@@ -9,7 +9,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 
 import com.fs.fsapi.bookmark.parser.LinkElement;
-import com.fs.fsapi.metallum.ArtistTitleSearchResult;
+import com.fs.fsapi.metallum.parser.ArtistTitleSearchResult;
 import com.fs.fsapi.metallum.parser.LyricsResult;
 import com.fs.fsapi.metallum.parser.SongResult;
 import com.fs.fsapi.metallum.response.AaDataValue;

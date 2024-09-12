@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.fs.fsapi.metallum.ArtistTitleSearchResult;
+import com.fs.fsapi.metallum.parser.ArtistTitleSearchResult;
 
 import lombok.RequiredArgsConstructor;
 

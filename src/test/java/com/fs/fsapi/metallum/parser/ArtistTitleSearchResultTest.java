@@ -1,4 +1,4 @@
-package com.fs.fsapi.metallum;
+package com.fs.fsapi.metallum.parser;
 
 import static org.junit.Assert.assertEquals;
 

@@ -55,7 +55,7 @@ public class MetallumParserTest {
     @Test
     public void shouldParseSongsTest() throws IOException {
       List<SongResult> actual = parser.parseSongs(
-        MetallumFileHelper.readTitleWithLyricsFile()
+        MetallumFileHelper.readTitlePageWithLyricsFile()
       );
 
       assertEquals(expected.size(), actual.size());
@@ -65,5 +65,11 @@ public class MetallumParserTest {
         assertEquals(expected.get(i).getDuration(), actual.get(i).getDuration());
       }
     }
+  }
+
+  @Nested
+  @DisplayName("parseLyrics")
+  public class ParseLyrics {
+
   }
 }

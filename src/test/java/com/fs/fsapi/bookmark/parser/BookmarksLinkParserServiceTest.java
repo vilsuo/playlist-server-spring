@@ -26,30 +26,30 @@ public class BookmarksLinkParserServiceTest {
   private final BookmarksLinkParserService service = new BookmarksLinkParserService();
 
   private final BookmarksLinkElement source = BookmarksFileHelper.VALID_FILE_CONTAINER_LINKS[0];
-  private final AlbumResult expected = AlbumHelper.VALID_FILE_CONTAINER_RESULTS[0];
+  private final AlbumParseResult expected = AlbumHelper.VALID_FILE_CONTAINER_RESULTS[0];
 
   private final String headerText = BookmarksFileHelper.ValidHeader.CONTAINER.getTextContent();
   private final String text = source.getText();
   private final String href = source.getHref();
   private final String addDate = source.getAddDate();
 
-  private AlbumResult parseSingle(String folderName, String text, String href, String addDate) {
-    Element e = ElementHelper.createLinkTypeElement(text, href, addDate);
-    return service.parseElements(List.of(new BookmarksLinkElement(e, folderName))).get(0);
+  private AlbumParseResult parseSingle(String headerText, String text, String href, String addDate) {
+    Element e = ElementHelper.createBookmarkLinkTypeElement(text, href, addDate);
+    return service.parse(List.of(new BookmarksLinkElement(e, headerText))).get(0);
   }
 
   @Test
-  public void shouldReturnEmptyListWhenNoFolderLinksTest() {
-    assertTrue(service.parseElements(List.of()).isEmpty());
+  public void shouldReturnEmptyListWhenValuesToParseIsEmptyTest() {
+    assertTrue(service.parse(List.of()).isEmpty());
   }
 
   @Test
-  public void shouldReturnParsedAlbumBaseTest() {
-    List<AlbumResult> results = service.parseElements(List.of(source));
+  public void shouldReturnParsedValuesTest() {
+    List<AlbumParseResult> actual = service.parse(List.of(source));
 
-    assertEquals(1, results.size());
+    assertEquals(1, actual.size());
+    AlbumParseResult result = actual.get(0);
 
-    AlbumResult result = results.get(0);
     assertEquals(expected.getVideoId(), result.getVideoId());
     assertEquals(expected.getArtist(), result.getArtist());
     assertEquals(expected.getTitle(), result.getTitle());
@@ -62,47 +62,37 @@ public class BookmarksLinkParserServiceTest {
   @DisplayName("extractVideoId")
   public class Href {
 
-    private AlbumResult parseSingleWithHref(String hrefValue) {
+    private AlbumParseResult parseSingleWithHref(String hrefValue) {
       return parseSingle(headerText, text, hrefValue, addDate);
     }
 
     @Test
-    public void shouldReturnEmptyWhenRequiredHrefQueryParameterValueIsEmptyTest() {
-      String withEmptyParam = "https://www.youtube.com/watch?v=";
+    public void shouldHaveEmptyVideoIdWhenRequiredHrefQueryParameterValueIsEmptyTest() {
+      String emptyParamVideoIdParameter = "https://www.youtube.com/watch?v=";
 
-      AlbumResult base = parseSingleWithHref(withEmptyParam);
-      assertTrue(base.getVideoId().isEmpty());
+      AlbumParseResult actual = parseSingleWithHref(emptyParamVideoIdParameter);
+      assertTrue(actual.getVideoId().isEmpty());
     }
 
     @Test
-    public void shouldReturnCorrectQueryParameterValueWhenHrefHasMultipleQueryParametersTest() {
-      String withMultipleParams = "https://www.youtube.com/watch?g=aspiasdihd&v=IdRn9IYWuaQ";
+    public void shouldCorrectVideoIdWhenHrefHasAlsoOtherQueryParametersTest() {
+      String multipleParameters = "https://www.youtube.com/watch?g=aspiasdihd&v=IdRn9IYWuaQ";
 
-      AlbumResult base = parseSingleWithHref(withMultipleParams);
-      assertEquals("IdRn9IYWuaQ", base.getVideoId());
-    }
-    
-    @Test
-    public void shouldThrowWhenMissingHrefAttributeTest() {
-      CustomHtmlParsingException ex = assertThrows(
-        CustomHtmlParsingException.class,
-        () -> parseSingleWithHref(null)
-      );
-
-      assertEquals("The 'href' attribute is missing", ex.getMessage());
+      AlbumParseResult actual = parseSingleWithHref(multipleParameters);
+      assertEquals("IdRn9IYWuaQ", actual.getVideoId());
     }
 
     @Test
     public void shouldThrowWhenHrefAttributeHasInvalidPrefixTest() {
-      String invalidHref = "https://www.google.com/watch?v=IdRn9IYWuaQ";
+      String invalidHrefPrefix = "https://www.google.com/watch?v=IdRn9IYWuaQ";
 
       CustomHtmlParsingException ex = assertThrows(
         CustomHtmlParsingException.class,
-        () -> parseSingleWithHref(invalidHref)
+        () -> parseSingleWithHref(invalidHrefPrefix)
       );
 
       assertEquals(
-        "Expected the 'href' attribute value '" + invalidHref
+        "Expected the 'href' attribute value '" + invalidHrefPrefix
         + "' to start with 'https://www.youtube.com/watch?'",
         ex.getMessage()
       );
@@ -110,15 +100,15 @@ public class BookmarksLinkParserServiceTest {
 
     @Test
     public void shouldThrowWhenHrefDoesNotHaveQueryParametersTest() {
-      String invalidHref = "https://www.youtube.com/watch?";
+      String noParameters = "https://www.youtube.com/watch?";
 
       CustomHtmlParsingException ex = assertThrows(
         CustomHtmlParsingException.class,
-        () -> parseSingleWithHref(invalidHref)
+        () -> parseSingleWithHref(noParameters)
       );
 
       assertEquals(
-        "Expected 'href' attribute value '" + invalidHref
+        "Expected 'href' attribute value '" + noParameters
         + "' to have a value for the query parameter 'v'",
         ex.getMessage()
       );
@@ -126,15 +116,15 @@ public class BookmarksLinkParserServiceTest {
 
     @Test
     public void shouldThrowWhenHrefHasWrongQueryParameterTest() {
-      String invalidHref = "https://www.youtube.com/watch?sv=IdRn9IYWuaQ";
+      String invalidParameter = "https://www.youtube.com/watch?sv=IdRn9IYWuaQ";
 
       CustomHtmlParsingException ex = assertThrows(
         CustomHtmlParsingException.class,
-        () -> parseSingleWithHref(invalidHref)
+        () -> parseSingleWithHref(invalidParameter)
       );
 
       assertEquals(
-        "Expected 'href' attribute value '" + invalidHref
+        "Expected 'href' attribute value '" + invalidParameter
         + "' to have a value for the query parameter 'v'",
         ex.getMessage()
       );
@@ -145,7 +135,7 @@ public class BookmarksLinkParserServiceTest {
   @DisplayName("extractTextContentDetails")
   public class TextContent {
 
-    private AlbumResult parseSingleWithText(String textValue) {
+    private AlbumParseResult parseSingleWithText(String textValue) {
       return parseSingle(headerText, textValue, href, addDate);
     }
 
@@ -175,14 +165,16 @@ public class BookmarksLinkParserServiceTest {
 
     @ParameterizedTest(name = "{index} should throw when {1}")
     @MethodSource("argumentProvider")
-    public void shouldThrowWhenMissingSeparatorInTextContentTest(String value, String description) {
+    public void shouldThrowWhenTextContentHasInvalidStructureTest(
+      String invalidTextContentStructure, String description
+    ) {
       CustomHtmlParsingException ex = assertThrows(
         CustomHtmlParsingException.class,
-        () -> parseSingleWithText(value)
+        () -> parseSingleWithText(invalidTextContentStructure)
       );
 
       assertEquals(
-        "The text content '" + value + "' is invalid",
+        "The text content '" + invalidTextContentStructure + "' is invalid",
         ex.getMessage()
       );
     }
@@ -206,42 +198,26 @@ public class BookmarksLinkParserServiceTest {
   @DisplayName("parseAddDate")
   public class AddDate {
 
-    private AlbumResult parseSingleWithAddDate(String addDateValue) {
+    private AlbumParseResult parseSingleWithAddDate(String addDateValue) {
       return parseSingle(headerText, text, href, addDateValue);
     }
 
     @Test
     public void shouldConvertWhenAddDateAttributeIsPositiveTest() {
-      AlbumResult result = parseSingleWithAddDate(addDate);
-
-      assertEquals(expected.getAddDate(), result.getAddDate());
+      AlbumParseResult actual = parseSingleWithAddDate(addDate);
+      assertEquals(expected.getAddDate(), actual.getAddDate());
     }
 
     @Test
     public void shouldConvertWhenAddDateAttributeIsNegativeTest() {
-      AlbumResult result = parseSingleWithAddDate("-1653126836");
-      
-      assertEquals("1917-08-13T14:06:04Z", result.getAddDate());
+      AlbumParseResult actual = parseSingleWithAddDate("-1653126836");
+      assertEquals("1917-08-13T14:06:04Z", actual.getAddDate());
     }
 
     @Test
     public void shouldReturnUnixExpochZeroWhenAddDateAttributeIsZeroTest() {
-      AlbumResult result = parseSingleWithAddDate("0");
-
-      assertEquals("1970-01-01T00:00:00Z", result.getAddDate());
-    }
-
-    @Test
-    public void shouldThrowWhenMissingAddDateAttributeTest() {
-      CustomHtmlParsingException ex = assertThrows(
-        CustomHtmlParsingException.class,
-        () -> parseSingleWithAddDate(null)
-      );
-
-      assertEquals(
-        "The 'add_date' attribute is missing",
-        ex.getMessage()
-      );
+      AlbumParseResult actual = parseSingleWithAddDate("0");
+      assertEquals("1970-01-01T00:00:00Z", actual.getAddDate());
     }
 
     @Test
@@ -259,14 +235,14 @@ public class BookmarksLinkParserServiceTest {
 
     @ParameterizedTest
     @ValueSource(strings = { "2022-05-21T09:53:56Z", "1653126x360" })
-    public void shouldThrowWhenAddDateAttributeContainsCharactersTest(String value) {
+    public void shouldThrowWhenAddDateAttributeHasInvalidValue(String invalidAddDateValue) {
       CustomHtmlParsingException ex = assertThrows(
         CustomHtmlParsingException.class,
-        () -> parseSingleWithAddDate(value)
+        () -> parseSingleWithAddDate(invalidAddDateValue)
       );
 
       assertEquals(
-        "The 'add_date' attribute value '" + value + "' is invalid",
+        "The 'add_date' attribute value '" + invalidAddDateValue + "' is invalid",
         ex.getMessage()
       );
     }

@@ -7,7 +7,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fs.fsapi.bookmark.parser.AlbumResult;
+import com.fs.fsapi.bookmark.parser.AlbumParseResult;
 import com.fs.fsapi.bookmark.parser.BookmarksFileParserService;
 import com.fs.fsapi.bookmark.parser.BookmarksLinkParserService;
 
@@ -21,9 +21,9 @@ public class BookmarksService {
 
   private final BookmarksLinkParserService linkParser;
 
-  public List<AlbumResult> getAlbumBases(MultipartFile file, String name) throws IOException {
+  public List<AlbumParseResult> getAlbumBases(MultipartFile file, String name) throws IOException {
     InputStream fileStream = file.getInputStream();
-    return linkParser.parseElements(fileParser.parseFile(fileStream, name));
+    return linkParser.parse(fileParser.parse(fileStream, name));
   }
   
 }

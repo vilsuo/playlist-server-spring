@@ -72,7 +72,7 @@ public class BookmarksFileHelper {
 
   // folderlinks created from the valid file
   private static final BookmarksLinkElement f1 = new BookmarksLinkElement(
-    ElementHelper.createLinkTypeElement(
+    ElementHelper.createBookmarkLinkTypeElement(
       "Annihilator - Alice In Hell (1989)",
       "https://www.youtube.com/watch?v=IdRn9IYWuaQ",
       "1653126836"
@@ -81,7 +81,7 @@ public class BookmarksFileHelper {
   );
 
   private static final BookmarksLinkElement f2 = new BookmarksLinkElement(
-    ElementHelper.createLinkTypeElement(
+    ElementHelper.createBookmarkLinkTypeElement(
       "A.O.D - Altars of Destruction (1988)",
       "https://www.youtube.com/watch?v=5av2oGfw34g&list=PLHz-VIInDvH9Wfr0oLNeOch_SIl6rA1ij&index=8",
       "1711378433"
@@ -90,7 +90,7 @@ public class BookmarksFileHelper {
   );
 
   private static final BookmarksLinkElement f3 = new BookmarksLinkElement(
-    ElementHelper.createLinkTypeElement(
+    ElementHelper.createBookmarkLinkTypeElement(
       "Nuclear Assault - Survive (1988)",
       "https://www.youtube.com/watch?v=zopfZLQibWw",
       "1711378636"
@@ -99,7 +99,7 @@ public class BookmarksFileHelper {
   );
 
   private static final BookmarksLinkElement f4 = new BookmarksLinkElement(
-    ElementHelper.createLinkTypeElement(
+    ElementHelper.createBookmarkLinkTypeElement(
       "Exodus - Fabulous Disaster (1989)",
       "https://www.youtube.com/watch?v=Zof79HxNpMs",
       "1711378682"
@@ -108,7 +108,7 @@ public class BookmarksFileHelper {
   );
 
   private static final BookmarksLinkElement f5 = new BookmarksLinkElement(
-    ElementHelper.createLinkTypeElement(
+    ElementHelper.createBookmarkLinkTypeElement(
       "Angel Dust - Into the Dark Past (1986)",
       "https://www.youtube.com/watch?v=DopHEl-BCGQ",
       "1711378617"
@@ -117,7 +117,7 @@ public class BookmarksFileHelper {
   );
 
   private static final BookmarksLinkElement f6 = new BookmarksLinkElement(
-    ElementHelper.createLinkTypeElement(
+    ElementHelper.createBookmarkLinkTypeElement(
       "Paradox - Product of Imagination (1987)",
       "https://www.youtube.com/watch?v=MV3yQFU3Z6s",
       "1711378656"

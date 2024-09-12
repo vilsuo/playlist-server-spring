@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import com.fs.fsapi.DateTimeString;
-import com.fs.fsapi.bookmark.parser.AlbumResult;
+import com.fs.fsapi.bookmark.parser.AlbumParseResult;
 import com.fs.fsapi.exceptions.CustomDataNotFoundException;
 import com.fs.fsapi.exceptions.CustomParameterConstraintException;
 
@@ -72,10 +72,9 @@ public class AlbumService {
    * by artist and title. 
    * 
    * @param value  parsed album value
-   * @return Optional containing the created album unless such album already 
-   *         exists
+   * @return Optional containing the created album if it was created
    */
-  private Optional<Album> create(@Valid AlbumResult value) {
+  private Optional<Album> create(AlbumParseResult value) {
     if (value == null) {
       throw new IllegalArgumentException("Expected creation value to be present");
     }
@@ -88,12 +87,12 @@ public class AlbumService {
       return Optional.empty();
     }
 
-    Album album = mapper.albumResultToAlbum(value);
+    Album album = mapper.albumParseResultToAlbum(value);
     return Optional.of(repository.save(album));
   }
 
   @Transactional
-  public List<Album> createMany(List<AlbumResult> values) {
+  public List<Album> createMany(List<AlbumParseResult> values) {
     return values.stream()
       .map(value -> this.create(value))
       .filter(Optional::isPresent)

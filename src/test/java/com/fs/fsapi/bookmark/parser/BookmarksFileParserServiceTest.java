@@ -23,14 +23,14 @@ public class BookmarksFileParserServiceTest {
   private final BookmarksFileParserService service = new BookmarksFileParserService();
 
   private List<BookmarksLinkElement> createWithValidFile(ValidHeader header) throws Exception {
-    return service.parseFile(
+    return service.parse(
       BookmarksFileHelper.readValidFile(), 
       header.getTextContent()
     );
   }
 
   private List<BookmarksLinkElement> createWithInValidFile(InvalidHeader header) throws Exception {
-    return service.parseFile(
+    return service.parse(
       BookmarksFileHelper.readFileWithInvalidStruture(), 
       header.getTextContent()
     );
@@ -54,9 +54,7 @@ public class BookmarksFileParserServiceTest {
   @Test
   public void shouldNotCreateAnyWhenFolderIsEmptyTest() throws Exception {
     final ValidHeader header = ValidHeader.EMPTY;
-
-    List<BookmarksLinkElement> folderLinks = createWithValidFile(header);
-    assertTrue(folderLinks.isEmpty());
+    assertTrue(createWithValidFile(header).isEmpty());
   }
 
   @Test
@@ -81,40 +79,40 @@ public class BookmarksFileParserServiceTest {
 
     private ValidHeader header = ValidHeader.CHILD;
 
-    private List<BookmarksLinkElement> results;
-    private BookmarksLinkElement result;
+    private List<BookmarksLinkElement> actuals;
+    private BookmarksLinkElement actual;
 
     private final BookmarksLinkElement expected = BookmarksFileHelper.VALID_FILE_CHILD_LINKS[0];
 
     @BeforeEach
     public void create() throws Exception {
-      results = createWithValidFile(header);
-      result = results.get(0);
+      actuals = createWithValidFile(header);
+      actual = actuals.get(0);
     }
 
     @Test
     public void shouldCreateSingleTest() {
-      assertEquals(1, results.size());
+      assertEquals(1, actuals.size());
     }
 
     @Test
     public void shouldGetFolderNameFromHeaderTextContentTest() {
-      assertEquals(expected.getHeaderText(), result.getHeaderText());
+      assertEquals(expected.getHeaderText(), actual.getHeaderText());
     }
 
     @Test
     public void shouldGetTextFromLinkTextContentTest() {
-      assertEquals(expected.getText(), result.getText());
+      assertEquals(expected.getText(), actual.getText());
     }
 
     @Test
     public void shouldGetHrefFromLinkHrefAttributeTest() {
-      assertEquals(expected.getHref(), result.getHref());
+      assertEquals(expected.getHref(), actual.getHref());
     }
     
     @Test
     public void shouldGetAddDateFromLinkAddDateAttributeTest() {
-      assertEquals(expected.getAddDate(), result.getAddDate());
+      assertEquals(expected.getAddDate(), actual.getAddDate());
     }
   }
 
@@ -124,50 +122,50 @@ public class BookmarksFileParserServiceTest {
 
     private ValidHeader header = ValidHeader.PARENT;
 
-    private List<BookmarksLinkElement> results;
+    private List<BookmarksLinkElement> actuals;
     private BookmarksLinkElement[] expectations = BookmarksFileHelper.VALID_FILE_PARENT_LINKS;
 
     @BeforeEach
     public void create() throws Exception {
-      results = createWithValidFile(header);
+      actuals = createWithValidFile(header);
     }
 
     @Test
     public void shouldCreateFromAllLinksInTheFolderRecursivelyTest() {
-      assertEquals(expectations.length, results.size());
+      assertEquals(expectations.length, actuals.size());
     }
 
     @Test
     public void shouldCreateFromLinksBeforeSubFolderTest() {
-      BookmarksLinkElement result = results.get(2);
+      BookmarksLinkElement actual = actuals.get(2);
       BookmarksLinkElement expected = expectations[2];
 
-      assertEquals(expected.getHeaderText(), result.getHeaderText());
-      assertEquals(expected.getText(), result.getText());
-      assertEquals(expected.getHref(), result.getHref());
-      assertEquals(expected.getAddDate(), result.getAddDate());
+      assertEquals(expected.getHeaderText(), actual.getHeaderText());
+      assertEquals(expected.getText(), actual.getText());
+      assertEquals(expected.getHref(), actual.getHref());
+      assertEquals(expected.getAddDate(), actual.getAddDate());
     }
 
     @Test
     public void shouldCreateFromLinksInSubFolderTest() {
-      BookmarksLinkElement result = results.get(3);
+      BookmarksLinkElement actual = actuals.get(3);
       BookmarksLinkElement expected = expectations[3];
 
-      assertEquals(expected.getHeaderText(), result.getHeaderText());
-      assertEquals(expected.getText(), result.getText());
-      assertEquals(expected.getHref(), result.getHref());
-      assertEquals(expected.getAddDate(), result.getAddDate());
+      assertEquals(expected.getHeaderText(), actual.getHeaderText());
+      assertEquals(expected.getText(), actual.getText());
+      assertEquals(expected.getHref(), actual.getHref());
+      assertEquals(expected.getAddDate(), actual.getAddDate());
     }
 
     @Test
     public void shouldCreateFromLinksAfterSubFolderTest() {
-      BookmarksLinkElement result = results.get(4);
+      BookmarksLinkElement actual = actuals.get(4);
       BookmarksLinkElement expected = expectations[4];
 
-      assertEquals(expected.getHeaderText(), result.getHeaderText());
-      assertEquals(expected.getText(), result.getText());
-      assertEquals(expected.getHref(), result.getHref());
-      assertEquals(expected.getAddDate(), result.getAddDate());
+      assertEquals(expected.getHeaderText(), actual.getHeaderText());
+      assertEquals(expected.getText(), actual.getText());
+      assertEquals(expected.getHref(), actual.getHref());
+      assertEquals(expected.getAddDate(), actual.getAddDate());
     }
   }
 }

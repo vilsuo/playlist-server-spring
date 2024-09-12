@@ -15,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fs.fsapi.album.Album;
 import com.fs.fsapi.album.AlbumService;
-import com.fs.fsapi.bookmark.parser.AlbumResult;
+import com.fs.fsapi.bookmark.parser.AlbumParseResult;
 import com.fs.fsapi.exceptions.CustomInvalidMediaTypeException;
 
 import jakarta.validation.constraints.NotEmpty;
@@ -40,7 +40,7 @@ public class BookmarksController {
   private final String SUPPORTED_MEDIA_TYPE = "text";
 
   @PostMapping
-  public ResponseEntity<List<Album>> uploadBookmarks(
+  public ResponseEntity<List<Album>> convertBookmarks(
     @RequestParam MultipartFile file,
     @NotEmpty @RequestParam String name
   ) throws IOException {
@@ -53,7 +53,7 @@ public class BookmarksController {
       );
     }
 
-    List<AlbumResult> values = bookmarkService.getAlbumBases(file, name);
+    List<AlbumParseResult> values = bookmarkService.getAlbumBases(file, name);
 
     return ResponseEntity
       .ok()

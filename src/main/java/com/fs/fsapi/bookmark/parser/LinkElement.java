@@ -1,45 +1,34 @@
 package com.fs.fsapi.bookmark.parser;
 
 import org.jsoup.nodes.Element;
-import org.springframework.lang.Nullable;
 
 import lombok.Getter;
 
 @Getter
 public class LinkElement {
 
-  private final Element element;
+  private String text; // link text content
 
-  public final String getText() {
-    return element.wholeText();
-  }
+  private String href; // link 'href' attribute value
 
+  /**
+   * 
+   * @param element  {@code a} element with {@code href} attribute
+   */
   public LinkElement(Element element) {
-    // attached element must be a tag 'a'
+    // attached element must be a 'a' element with 'href' attribute
     final String tag = element.normalName();
     if (!tag.equals("a")) {
       throw new IllegalArgumentException(
         "Expected element '" + tag + "' to be 'a' element"
       );
+    } else if (!element.hasAttr("href")) {
+      throw new IllegalArgumentException(
+        "Expected element to have 'href' attribute"
+      );
     }
 
-    this.element = element;
-  }
-
-  /**
-   * 
-   * @return the href key value, or null if not present
-   */
-  public final String getHref() {
-    return getAttributeValue("href");
-  }
-
-  @Nullable
-  protected final String getAttributeValue(String name) {
-    if (element.hasAttr(name)) {
-      return element.attr(name);
-    }
-
-    return null;
+    this.text = element.wholeText();
+    this.href = element.attr("href");
   }
 }

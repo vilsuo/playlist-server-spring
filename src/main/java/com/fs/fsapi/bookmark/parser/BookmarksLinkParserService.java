@@ -26,8 +26,8 @@ public class BookmarksLinkParserService {
   private final Pattern TEXT_PATTERN = Pattern.compile("(.+?) - (.+?) \\((\\d+)\\)$");
 
   /**
-   * Create base album objects from a list of html elements with their
-   * associated folder name.
+   * Create base album objects based on a extracted details about {@code a}
+   * elements.
    * 
    * <ul>
    *  <li>{@code videoId} is created from element {@code href} attribute
@@ -35,22 +35,24 @@ public class BookmarksLinkParserService {
    *    {@code artist}, {@code title} and {@code published} are extracted 
    *    from the element text content according to the formula
    *    {@code artist_name - album_title (publish_year)}
-   *  <li>{@code category} is set to the {@code folderName}
+   *  <li>
+   *    {@code category} is set to the element parent header element text
+   *    content
    *  <li>
    *    {@code addDate} is created from element {@code add_date} attribute.
    *    The value is expected to be in Unix Epoch seconds
    * </ul>
    * 
-   * @param values  list of html elements with their associated folder name
+   * @param values  list of {@code a} element details
    * @return the created list of album base objects
    * 
    */
-  public List<AlbumResult> parseElements(List<BookmarksLinkElement> values) {
+  public List<AlbumParseResult> parse(List<BookmarksLinkElement> values) {
     return values.stream()
       .map(value -> {
         final TextDetails details = extractTextContentDetails(value.getText());
 
-        return new AlbumResult(
+        return new AlbumParseResult(
           extractVideoId(value.getHref()),
           details.getArtist(),
           details.getTitle(),
@@ -63,10 +65,9 @@ public class BookmarksLinkParserService {
   }
 
   /**
-   * Extract the query paramenter {@link BookmarksLinkParserService#VIDEO_ID_KEY_NAME} value
-   * from an URL starting with {@link BookmarksLinkParserService#HREF_PREFIX}.
+   * Extract the video id query paramenter value.
    * 
-   * @param href  Link element href attribute value
+   * @param href  element href attribute value
    * @return the extracted query parameter value
    */
   private String extractVideoId (String href) {

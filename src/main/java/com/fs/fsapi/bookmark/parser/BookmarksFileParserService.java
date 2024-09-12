@@ -21,8 +21,8 @@ public class BookmarksFileParserService {
   private final Pattern ANY_HEADER_PATTERN = Pattern.compile("h[1-6]");
 
   /**
-   * Find HTML {@code a} elements in a specific block indicated by a header
-   * text content. Each resulting object will also contain the preceeding header
+   * Find details about {@code a} elements in a specific block indicated by a header
+   * text content. Each resulting object will also contain the parent header
    * element's text content. 
    * 
    * The input is expected to have/contain the structure specified by the following 
@@ -45,11 +45,11 @@ public class BookmarksFileParserService {
    * @param headerText  the {@code <text>} of the {@code <header>} indicating
    *                    the search for links is limited in the following
    *                    {@code <folder>}
-   * @return the list of link elements with their associated header text content
+   * @return the list of {@code a} element details
    * @throws IOException if the file could not be found, or read, or if the
    *                     charsetName is invalid
    */
-  public List<BookmarksLinkElement> parseFile(InputStream file, String headerText) throws IOException {
+  public List<BookmarksLinkElement> parse(InputStream file, String headerText) throws IOException {
     Document doc = Jsoup.parse(file, null, "");
 
     return parseFolder(findHeader(doc, headerText), new ArrayList<>());
@@ -83,15 +83,14 @@ public class BookmarksFileParserService {
   }
 
   /**
-   * Find link elements recursively inside the block indicated by the header
-   * element text content.
+   * Find details about {@code a} elements recursively inside the block indicated
+   * by the header element text content.
    * 
    * @param h  the header element
-   * @param folderLinks  the list where to add found link elements with their
-   *                     associated header text content
-   * @return the passed in list 
+   * @param values  the list to populate with details about {@code a} elements
+   * @return the populated list
    */
-  private List<BookmarksLinkElement> parseFolder(Element h, List<BookmarksLinkElement> folderLinks) {
+  private List<BookmarksLinkElement> parseFolder(Element h, List<BookmarksLinkElement> values) {
     final String text = h.text();
 
     // the next element should be a dl element
@@ -112,17 +111,21 @@ public class BookmarksFileParserService {
     }
 
     next.children().stream()
-      .skip(1) // first element is expected to be 'p' element
+      .skip(1) // first element is expected to be a 'p' element
       .forEach(element -> {
         if (isDtSingleElement(element)) {
-          // the only child is 'a' element
-          Element a = element.child(0);
-          folderLinks.add(new BookmarksLinkElement(a, text));
-
+          try {
+            // the only child is 'a' element
+            Element a = element.child(0);
+            values.add(new BookmarksLinkElement(a, text));
+          } catch (IllegalArgumentException e) {
+            // throw creation errors
+            throw new CustomHtmlParsingException(e.getMessage());
+          }
         } else if (isDtContainerElement(element)) {
           // the first child is header element
           Element hSub = element.child(0);
-          parseFolder(hSub, folderLinks);
+          parseFolder(hSub, values);
 
         } else  if (element.nameIs("dt")) {
           throw new CustomHtmlParsingException(
@@ -135,7 +138,7 @@ public class BookmarksFileParserService {
         }
       });
 
-    return folderLinks;
+    return values;
   }
 
   /**
@@ -163,7 +166,7 @@ public class BookmarksFileParserService {
    *    <dl />
    *    <p />
    *  </dt>
-   * }. The tag {@code h?} is a html header element of any level.
+   * }, where the tag {@code h?} is a html header element of any level.
    * 
    * @param e  the element to check
    * @return true if element has the structure

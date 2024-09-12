@@ -1,7 +1,7 @@
 package com.fs.fsapi.bookmark.parser;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.jupiter.api.DisplayName;
@@ -21,9 +21,20 @@ public class BookmarksLinkElementTest {
   private final String folderName = "Thrash";
 
   private final BookmarksLinkElement folderLink = new BookmarksLinkElement(
-    ElementHelper.createLinkTypeElement(text, href, addDate),
+    ElementHelper.createBookmarkLinkTypeElement(text, href, addDate),
     folderName
   );
+
+  @Test
+  public void shouldThrowWhenCreatedWithoutAddDateAttributeTest() {
+    assertThrows(
+      IllegalArgumentException.class,
+      () -> new BookmarksLinkElement(
+        ElementHelper.createBookmarkLinkTypeElement(text, href, null),
+        folderName
+      )
+    );
+  }
 
   @Nested
   @DisplayName("getText")
@@ -37,7 +48,7 @@ public class BookmarksLinkElementTest {
     @Test
     public void shouldReturnEmptyTextWhenElementTextContentIsEmptyTest() {
       final BookmarksLinkElement f = new BookmarksLinkElement(
-        ElementHelper.createLinkTypeElement("", href, addDate),
+        ElementHelper.createBookmarkLinkTypeElement("", href, addDate),
         folderName
       );
 
@@ -47,7 +58,7 @@ public class BookmarksLinkElementTest {
     @Test
     public void shouldReturnEmptyTextWhenElementDoesNotHaveTextContentTest() {
       final BookmarksLinkElement f = new BookmarksLinkElement(
-        ElementHelper.createLinkTypeElement(null, href, addDate),
+        ElementHelper.createBookmarkLinkTypeElement(null, href, addDate),
         folderName
       );
 
@@ -67,21 +78,11 @@ public class BookmarksLinkElementTest {
     @Test
     public void shouldReturnEmptyWhenElementHrefAttributeIsEmptyTest() {
       final BookmarksLinkElement f = new BookmarksLinkElement(
-        ElementHelper.createLinkTypeElement(text, "", addDate),
+        ElementHelper.createBookmarkLinkTypeElement(text, "", addDate),
         folderName
       );
 
       assertTrue(f.getHref().isEmpty());
-    }
-
-    @Test
-    public void shouldReturnNullWhenElementDoesNotHaveHrefAttributeTest() {
-      final BookmarksLinkElement f = new BookmarksLinkElement(
-        ElementHelper.createLinkTypeElement(text, null, addDate),
-        folderName
-      );
-
-      assertNull(f.getHref());
     }
   }
 
@@ -97,21 +98,11 @@ public class BookmarksLinkElementTest {
     @Test
     public void shouldReturnEmptyWhenElementAddDateAttributeIsEmptyTest() {
       final BookmarksLinkElement f = new BookmarksLinkElement(
-        ElementHelper.createLinkTypeElement(text, href, ""),
+        ElementHelper.createBookmarkLinkTypeElement(text, href, ""),
         folderName
       );
 
       assertTrue(f.getAddDate().isEmpty());
-    }
-
-    @Test
-    public void shouldReturnNullWhenElementDoesNotHaveAddDateAttributeTest() {
-      final BookmarksLinkElement f = new BookmarksLinkElement(
-        ElementHelper.createLinkTypeElement(text, href, null),
-        folderName
-      );
-
-      assertNull(f.getAddDate());
     }
   }
 }

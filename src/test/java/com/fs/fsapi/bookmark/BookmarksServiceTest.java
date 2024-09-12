@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 
-import com.fs.fsapi.bookmark.parser.AlbumResult;
+import com.fs.fsapi.bookmark.parser.AlbumParseResult;
 import com.fs.fsapi.bookmark.parser.BookmarksFileParserService;
 import com.fs.fsapi.bookmark.parser.BookmarksLinkParserService;
 import com.fs.fsapi.exceptions.CustomHtmlParsingException;
@@ -78,7 +78,7 @@ public class BookmarksServiceTest {
       );
 
       assertEquals(
-        "The 'add_date' attribute is missing",
+        "Expected element to have 'add_date' attribute",
         ex.getMessage()
       );
     }
@@ -145,9 +145,9 @@ public class BookmarksServiceTest {
     @Test
     public void shouldNotCreateAnyWhenThereAreNoLinksTest() throws IOException {
       final ValidHeader header = ValidHeader.EMPTY;
-      List<AlbumResult> results = service.getAlbumBases(file, header.getTextContent());
+      List<AlbumParseResult> actual = service.getAlbumBases(file, header.getTextContent());
 
-      assertTrue(results.isEmpty());
+      assertTrue(actual.isEmpty());
     }
 
     @Nested
@@ -156,38 +156,38 @@ public class BookmarksServiceTest {
 
       private final ValidHeader header = ValidHeader.CHILD;
 
-      private List<AlbumResult> results;
-      private AlbumResult result;
+      private List<AlbumParseResult> actuals;
+      private AlbumParseResult actual;
 
-      private final AlbumResult expected = AlbumHelper.VALID_FILE_CHILD_RESULTS[0];
+      private final AlbumParseResult expected = AlbumHelper.VALID_FILE_CHILD_RESULTS[0];
 
       @BeforeEach
       public void create() throws Exception {
-        results = service.getAlbumBases(file, header.getTextContent());
-        result = results.get(0);
+        actuals = service.getAlbumBases(file, header.getTextContent());
+        actual = actuals.get(0);
       }
 
       @Test
       public void shouldCreateSingleTest() {
-        assertEquals(1, results.size());
+        assertEquals(1, actuals.size());
       }
 
       @Test
       public void shouldSetCategoryToHeaderTextContentTest() {
-        assertEquals(expected.getCategory(), result.getCategory());
+        assertEquals(expected.getCategory(), actual.getCategory());
       }
 
       @Test
       public void shouldGetDetailsFromTextContentTest() {
-        assertEquals(expected.getArtist(), result.getArtist());
-        assertEquals(expected.getTitle(), result.getTitle());
-        assertEquals(expected.getPublished(), result.getPublished());
+        assertEquals(expected.getArtist(), actual.getArtist());
+        assertEquals(expected.getTitle(), actual.getTitle());
+        assertEquals(expected.getPublished(), actual.getPublished());
       }
 
       @Test
       public void shouldGetDetailsFromAttributesTest() {
-        assertEquals(expected.getVideoId(), result.getVideoId());
-        assertEquals(expected.getAddDate(), result.getAddDate());
+        assertEquals(expected.getVideoId(), actual.getVideoId());
+        assertEquals(expected.getAddDate(), actual.getAddDate());
       }
     }
 
@@ -197,56 +197,56 @@ public class BookmarksServiceTest {
 
       private ValidHeader header = ValidHeader.PARENT;
 
-      private List<AlbumResult> results;
-      private AlbumResult[] expectations = AlbumHelper.VALID_FILE_PARENT_RESULTS;
+      private List<AlbumParseResult> actuals;
+      private AlbumParseResult[] expectations = AlbumHelper.VALID_FILE_PARENT_RESULTS;
 
       @BeforeEach
       public void create() throws IOException  {
-        results = service.getAlbumBases(file, header.getTextContent());
+        actuals = service.getAlbumBases(file, header.getTextContent());
       }
 
       @Test
       public void shouldCreateFromAllLinksInTheFolderRecursivelyTest() {
-        assertEquals(expectations.length, results.size());
+        assertEquals(expectations.length, actuals.size());
       }
 
       @Test
       public void shouldCreateFromLinksBeforeSubFolderTest() {
-        AlbumResult result = results.get(2);
-        AlbumResult expected = expectations[2];
+        AlbumParseResult actual = actuals.get(2);
+        AlbumParseResult expected = expectations[2];
 
-        assertEquals(expected.getVideoId(), result.getVideoId());
-        assertEquals(expected.getArtist(), result.getArtist());
-        assertEquals(expected.getTitle(), result.getTitle());
-        assertEquals(expected.getPublished(), result.getPublished());
-        assertEquals(expected.getCategory(), result.getCategory());
-        assertEquals(expected.getAddDate(), result.getAddDate());
+        assertEquals(expected.getVideoId(), actual.getVideoId());
+        assertEquals(expected.getArtist(), actual.getArtist());
+        assertEquals(expected.getTitle(), actual.getTitle());
+        assertEquals(expected.getPublished(), actual.getPublished());
+        assertEquals(expected.getCategory(), actual.getCategory());
+        assertEquals(expected.getAddDate(), actual.getAddDate());
       }
 
       @Test
       public void shouldCreateFromLinksInSubFolderTest() {
-        AlbumResult result = results.get(3);
-        AlbumResult expected = expectations[3];
+        AlbumParseResult actual = actuals.get(3);
+        AlbumParseResult expected = expectations[3];
 
-        assertEquals(expected.getVideoId(), result.getVideoId());
-        assertEquals(expected.getArtist(), result.getArtist());
-        assertEquals(expected.getTitle(), result.getTitle());
-        assertEquals(expected.getPublished(), result.getPublished());
-        assertEquals(expected.getCategory(), result.getCategory());
-        assertEquals(expected.getAddDate(), result.getAddDate());
+        assertEquals(expected.getVideoId(), actual.getVideoId());
+        assertEquals(expected.getArtist(), actual.getArtist());
+        assertEquals(expected.getTitle(), actual.getTitle());
+        assertEquals(expected.getPublished(), actual.getPublished());
+        assertEquals(expected.getCategory(), actual.getCategory());
+        assertEquals(expected.getAddDate(), actual.getAddDate());
       }
 
       @Test
       public void shouldCreateFromLinksAfterSubFolderTest() {
-        AlbumResult result = results.get(4);
-        AlbumResult expected = expectations[4];
+        AlbumParseResult actual = actuals.get(4);
+        AlbumParseResult expected = expectations[4];
 
-        assertEquals(expected.getVideoId(), result.getVideoId());
-        assertEquals(expected.getArtist(), result.getArtist());
-        assertEquals(expected.getTitle(), result.getTitle());
-        assertEquals(expected.getPublished(), result.getPublished());
-        assertEquals(expected.getCategory(), result.getCategory());
-        assertEquals(expected.getAddDate(), result.getAddDate());
+        assertEquals(expected.getVideoId(), actual.getVideoId());
+        assertEquals(expected.getArtist(), actual.getArtist());
+        assertEquals(expected.getTitle(), actual.getTitle());
+        assertEquals(expected.getPublished(), actual.getPublished());
+        assertEquals(expected.getCategory(), actual.getCategory());
+        assertEquals(expected.getAddDate(), actual.getAddDate());
       }
     }
   }

@@ -8,6 +8,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.fs.fsapi.config.CustomWebClientConfig;
 import com.fs.fsapi.metallum.cache.ArtistTitleSearchCache;
+import com.fs.fsapi.metallum.parser.LyricsResult;
 import com.fs.fsapi.metallum.parser.MetallumParser;
 import com.fs.fsapi.metallum.parser.SongResult;
 import com.fs.fsapi.metallum.response.ArtistTitleSearchResponse;
@@ -194,8 +195,8 @@ public class MetallumService {
    * @return html string containing the lyrics, or html string describing
    *         the lyrics were not found
    */
-  public String searchSongLyrics(String songId) {
-    return webClient.get()
+  public LyricsResult searchSongLyrics(String songId) {
+    final String html = webClient.get()
       .uri(uriBuilder -> uriBuilder
         .path("/release/ajax-view-lyrics/id/{songId}")
         .build(songId))
@@ -203,5 +204,7 @@ public class MetallumService {
       .retrieve()
       .bodyToMono(String.class)
       .block();
+
+    return parser.parseLyrics(html);
   }
 }

@@ -2,6 +2,8 @@ package com.fs.fsapi.metallum.parser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -143,5 +145,26 @@ public class MetallumParser {
     throw new CustomMetallumScrapingException(
       "Song id was not found"
     );
+  }
+
+  public LyricsResult parseLyrics(String html) {
+    final String value = html.trim();
+
+    // no lyrics
+    if (value.equals("<em>(lyrics not available)</em>")) {
+      return new LyricsResult("Lyrics not available");
+    }
+
+    // instrumental
+    if (value.equals("(<em>Instrumental</em>)<br />")) {
+      return new LyricsResult("Instrumental");
+    }
+
+    final String ROW_SEPARATOR = "<br />";
+    final List<String> lyrics = Stream.of(value.split(ROW_SEPARATOR))
+      .map(row -> row.trim())
+      .collect(Collectors.toList());
+
+    return new LyricsResult(lyrics);
   }
 }

@@ -73,7 +73,7 @@ public class MetallumService {
    * @return the image
    */
   public byte[] searchTitleCover(String id) {
-    return searchImage(getTitleCoverPath(id));
+    return searchImage(constructImagePath(id) + IMAGE_EXTENSION);
   }
 
   /**
@@ -83,7 +83,7 @@ public class MetallumService {
    * @return the image
    */
   public byte[] searchArtistLogo(String id) {
-    return searchImage(getArtistLogoPath(id));
+    return searchImage(constructImagePath(id) + "_logo" + IMAGE_EXTENSION);
   }
 
   private byte[] searchImage(String imagePath) {
@@ -95,26 +95,6 @@ public class MetallumService {
       .retrieve()
       .bodyToMono(byte[].class)
       .block();
-  }
-
-  /**
-   * Get the path of the release cover image. 
-   * 
-   * @param id  the release title id
-   * @return the path of the release cover image
-   */
-  private String getTitleCoverPath(String id) {
-    return constructImagePath(id) + IMAGE_EXTENSION;
-  }
-
-  /**
-   * Get the path of the artist logo image. 
-   * 
-   * @param id  the artist id
-   * @return the path of the artist logo image
-   */
-  private String getArtistLogoPath(String id) {
-    return constructImagePath(id) + "_logo" + IMAGE_EXTENSION;
   }
 
   /**
@@ -152,9 +132,9 @@ public class MetallumService {
    * {@link ArtistTitleSearchResult#getTitleHref()}
    */
   public List<SongResult> searchSongs(String titleId) {
-    // only title id required seems to be required,
+    // only title id seems to be required,
     // artist and title can be empty...
-    String html = webClient.get()
+    final String html = webClient.get()
       .uri(uriBuilder -> uriBuilder
         .path("/albums/{artist}/{title}/{titleId}") 
         .build("", "", titleId))
@@ -174,17 +154,13 @@ public class MetallumService {
    *         the lyrics were not found
    */
   public String searchSongLyrics(String songId) {
-    final String path = "/release/ajax-view-lyrics/id/" + songId;
-
-    String html = webClient.get()
+    return webClient.get()
       .uri(uriBuilder -> uriBuilder
-        .path(path)
-        .build())
+        .path("/release/ajax-view-lyrics/id/{songId}")
+        .build(songId))
       .accept(MediaType.TEXT_HTML)
       .retrieve()
       .bodyToMono(String.class)
       .block();
-
-    return html;
   }
 }

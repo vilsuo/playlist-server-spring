@@ -19,7 +19,7 @@ public class ArtistTitleSearchCacheTest {
   @Autowired
   private ArtistTitleSearchCache cache;
 
-  private final ArtistTitleSearchResult expected = MetallumFileHelper.searchResult;
+  private final ArtistTitleSearchResult expected = MetallumFileHelper.SEARCH_RESULT;
   private final String key1 = expected.getArtist();
   private final String key2 = expected.getTitle();
 
@@ -35,14 +35,14 @@ public class ArtistTitleSearchCacheTest {
 
   @Test
   public void shouldContainMappingAfterPuttingTest() {
-    ArtistTitleSearchResult expected = MetallumFileHelper.searchResult;
+    final ArtistTitleSearchResult expected = MetallumFileHelper.SEARCH_RESULT;
 
     cache.put(key1, key2, expected);
 
     Optional<ArtistTitleSearchResult> opt = cache.get(key1, key2);
     assertTrue(opt.isPresent());
 
-    ArtistTitleSearchResult actual = opt.get();
+    final ArtistTitleSearchResult actual = opt.get();
 
     assertEquals(expected, actual);
   }

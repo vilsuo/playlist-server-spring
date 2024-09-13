@@ -27,14 +27,13 @@ public class MetallumParserTest {
   @DisplayName("getSearchResult")
   public class SearchResult {
 
-    private final ArtistTitleSearchResult expected = MetallumFileHelper.searchResult;
+    private final ArtistTitleSearchResult expected = MetallumFileHelper.SEARCH_RESULT;
 
     @Test
     public void shouldReturnSearchResultTest() {
-      ArtistTitleSearchResponse response = MetallumFileHelper.searchResponse;
-      ArtistTitleSearchResult actual = parser.getSearchResult(
-        response, null, null
-      );
+      final ArtistTitleSearchResponse response = MetallumFileHelper.SEARCH_RESPONSE;
+      final ArtistTitleSearchResult actual = parser
+        .getSearchResult(response, null, null);
 
       assertEquals(expected.getArtist(), actual.getArtist());
       assertEquals(expected.getArtistHref(), actual.getArtistHref());
@@ -52,11 +51,11 @@ public class MetallumParserTest {
   @DisplayName("parseSongs")
   public class ParseSongs {
 
-    private final List<SongResult> expected = MetallumFileHelper.songsWithLyrics;
+    private final List<SongResult> expected = MetallumFileHelper.SONGS_RESULT_WITH_LYRICS;
 
     @Test
     public void shouldParseSongsTest() throws IOException {
-      List<SongResult> actual = parser.parseSongs(
+      final List<SongResult> actual = parser.parseSongs(
         MetallumFileHelper.readTitlePageWithLyricsFile()
       );
 
@@ -77,7 +76,7 @@ public class MetallumParserTest {
     @DisplayName("when song lyrics are available")
     public class Available {
 
-      final LyricsResult expected = MetallumFileHelper.lyrics;
+      final LyricsResult expected = MetallumFileHelper.LYRICS_RESULT;
       LyricsResult actual;
 
       @BeforeEach
@@ -92,8 +91,8 @@ public class MetallumParserTest {
 
       @Test
       public void shouldHaveTheSongLyricsTest() throws IOException {
-        List<String> expectedLyrics = expected.getLyrics();
-        List<String> actualLyrics = actual.getLyrics();
+        final List<String> expectedLyrics = expected.getLyrics();
+        final List<String> actualLyrics = actual.getLyrics();
   
         assertEquals(expectedLyrics.size(), actualLyrics.size());
         for (int i = 0; i < actual.getLyrics().size(); ++i) {
@@ -106,7 +105,7 @@ public class MetallumParserTest {
     @DisplayName("when song lyrics are not available")
     public class NotAvailable {
 
-      final LyricsResult expected = MetallumFileHelper.lyricsNotAvailable;
+      final LyricsResult expected = MetallumFileHelper.LYRICS_RESULT_NOT_AVAILABLE;
       LyricsResult actual;
 
       @BeforeEach
@@ -125,8 +124,8 @@ public class MetallumParserTest {
 
       @Test
       public void shouldNotHaveAnySongLyricsTest() throws IOException {
-        List<String> expectedLyrics = expected.getLyrics();
-        List<String> actualLyrics = actual.getLyrics();
+        final List<String> expectedLyrics = expected.getLyrics();
+        final List<String> actualLyrics = actual.getLyrics();
   
         assertTrue(expectedLyrics.isEmpty());
         assertTrue(actualLyrics.isEmpty());
@@ -137,14 +136,12 @@ public class MetallumParserTest {
     @DisplayName("when song is instrumental")
     public class Instrumental {
 
-      final LyricsResult expected = MetallumFileHelper.lyricsInstrumental;
+      final LyricsResult expected = MetallumFileHelper.LYRICS_RESULT_INSTRUMENTAL;
       LyricsResult actual;
 
       @BeforeEach
       public void parse() throws IOException {
-        actual = parser.parseLyrics(
-          MetallumFileHelper.readLyricsInstrumentalFile()
-        );
+        actual = parser.parseLyrics(MetallumFileHelper.readLyricsInstrumentalFile());
       }
 
       @Test
@@ -156,8 +153,8 @@ public class MetallumParserTest {
 
       @Test
       public void shouldNotHaveAnySongLyricsTest() throws IOException {
-        List<String> expectedLyrics = expected.getLyrics();
-        List<String> actualLyrics = actual.getLyrics();
+        final List<String> expectedLyrics = expected.getLyrics();
+        final List<String> actualLyrics = actual.getLyrics();
   
         assertTrue(expectedLyrics.isEmpty());
         assertTrue(actualLyrics.isEmpty());

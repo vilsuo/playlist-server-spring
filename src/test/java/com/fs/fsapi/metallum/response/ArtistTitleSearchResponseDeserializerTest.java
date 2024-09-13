@@ -19,19 +19,18 @@ public class ArtistTitleSearchResponseDeserializerTest {
 
   @Test
   public void shouldDeserializeTest() throws IOException {
-    ArtistTitleSearchResponse expected = MetallumFileHelper.searchResponse;
+    final ArtistTitleSearchResponse expected = MetallumFileHelper.SEARCH_RESPONSE;
 
-    ArtistTitleSearchResponse actual = jacksonTester.parseObject(
-      MetallumFileHelper.readSearchResponseFile()
-    );
+    final ArtistTitleSearchResponse actual = jacksonTester
+      .parseObject(MetallumFileHelper.readSearchResponseFile());
 
     assertEquals(expected.getError(), actual.getError());
     assertEquals(expected.getTotalRecords(), actual.getTotalRecords());
     assertEquals(expected.getTotalDisplayRecords(), actual.getTotalDisplayRecords());
 
     // compare first results
-    AaDataValue expectedFirst = expected.getFirstDataValue();
-    AaDataValue actualFirst = actual.getFirstDataValue();
+    final AaDataValue expectedFirst = expected.getFirstDataValue();
+    final AaDataValue actualFirst = actual.getFirstDataValue();
 
     assertEquals(
       expectedFirst.getArtistLinkElementOuterHtml(),

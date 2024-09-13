@@ -8,7 +8,7 @@ import com.fs.fsapi.helpers.MetallumFileHelper;
 
 public class ArtistTitleSearchResultTest {
   
-  private final ArtistTitleSearchResult searchResult = MetallumFileHelper.searchResult;
+  private final ArtistTitleSearchResult searchResult = MetallumFileHelper.SEARCH_RESULT;
 
   @Test
   public void shouldHaveExpectedTitleHrefTest() {

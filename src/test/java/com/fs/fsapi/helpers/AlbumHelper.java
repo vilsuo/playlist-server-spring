@@ -3,6 +3,7 @@ package com.fs.fsapi.helpers;
 import com.fs.fsapi.album.Album;
 import com.fs.fsapi.album.AlbumCreation;
 import com.fs.fsapi.bookmark.parser.AlbumParseResult;
+import com.fs.fsapi.exceptions.response.ApiValidationError;
 
 public class AlbumHelper {
 
@@ -30,6 +31,17 @@ public class AlbumHelper {
    * Mocked invalid add video id value
    */
   public static final String MOCK_INVALID_VIDEO_ID = "InVaLiD";
+
+
+  /**
+   * Validation error for {@link AlbumHelper#MOCK_INVALID_VIDEO_ID}.
+   */
+  public static final ApiValidationError INVALID_VIDEO_ID_VALIDATION_ERROR
+    = new ApiValidationError(
+      "videoId", 
+      "The video id must be 11 characters long", 
+      MOCK_INVALID_VIDEO_ID
+    );
 
   public static AlbumCreation ALBUM_CREATION_VALUE_1() {
     return new AlbumCreation(
@@ -209,7 +221,7 @@ public class AlbumHelper {
   }
 
 
-  // TODO MOVE TO A NEW FILE 'BookmarksHelper'
+  // TODO DELETE ALL BELOW
 
 
   private static final AlbumParseResult a1 = new AlbumParseResult(

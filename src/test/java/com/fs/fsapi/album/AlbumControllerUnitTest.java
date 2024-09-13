@@ -1,6 +1,7 @@
 package com.fs.fsapi.album;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -27,6 +28,8 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import static com.fs.fsapi.helpers.AlbumHelper.*;
+
 @ExtendWith(MockitoExtension.class)
 public class AlbumControllerUnitTest {
 
@@ -39,65 +42,15 @@ public class AlbumControllerUnitTest {
   @InjectMocks
   private AlbumController controller;
 
-  protected final Integer id = 123;
+  private final Integer id = MOCK_ID_1;
 
-  protected final String addDate = "2024-08-14T10:33:57.604056616Z";
+  private final AlbumCreation source = ALBUM_CREATION_VALUE_1();
 
-  protected static final AlbumCreation source = new AlbumCreation(
-    "JMAbKMSuVfI",
-    "Massacra",
-    "Signs of the Decline",
-    1992,
-    "Death"
-  );
+  private final AlbumCreation newValues = ALBUM_CREATION_VALUE_1();
 
-  protected final AlbumCreation newValues = new AlbumCreation(
-    "qJVktESKhKY",
-    "Devastation",
-    "Idolatry",
-    1991,
-    "Thrash"
-  );
+  private final Album target = MOCK_ALBUM_1();
 
-  protected final Album mappedSource = new Album(
-    null,
-    source.getVideoId(),
-    source.getArtist(),
-    source.getTitle(),
-    source.getPublished(),
-    source.getCategory(),
-    null
-  );
-
-  protected final Album mappedSourceWithAddDate = new Album(
-    mappedSource.getId(),
-    mappedSource.getVideoId(),
-    mappedSource.getArtist(),
-    mappedSource.getTitle(),
-    mappedSource.getPublished(),
-    mappedSource.getCategory(),
-    addDate
-  );
-
-  protected final Album target = new Album(
-    id,
-    mappedSourceWithAddDate.getVideoId(),
-    mappedSourceWithAddDate.getArtist(),
-    mappedSourceWithAddDate.getTitle(),
-    mappedSourceWithAddDate.getPublished(),
-    mappedSourceWithAddDate.getCategory(),
-    mappedSourceWithAddDate.getAddDate()
-  );
-
-  protected final Album targetWithNewValues = new Album(
-    target.getId(),
-    newValues.getVideoId(),
-    newValues.getArtist(),
-    newValues.getTitle(),
-    newValues.getPublished(),
-    newValues.getCategory(),
-    target.getAddDate()
-  );
+  private final Album targetWithNewValues = MOCK_UPDATED_ALBUM();
 
   @Nested
   @DisplayName("getAll")
@@ -108,9 +61,10 @@ public class AlbumControllerUnitTest {
       when(service.findAll()).thenReturn(List.of());
 
       ResponseEntity<List<Album>> ent = controller.getAll();
-      List<Album> albums = ent.getBody();
+      final List<Album> albums = ent.getBody();
 
-      assertTrue(albums.isEmpty());
+      assertTrue(albums != null && albums.isEmpty());
+
       assertEquals(HttpStatus.OK.value(), ent.getStatusCode().value());
     }
 
@@ -121,8 +75,10 @@ public class AlbumControllerUnitTest {
       ResponseEntity<List<Album>> ent = controller.getAll();
       List<Album> albums = ent.getBody();
 
+      assertNotNull(albums);
       assertEquals(1, albums.size());
       assertEquals(target, albums.get(0));
+
       assertEquals(HttpStatus.OK.value(), ent.getStatusCode().value());
     }
   }
@@ -151,7 +107,7 @@ public class AlbumControllerUnitTest {
       public void shouldReturnCreatedAlbumTest() {
         ResponseEntity<Album> ent = controller.postAlbum(source);
 
-        Album album = ent.getBody();
+        final Album album = ent.getBody();
         assertEquals(target, album);
       }
 
@@ -179,15 +135,15 @@ public class AlbumControllerUnitTest {
           .append(target.getId())
           .toString();
 
-        URI location = ent.getHeaders().getLocation();
-
+        final URI location = ent.getHeaders().getLocation();
+        assertNotNull(location);
         assertEquals(finalUrl, location.toString());
       }
     }
 
     @Test
     public void shouldThrowWhenServiceThrowsTest() {
-      String message = "Something went wrong";
+      final String message = "Something went wrong";
       when(service.create(source))
         .thenThrow(new RuntimeException(message));
 
@@ -215,7 +171,7 @@ public class AlbumControllerUnitTest {
       @Test
       public void shouldReturnAlbumWhenFoundTest() {
         ResponseEntity<Album> ent = controller.getAlbum(id);
-        Album album = ent.getBody();
+        final Album album = ent.getBody();
 
         assertEquals(target, album);
       }
@@ -236,7 +192,7 @@ public class AlbumControllerUnitTest {
 
     @Test
     public void shouldThrowWhenNotFoundTest() {
-      String message = "Not found";
+      final String message = "Not found";
 
       when(service.findOne(id))
         .thenThrow(new RuntimeException(message));
@@ -265,7 +221,7 @@ public class AlbumControllerUnitTest {
       @Test
       public void shouldReturnUpdatedAlbumTest() {
         ResponseEntity<Album> ent = controller.putAlbum(id, newValues);
-        Album album = ent.getBody();
+        final Album album = ent.getBody();
 
         assertEquals(targetWithNewValues, album);
       }
@@ -294,7 +250,7 @@ public class AlbumControllerUnitTest {
 
     @Test
     public void shouldThrowWhenServiceThrowsTest() {
-      String message = "Something went wrong";
+      final String message = "Something went wrong";
 
       when(service.update(id, newValues))
         .thenThrow(new RuntimeException(message));

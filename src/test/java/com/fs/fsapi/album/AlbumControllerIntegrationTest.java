@@ -7,7 +7,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
@@ -36,6 +35,8 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fs.fsapi.exceptions.response.ApiValidationError;
 import com.fs.fsapi.exceptions.response.ErrorDataResponse;
 import com.fs.fsapi.exceptions.response.ErrorResponse;
+
+import static com.fs.fsapi.helpers.AlbumHelper.*;
 
 @Testcontainers
 @SpringBootTest
@@ -75,28 +76,6 @@ public class AlbumControllerIntegrationTest {
     repository.deleteAll();
   }
 
-  private static AlbumCreation createNewSource() {
-    return new AlbumCreation(
-      "JMAbKMSuVfI",
-      "Massacra",
-      "Signs of the Decline",
-      1992,
-      "Death"
-    );
-  }
-
-  private static AlbumCreation createNewValues() {
-    return new AlbumCreation(
-      "qJVktESKhKY",
-      "Devastation",
-      "Idolatry",
-      1991,
-      "Thrash"
-    );
-  }
-
-  private final String invalidVideoId = "thisisinvalid";
-
   @Nested
   public class GetAll {
 
@@ -114,7 +93,7 @@ public class AlbumControllerIntegrationTest {
 
     @Test
     public void shouldReturnAlbumsArrayWhenThereAreAlbumsTest() throws Exception {
-      Album initial = service.create(createNewSource());
+      final Album expected = service.create(ALBUM_CREATION_VALUE_1());
 
       MvcResult result = mockMvc
         .perform(get("/albums"))
@@ -124,11 +103,11 @@ public class AlbumControllerIntegrationTest {
       List<Album> albums = getAlbumListFromResponse(result);
 
       assertEquals(1, albums.size());
-      assertEquals(initial, albums.get(0));
+      assertEquals(expected, albums.get(0));
     }
 
     private List<Album> getAlbumListFromResponse(MvcResult result) throws Exception {
-      String json = result.getResponse().getContentAsString();
+      final String json = result.getResponse().getContentAsString();
       CollectionType collectionType = objectMapper
         .getTypeFactory()
         .constructCollectionType(List.class, Album.class);
@@ -140,80 +119,77 @@ public class AlbumControllerIntegrationTest {
   @Nested
   public class Post {
 
+    private final AlbumCreation source = ALBUM_CREATION_VALUE_1();
+
     @Test
     public void shouldReturnCreatedAlbumTest() throws Exception {
-      AlbumCreation source = createNewSource();
-      String content = objectMapper.writeValueAsString(source);
+      final String content = objectMapper.writeValueAsString(source);
 
       MvcResult result = mockMvc
         .perform(post("/albums")
           .contentType(MediaType.APPLICATION_JSON)
-          .content(content)
-        )
-        .andDo(print())
+          .content(content))
         .andExpect(status().isCreated())
         .andReturn();
 
-      Album album = getAlbumFromResponse(result);
+      final Album actual = getAlbumFromResponse(result);
 
-      assertNotNull(album.getId());
-      assertEquals(source.getArtist(), album.getArtist());
-      assertEquals(source.getTitle(), album.getTitle());
-      assertEquals(source.getPublished(), album.getPublished());
-      assertEquals(source.getCategory(), album.getCategory());
-      assertEquals(source.getVideoId(), album.getVideoId());
-      assertNotNull(album.getAddDate());
+      assertNotNull(actual.getId());
+      assertEquals(source.getArtist(), actual.getArtist());
+      assertEquals(source.getTitle(), actual.getTitle());
+      assertEquals(source.getPublished(), actual.getPublished());
+      assertEquals(source.getCategory(), actual.getCategory());
+      assertEquals(source.getVideoId(), actual.getVideoId());
+      assertNotNull(actual.getAddDate());
     }
 
     @Test
     public void shouldReturnErrorWithMissingValuesTest() throws Exception {
-      AlbumCreation source = createNewSource();
+      final AlbumCreation source = ALBUM_CREATION_VALUE_1();
 
       // do not include video id
       objectMapper.setSerializationInclusion(Include.NON_NULL);
       source.setVideoId(null);
 
-      String content = objectMapper.writeValueAsString(source);
+      final String content = objectMapper.writeValueAsString(source);
 
       MvcResult result = mockMvc
         .perform(post("/albums")
           .contentType(MediaType.APPLICATION_JSON)
-          .content(content)
-        )
+          .content(content))
         .andExpect(status().isBadRequest())
         .andReturn();
 
-      var validationErrors = getValidationErrorDataResponse(result).getData();
+      List<ApiValidationError> validationErrors = getValidationErrorDataResponse(result).getData();
       assertEquals(1, validationErrors.size());
 
-      ApiValidationError validationError = validationErrors.get(0);
+      final ApiValidationError validationError = validationErrors.get(0);
       assertEquals("videoId", validationError.getField());
       assertEquals("Video id is required", validationError.getMessage());
+      assertEquals(null, validationError.getRejectedValue());
     }
 
     @Test
     public void shouldReturnErrorWithInvalidValuesTest() throws Exception {
-      AlbumCreation source = createNewSource();
-
-      // include invalid video id
-      source.setVideoId(invalidVideoId);
-      
-      String content = objectMapper.writeValueAsString(source);
+      final AlbumCreation source = INVALID_ALBUM_CREATION_VALUE();
+      final String content = objectMapper.writeValueAsString(source);
 
       MvcResult result = mockMvc
         .perform(post("/albums")
           .contentType(MediaType.APPLICATION_JSON)
-          .content(content)
-        )
+          .content(content))
         .andExpect(status().isBadRequest())
         .andReturn();
 
-      var validationErrors = getValidationErrorDataResponse(result).getData();
+      List<ApiValidationError> validationErrors = getValidationErrorDataResponse(result).getData();
       assertEquals(1, validationErrors.size());
   
-      ApiValidationError validationError = validationErrors.get(0);
-      assertEquals("videoId", validationError.getField());
-      assertEquals("The video id must be 11 characters long", validationError.getMessage());
+      final ApiValidationError validationError = validationErrors.get(0);
+      final ApiValidationError expectedValidationError = INVALID_VIDEO_ID_VALIDATION_ERROR;
+
+      assertEquals(expectedValidationError.getField(), validationError.getField());
+      assertEquals(expectedValidationError.getMessage(), validationError.getMessage());
+      assertEquals(expectedValidationError.getRejectedValue(), validationError.getRejectedValue());
     }
   }
 
@@ -222,27 +198,27 @@ public class AlbumControllerIntegrationTest {
 
     @Test
     public void shouldReturnAlbumWhenItExistsTest() throws Exception {
-      Album initial = service.create(createNewSource());
+      final Album initial = service.create(ALBUM_CREATION_VALUE_1());
 
       MvcResult result = mockMvc
         .perform(get("/albums/{id}", initial.getId()))
         .andExpect(status().isOk())
         .andReturn();
 
-      Album album = getAlbumFromResponse(result);
-      assertEquals(initial, album);
+      final Album actual = getAlbumFromResponse(result);
+      assertEquals(initial, actual);
     }
 
     @Test
     public void shouldReturnErrorWhenItDoesNotExistTest() throws Exception {
-      Integer id = 123;
+      final Integer id = MOCK_ID_1;
 
       MvcResult result = mockMvc
         .perform(get("/albums/{id}", id))
         .andExpect(status().isNotFound())
         .andReturn();
 
-      ErrorResponse error = getErrorFromResponse(result);
+      final ErrorResponse error = getErrorFromResponse(result);
       assertEquals("Album was not found", error.getMessage());
     }
   }
@@ -250,104 +226,99 @@ public class AlbumControllerIntegrationTest {
   @Nested
   public class Update {
 
-    Album initial;
+    private Album initial;
 
     @BeforeEach
     public void createInitial() {
-      initial = service.create(createNewSource());
+      initial = service.create(ALBUM_CREATION_VALUE_1());
     }
     
     @Test
     public void shouldBeAbleToUpdateExistingAlbumTest() throws Exception {
-      AlbumCreation newValues = createNewValues();
-      String content = objectMapper.writeValueAsString(newValues);
+      final AlbumCreation newValues = ALBUM_CREATION_VALUE_2();
+      final String content = objectMapper.writeValueAsString(newValues);
 
       MvcResult result = mockMvc
         .perform(put("/albums/{id}", initial.getId())
           .contentType(MediaType.APPLICATION_JSON)
-          .content(content)
-        )
+          .content(content))
         .andExpect(status().isOk())
         .andReturn();
       
-      Album album = getAlbumFromResponse(result);
+      final Album actual = getAlbumFromResponse(result);
 
-      assertEquals(initial.getId(), album.getId());
-      assertEquals(newValues.getArtist(), album.getArtist());
-      assertEquals(newValues.getTitle(), album.getTitle());
-      assertEquals(newValues.getPublished(), album.getPublished());
-      assertEquals(newValues.getCategory(), album.getCategory());
-      assertEquals(newValues.getVideoId(), album.getVideoId());
-      assertEquals(initial.getAddDate(), album.getAddDate());
+      assertEquals(initial.getId(), actual.getId());
+      assertEquals(newValues.getArtist(), actual.getArtist());
+      assertEquals(newValues.getTitle(), actual.getTitle());
+      assertEquals(newValues.getPublished(), actual.getPublished());
+      assertEquals(newValues.getCategory(), actual.getCategory());
+      assertEquals(newValues.getVideoId(), actual.getVideoId());
+      assertEquals(initial.getAddDate(), actual.getAddDate());
     }
 
     @Test
     public void shouldReturnErrorWhenRequiredPropertyIsMissingTest() throws Exception {
-      AlbumCreation source = createNewSource();
+      final AlbumCreation newValues = ALBUM_CREATION_VALUE_1();
 
       // do not include video id
       objectMapper.setSerializationInclusion(Include.NON_NULL);
-      source.setVideoId(null);
+      newValues.setVideoId(null);
 
-      String content = objectMapper.writeValueAsString(source);
+      final String content = objectMapper.writeValueAsString(newValues);
 
       MvcResult result = mockMvc
         .perform(put("/albums/{id}", initial.getId())
           .contentType(MediaType.APPLICATION_JSON)
-          .content(content)
-        )
+          .content(content))
         .andExpect(status().isBadRequest())
         .andReturn();
 
-      var validationErrors = getValidationErrorDataResponse(result).getData();
+      List<ApiValidationError> validationErrors = getValidationErrorDataResponse(result).getData();
       assertEquals(1, validationErrors.size());
 
       ApiValidationError validationError = validationErrors.get(0);
       assertEquals("videoId", validationError.getField());
       assertEquals("Video id is required", validationError.getMessage());
+      assertEquals(null, validationError.getRejectedValue());
     }
 
     @Test
     public void shouldReturnErrorWithInvalidValuesTest() throws Exception {
-      AlbumCreation source = createNewSource();
-
-      // include invalid video id
-      source.setVideoId(invalidVideoId);
-      
-      String content = objectMapper.writeValueAsString(source);
+      final AlbumCreation newValues = INVALID_ALBUM_CREATION_VALUE();
+      final String content = objectMapper.writeValueAsString(newValues);
 
       MvcResult result = mockMvc
         .perform(put("/albums/{id}", initial.getId())
           .contentType(MediaType.APPLICATION_JSON)
-          .content(content)
-        )
+          .content(content))
         .andExpect(status().isBadRequest())
         .andReturn();
 
-      var validationErrors = getValidationErrorDataResponse(result).getData();
+      List<ApiValidationError> validationErrors = getValidationErrorDataResponse(result).getData();
       assertEquals(1, validationErrors.size());
   
-      ApiValidationError validationError = validationErrors.get(0);
-      assertEquals("videoId", validationError.getField());
-      assertEquals("The video id must be 11 characters long", validationError.getMessage());
+      final ApiValidationError validationError = validationErrors.get(0);
+      final ApiValidationError expectedValidationError = INVALID_VIDEO_ID_VALIDATION_ERROR;
+
+      assertEquals(expectedValidationError.getField(), validationError.getField());
+      assertEquals(expectedValidationError.getMessage(), validationError.getMessage());
+      assertEquals(expectedValidationError.getRejectedValue(), validationError.getRejectedValue());
     }
 
     @Test
     public void shouldReturnErrorWhenAlbumDoesNotExistTest() throws Exception {
-      Integer nonExistingId = initial.getId() + 1;
-      AlbumCreation newValues = createNewValues();
-      String content = objectMapper.writeValueAsString(newValues);
+      final AlbumCreation newValues = ALBUM_CREATION_VALUE_2();
+      final String content = objectMapper.writeValueAsString(newValues);
 
+      final Integer nonExistingId = initial.getId() + 1;
       MvcResult result = mockMvc
         .perform(put("/albums/{id}", nonExistingId)
           .contentType(MediaType.APPLICATION_JSON)
-          .content(content)
-        )
+          .content(content))
         .andExpect(status().is4xxClientError())
         .andReturn();
 
       ErrorResponse error = getErrorFromResponse(result);
-
       assertEquals("Album was not found", error.getMessage());
     }
   }
@@ -357,8 +328,8 @@ public class AlbumControllerIntegrationTest {
     
     @Test
     public void shouldBeAbleToDeleteExistingAlbumTest() throws Exception {
-      Album initial = service.create(createNewSource());
-      Integer id = initial.getId();
+      final Album initial = service.create(ALBUM_CREATION_VALUE_1());
+      final Integer id = initial.getId();
 
       mockMvc
         .perform(delete("/albums/{id}", id))
@@ -368,7 +339,7 @@ public class AlbumControllerIntegrationTest {
 
     @Test
     public void shouldBeAbleToTryToDeleteNonExistingAlbumTest() throws Exception {
-      Integer id = 123;
+      final Integer id = MOCK_ID_1;
 
       mockMvc
         .perform(delete("/albums/{id}", id))
@@ -392,12 +363,12 @@ public class AlbumControllerIntegrationTest {
   }
 
   private Album getAlbumFromResponse(MvcResult result) throws Exception {
-    String json = result.getResponse().getContentAsString();
+    final String json = result.getResponse().getContentAsString();
     return objectMapper.readValue(json, Album.class);
   }
 
   private ErrorResponse getErrorFromResponse(MvcResult result) throws Exception {
-    String json = result.getResponse().getContentAsString();
+    final String json = result.getResponse().getContentAsString();
     return objectMapper.readValue(json, ErrorResponse.class);
   }
 
@@ -410,7 +381,7 @@ public class AlbumControllerIntegrationTest {
       .getTypeFactory()
       .constructParametricType(ErrorDataResponse.class, collectionType);
 
-    String json = result.getResponse().getContentAsString();
+    final String json = result.getResponse().getContentAsString();
     return objectMapper.readValue(json, errorType);
   }
 }

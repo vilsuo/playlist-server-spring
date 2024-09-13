@@ -17,11 +17,9 @@ import com.fs.fsapi.bookmark.parser.BookmarksFileParserService;
 import com.fs.fsapi.bookmark.parser.BookmarksLinkParserService;
 import com.fs.fsapi.exceptions.CustomHtmlParsingException;
 import com.fs.fsapi.exceptions.CustomParameterConstraintException;
-import com.fs.fsapi.helpers.AlbumHelper;
-import com.fs.fsapi.helpers.BookmarksFileHelper;
-import com.fs.fsapi.helpers.BookmarksFileHelper.InvalidHeader;
 
-import static com.fs.fsapi.helpers.BookmarksFileHelper.ValidHeader;
+import static com.fs.fsapi.helpers.BookmarksFileHelper.*;
+import static com.fs.fsapi.helpers.ParsedAlbumHelper.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -40,7 +38,7 @@ public class BookmarksServiceTest {
 
   @Test
   public void shouldThrowWhenFileElementStructureIsInvalidTest() throws Exception {
-    InputStream contentStream = BookmarksFileHelper.readFileWithInvalidStruture();
+    InputStream contentStream = readFileWithInvalidStruture();
     MockMultipartFile file = new MockMultipartFile(name, contentStream);
 
     final InvalidHeader header = InvalidHeader.STRUCTURE;
@@ -64,7 +62,7 @@ public class BookmarksServiceTest {
 
     @BeforeEach
     public void setUpMockFile() throws IOException {
-      final InputStream contentStream = BookmarksFileHelper.readFileWithInvalidLink();
+      final InputStream contentStream = readFileWithInvalidLinks();
       file = new MockMultipartFile(name, contentStream);
     }
 
@@ -122,7 +120,7 @@ public class BookmarksServiceTest {
 
     @BeforeEach
     public void setUpMockFile() throws IOException {
-      final InputStream contentStream = BookmarksFileHelper.readValidFile();
+      final InputStream contentStream = readValidFile();
       file = new MockMultipartFile(name, contentStream);
     }
 
@@ -155,11 +153,10 @@ public class BookmarksServiceTest {
     public class WithoutSubFolders {
 
       private final ValidHeader header = ValidHeader.CHILD;
+      private final AlbumParseResult expected = VALID_FILE_CHILD_RESULTS[0];
 
       private List<AlbumParseResult> actuals;
       private AlbumParseResult actual;
-
-      private final AlbumParseResult expected = AlbumHelper.VALID_FILE_CHILD_RESULTS[0];
 
       @BeforeEach
       public void create() throws Exception {
@@ -196,9 +193,9 @@ public class BookmarksServiceTest {
     public class WithSubFolders {
 
       private ValidHeader header = ValidHeader.PARENT;
-
+      private AlbumParseResult[] expectations = VALID_FILE_PARENT_RESULTS;
+      
       private List<AlbumParseResult> actuals;
-      private AlbumParseResult[] expectations = AlbumHelper.VALID_FILE_PARENT_RESULTS;
 
       @BeforeEach
       public void create() throws IOException  {
@@ -212,8 +209,8 @@ public class BookmarksServiceTest {
 
       @Test
       public void shouldCreateFromLinksBeforeSubFolderTest() {
-        AlbumParseResult actual = actuals.get(2);
-        AlbumParseResult expected = expectations[2];
+        final AlbumParseResult actual = actuals.get(2);
+        final AlbumParseResult expected = expectations[2];
 
         assertEquals(expected.getVideoId(), actual.getVideoId());
         assertEquals(expected.getArtist(), actual.getArtist());
@@ -225,8 +222,8 @@ public class BookmarksServiceTest {
 
       @Test
       public void shouldCreateFromLinksInSubFolderTest() {
-        AlbumParseResult actual = actuals.get(3);
-        AlbumParseResult expected = expectations[3];
+        final AlbumParseResult actual = actuals.get(3);
+        final AlbumParseResult expected = expectations[3];
 
         assertEquals(expected.getVideoId(), actual.getVideoId());
         assertEquals(expected.getArtist(), actual.getArtist());
@@ -238,8 +235,8 @@ public class BookmarksServiceTest {
 
       @Test
       public void shouldCreateFromLinksAfterSubFolderTest() {
-        AlbumParseResult actual = actuals.get(4);
-        AlbumParseResult expected = expectations[4];
+        final AlbumParseResult actual = actuals.get(4);
+        final AlbumParseResult expected = expectations[4];
 
         assertEquals(expected.getVideoId(), actual.getVideoId());
         assertEquals(expected.getArtist(), actual.getArtist());

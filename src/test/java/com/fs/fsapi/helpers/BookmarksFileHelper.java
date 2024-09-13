@@ -16,15 +16,33 @@ public class BookmarksFileHelper {
   private static final String INVALID_FILE_STRUCTURE = "bookmarks-invalid-structure.html";
   private static final String INVALID_FILE_LINK = "bookmarks-invalid-links.html";
 
+  /**
+   * Read bookmarks html file with expected structure.
+   * 
+   * @return
+   * @throws FileNotFoundException
+   */
   public static InputStream readValidFile() throws FileNotFoundException {
     return readFile(VALID_FILE);
   }
 
+  /**
+   * Read bookmarks html file with unexpected structure.
+   * 
+   * @return
+   * @throws FileNotFoundException
+   */
   public static InputStream readFileWithInvalidStruture() throws FileNotFoundException {
     return readFile(INVALID_FILE_STRUCTURE);
   }
 
-  public static InputStream readFileWithInvalidLink() throws FileNotFoundException {
+  /**
+   * Read bookmarks html file with expected structure, but with unexpected 'a' elements
+   * 
+   * @return
+   * @throws FileNotFoundException
+   */
+  public static InputStream readFileWithInvalidLinks() throws FileNotFoundException {
     return readFile(INVALID_FILE_LINK);
   }
 
@@ -33,6 +51,9 @@ public class BookmarksFileHelper {
     return new FileInputStream(initialFile);
   }
 
+  /**
+   * Header element text contents in file {@link BookmarksFileHelper#VALID_FILE}.
+   */
   public enum ValidHeader {
     ROOT ("Bookmarks"),
     CONTAINER ("Bookmarks bar"),
@@ -52,12 +73,27 @@ public class BookmarksFileHelper {
     }
   }
 
+  /**
+   * Header element text contents in file {@link BookmarksFileHelper#INVALID_FILE_STRUCTURE}
+   * and {@link BookmarksFileHelper#INVALID_FILE_LINK}.
+   */
   public enum InvalidHeader {
     STRUCTURE ("Example"),
 
-    LINK_ATTRIBUTE_MISSING ("Missing"), // missing "add_date" attribute
-    LINK_ATTRIBUTE_INVALID ("Invalid"), // invalid "href" attribute prefix
-    LINK_TEXT_CONTENT_INVALID ("Content"); // missing separator
+    /**
+     * 'a' missing "add_date" attribute
+     */
+    LINK_ATTRIBUTE_MISSING ("Missing"),
+
+    /**
+     * 'a' has invalid "href" attribute value prefix
+     */
+    LINK_ATTRIBUTE_INVALID ("Invalid"),
+
+    /**
+     * 'a' text content has invalid structure (missing separator)
+     */
+    LINK_TEXT_CONTENT_INVALID ("Content");
 
     private final String textContent;
 
@@ -70,7 +106,8 @@ public class BookmarksFileHelper {
     }
   }
 
-  // folderlinks created from the valid file
+  // DETAILS ABOUT LINKS FROM A VALID FILE
+  
   private static final BookmarksLinkElement f1 = new BookmarksLinkElement(
     ElementHelper.createBookmarkLinkTypeElement(
       "Annihilator - Alice In Hell (1989)",
@@ -125,9 +162,34 @@ public class BookmarksFileHelper {
     ValidHeader.PARENT.getTextContent()
   );
 
+  /**
+   * Expected details about link elements in file {@link BookmarksFileHelper#VALID_FILE}
+   * at the location specified by {@link BookmarksFileHelper.ValidHeader#ROOT}.
+   */
   public static final BookmarksLinkElement[] VALID_FILE_ROOT_LINKS = { f1, f2, f3, f4, f5, f6 };
+
+  /**
+   * Expected details about link elements in file {@link BookmarksFileHelper#VALID_FILE}
+   * at the location specified by {@link BookmarksFileHelper.ValidHeader#CONTAINER}.
+   */
   public static final BookmarksLinkElement[] VALID_FILE_CONTAINER_LINKS = { f1, f2, f3, f4, f5, f6 };
+
+  /**
+   * Expected details about link elements in file {@link BookmarksFileHelper#VALID_FILE}
+   * at the location specified by {@link BookmarksFileHelper.ValidHeader#PARENT}.
+   */
   public static final BookmarksLinkElement[] VALID_FILE_PARENT_LINKS = { f2, f3, f4, f5, f6 };
+
+  /**
+   * Expected details about link elements in file {@link BookmarksFileHelper#VALID_FILE}
+   * at the location specified by {@link BookmarksFileHelper.ValidHeader#CHILD}.
+   */
   public static final BookmarksLinkElement[] VALID_FILE_CHILD_LINKS = { f5 };
+
+  /**
+   * Expected details about link elements in file {@link BookmarksFileHelper#VALID_FILE}
+   * at the location specified by {@link BookmarksFileHelper.ValidHeader#EMPTY}.
+   */
   public static final BookmarksLinkElement[] VALID_FILE_EMPTY_LINKS = { };
+
 }

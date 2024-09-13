@@ -167,9 +167,28 @@ public class ParsedAlbumHelper {
     "2024-03-25T14:57:36Z"
   );
 
+  /**
+   * Expected parsed results for {@link BookmarksFileHelper#VALID_FILE_ROOT_LINKS}.
+   */
   public static final AlbumParseResult[] VALID_FILE_ROOT_RESULTS = { a1, a2, a3, a4, a5, a6 };
+
+  /**
+   * Expected parsed results for {@link BookmarksFileHelper#VALID_FILE_CONTAINER_LINKS}.
+   */
   public static final AlbumParseResult[] VALID_FILE_CONTAINER_RESULTS = { a1, a2, a3, a4, a5, a6 };
+
+  /**
+   * Expected parsed results for {@link BookmarksFileHelper#VALID_FILE_PARENT_LINKS}.
+   */
   public static final AlbumParseResult[] VALID_FILE_PARENT_RESULTS = { a2, a3, a4, a5, a6 };
+
+  /**
+   * Expected parsed results for {@link BookmarksFileHelper#VALID_FILE_CHILD_LINKS}.
+   */
   public static final AlbumParseResult[] VALID_FILE_CHILD_RESULTS = { a5 };
+
+  /**
+   * Expected parsed results for {@link BookmarksFileHelper#VALID_FILE_EMPTY_LINKS}.
+   */
   public static final AlbumParseResult[] VALID_FILE_EMPTY_RESULTS = { };
 }

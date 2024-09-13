@@ -6,7 +6,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.fs.fsapi.config.CustomWebClientConfig;
 import com.fs.fsapi.metallum.cache.ArtistTitleSearchCache;
 import com.fs.fsapi.metallum.parser.ArtistTitleSearchResult;
 import com.fs.fsapi.metallum.parser.LyricsResult;
@@ -14,7 +13,6 @@ import com.fs.fsapi.metallum.parser.MetallumParser;
 import com.fs.fsapi.metallum.parser.SongResult;
 import com.fs.fsapi.metallum.response.ArtistTitleSearchResponse;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 // TODO
@@ -23,14 +21,21 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class MetallumService {
+
+  public static final String METALLUM_BASE_URL = "https://www.metal-archives.com";
 
   private final WebClient webClient;
 
   private final MetallumParser parser;
 
   private final ArtistTitleSearchCache cache;
+
+  public MetallumService(WebClient.Builder webClient, MetallumParser parser, ArtistTitleSearchCache cache) {
+    this.webClient = webClient.build();
+    this.parser = parser;
+    this.cache = cache;
+  }
 
   private final String IMAGE_EXTENSION = ".jpg"; // always?
   
@@ -86,7 +91,7 @@ public class MetallumService {
    * @return the image url
    */
   public String createArtistLogoUrl(String id) {
-    return CustomWebClientConfig.METALLUM_BASE_URL + getArtistLogoPath(id);
+    return METALLUM_BASE_URL + getArtistLogoPath(id);
   }
 
   /**
@@ -106,7 +111,7 @@ public class MetallumService {
    * @return the image url
    */
   public String createTitleCoverUrl(String id) {
-    return CustomWebClientConfig.METALLUM_BASE_URL + getTitleCoverPath(id);
+    return METALLUM_BASE_URL + getTitleCoverPath(id);
   }
 
   private byte[] searchImage(String imagePath) {

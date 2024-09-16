@@ -1,6 +1,8 @@
 package com.fs.fsapi.metallum.response;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 import java.io.IOException;
 
@@ -17,10 +19,10 @@ public class ArtistTitleSearchResponseDeserializerTest {
   @Autowired
   private JacksonTester<ArtistTitleSearchResponse> jacksonTester;
 
+  private final ArtistTitleSearchResponse expected = MetallumFileHelper.SEARCH_RESPONSE;
+
   @Test
   public void shouldDeserializeTest() throws IOException {
-    final ArtistTitleSearchResponse expected = MetallumFileHelper.SEARCH_RESPONSE;
-
     final ArtistTitleSearchResponse actual = jacksonTester
       .parseObject(MetallumFileHelper.readSearchResponseFile());
 
@@ -28,22 +30,8 @@ public class ArtistTitleSearchResponseDeserializerTest {
     assertEquals(expected.getTotalRecords(), actual.getTotalRecords());
     assertEquals(expected.getTotalDisplayRecords(), actual.getTotalDisplayRecords());
 
-    // compare first results
-    final AaDataValue expectedFirst = expected.getFirstDataValue();
-    final AaDataValue actualFirst = actual.getFirstDataValue();
-
-    assertEquals(
-      expectedFirst.getArtistLinkElementOuterHtml(),
-      actualFirst.getArtistLinkElementOuterHtml()
-    );
-    assertEquals(
-      expectedFirst.getTitleLinkElementOuterHtml(),
-      actualFirst.getTitleLinkElementOuterHtml()
-    );
-    assertEquals(
-      expectedFirst.getReleaseType(),
-      actualFirst.getReleaseType()
-    );
+    assertFalse(expected.getAaData().isEmpty());
+    assertIterableEquals(expected.getAaData(), actual.getAaData());
   }
 }
 

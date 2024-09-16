@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -21,10 +20,5 @@ public class ArtistTitleSearchResponse {
 
   //private int sEcho;
 
-  @Getter(AccessLevel.NONE)
   private List<AaDataValue> aaData;
-
-  public AaDataValue getFirstDataValue() {
-    return this.aaData.getFirst();
-  }
 }

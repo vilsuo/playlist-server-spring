@@ -54,7 +54,7 @@ public class MetallumParser {
       }
       case 1: {
         // return the only result
-        AaDataValue data = response.getFirstDataValue();
+        AaDataValue data = response.getAaData().get(0);
         return parseSearchData(data);
       }
       default: {
@@ -63,7 +63,7 @@ public class MetallumParser {
         // return the first result...
         // - implement narrowing by release type?
         // - return a list of results?
-        AaDataValue data = response.getFirstDataValue();
+        AaDataValue data = response.getAaData().get(0);
         return parseSearchData(data);
       }
     }

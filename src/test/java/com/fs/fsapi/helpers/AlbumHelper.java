@@ -2,7 +2,6 @@ package com.fs.fsapi.helpers;
 
 import com.fs.fsapi.album.Album;
 import com.fs.fsapi.album.AlbumCreation;
-import com.fs.fsapi.bookmark.parser.AlbumParseResult;
 import com.fs.fsapi.exceptions.response.ApiValidationError;
 
 public class AlbumHelper {

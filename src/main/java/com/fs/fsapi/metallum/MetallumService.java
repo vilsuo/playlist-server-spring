@@ -13,6 +13,7 @@ import com.fs.fsapi.metallum.parser.MetallumParser;
 import com.fs.fsapi.metallum.parser.SongResult;
 import com.fs.fsapi.metallum.response.ArtistTitleSearchResponse;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 // TODO
@@ -21,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class MetallumService {
 
   public static final String METALLUM_BASE_URL = "https://www.metal-archives.com";
@@ -30,12 +32,6 @@ public class MetallumService {
   private final MetallumParser parser;
 
   private final ArtistTitleSearchCache cache;
-
-  public MetallumService(WebClient.Builder webClient, MetallumParser parser, ArtistTitleSearchCache cache) {
-    this.webClient = webClient.build();
-    this.parser = parser;
-    this.cache = cache;
-  }
 
   private final String IMAGE_EXTENSION = ".jpg"; // always?
   

@@ -3,6 +3,7 @@ package com.fs.fsapi.helpers;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 
@@ -116,8 +117,8 @@ public class MetallumFileHelper {
   }
 
   private static String readFileAsString(String filename) throws IOException {
-    File initialFile = new File(METALLUM_TEST_FILES_LOCATION + "/" + filename);
-    return FileUtils.readFileToString(initialFile, StandardCharsets.UTF_8);
+    final File file = new File(METALLUM_TEST_FILES_LOCATION + "/" + filename);
+    return FileUtils.readFileToString(file, StandardCharsets.UTF_8);
   }
 
   // EXPECTED RESULTS
@@ -219,4 +220,27 @@ public class MetallumFileHelper {
    *  Expected parsed result for reading lyrics from {@link MetallumFileHelper#readLyricsInstrumentalFile()}.
    */
   public static final LyricsResult LYRICS_RESULT_INSTRUMENTAL = new LyricsResult("Instrumental");
+
+
+  // IMAGES
+
+  public static final String ARTIST_ID = "2426";
+
+  public static final String ARTIST_LOGO_RESPONSE_FILE = "2426_logo.jpg";
+
+  public static final String ARTIST_LOGO_PATH = "/images/2/4/2/6/2426_logo.jpg";
+
+  /**
+   * Expected artist logo url for {@link MetallumFileHelper#ARTIST_ID}.
+   */
+  public static final String ARTIST_LOGO_URL = "https://www.metal-archives.com" + ARTIST_LOGO_PATH;
+
+  public static final byte[] readArtistLogoImage() throws IOException {
+    return readImage(ARTIST_LOGO_RESPONSE_FILE);
+  }
+
+  private static final byte[] readImage(String filename) throws IOException {
+    final File file = new File(METALLUM_TEST_FILES_LOCATION + "/" + filename);
+    return Files.readAllBytes(file.toPath());
+  }
 }

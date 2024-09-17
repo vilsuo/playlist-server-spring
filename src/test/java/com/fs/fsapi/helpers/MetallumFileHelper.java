@@ -28,6 +28,18 @@ public class MetallumFileHelper {
   private static final String SEARCH_RESPONSE_FILE = "search.json";
 
   /**
+   * Metallum search response for the logo image of an artist with id
+   * {@link MetallumFileHelper#TITLE_COVER_ID}.
+   */
+  private static final String ARTIST_LOGO_RESPONSE_FILE = "2426_logo.jpg";
+
+  /**
+   * Metallum search response for the release title cover iamge with id
+   * {@link MetallumFileHelper#TITLE_COVER_ID}.
+   */
+  private static final String TITLE_COVER_RESPONSE_FILE = "6516.jpg";
+
+  /**
    * Metallum release title page for a title that has lyrics available.
    */
   private static final String TITLE_WITH_LYRICS_RESPONSE_FILE = "title-page-with-lyrics.html";
@@ -224,19 +236,54 @@ public class MetallumFileHelper {
 
   // IMAGES
 
-  public static final String ARTIST_ID = "2426";
+  public static final String LOGO_ARTIST_ID = "2426";
 
-  public static final String ARTIST_LOGO_RESPONSE_FILE = "2426_logo.jpg";
-
+  /**
+   * Expected search path of the logo image of an artist with id
+   * {@link MetallumFileHelper#LOGO_ARTIST_ID}.
+   */
   public static final String ARTIST_LOGO_PATH = "/images/2/4/2/6/2426_logo.jpg";
 
   /**
-   * Expected artist logo url for {@link MetallumFileHelper#ARTIST_ID}.
+   * Expected search url of the logo image of an artist with id
+   * {@link MetallumFileHelper#LOGO_ARTIST_ID}.
    */
   public static final String ARTIST_LOGO_URL = "https://www.metal-archives.com" + ARTIST_LOGO_PATH;
 
+  /**
+   * Read the artist logo image search response file
+   * {@link MetallumFileHelper#ARTIST_LOGO_RESPONSE_FILE}.
+   * 
+   * @return the artist logo image
+   * @throws IOException
+   */
   public static final byte[] readArtistLogoImage() throws IOException {
     return readImage(ARTIST_LOGO_RESPONSE_FILE);
+  }
+
+  public static final String TITLE_COVER_ID = "6516";
+
+  /**
+   * Expected search path of the release title image of title with id
+   * {@link MetallumFileHelper#TITLE_COVER_ID}.
+   */
+  public static final String TITLE_COVER_PATH = "/images/6/5/1/6/6516.jpg";
+
+  /**
+   * Expected search url of the release title image of title with id
+   * {@link MetallumFileHelper#TITLE_COVER_ID}.
+   */
+  public static final String TITLE_COVER_URL = "https://www.metal-archives.com" + TITLE_COVER_PATH;
+
+  /**
+   * Read the release title cover image search response file
+   * {@link MetallumFileHelper#ARTIST_LOGO_RESPONSE_FILE}.
+   * 
+   * @return the release title image
+   * @throws IOException
+   */
+  public static final byte[] readTitleCoverImage() throws IOException {
+    return readImage(TITLE_COVER_RESPONSE_FILE);
   }
 
   private static final byte[] readImage(String filename) throws IOException {

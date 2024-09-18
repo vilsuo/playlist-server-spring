@@ -12,10 +12,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fs.fsapi.metallum.parser.ArtistTitleSearchResult;
+import com.fs.fsapi.metallum.parser.LyricsResult;
 import com.fs.fsapi.metallum.parser.SongResult;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+// TODO
+// - lyrics: HANDLE INSTRUMENTAL AND NOT FOUND!
 
 @Slf4j
 @Service
@@ -107,5 +111,53 @@ public class MetallumWebDriverService {
     // convert table body element to string
     final String html = tBody.getAttribute("outerHTML");
     return parser.parseSongs(html);
+  }
+
+  /**
+   * Search song lyrics by song id.
+   * 
+   * @param songId  the song id
+   * @return html string containing the lyrics, or html string describing
+   *         the lyrics were not found
+   */
+  public LyricsResult searchSongLyrics(String titleId, String songId) {
+    // only title id seems to be required,
+    // artist and title can be empty...
+    URI uri = UriComponentsBuilder
+      .fromHttpUrl("https://www.metal-archives.com")
+      .path("/albums/{artist}/{title}/{titleId}")
+      .build("", "", titleId);
+
+    driver.get(uri.toString());
+    driver.manage().addCookie(new Cookie("cf_clearance", cookieValue));
+
+    // wait for songs
+    WebElement firstTr = driver.findElement(LOCATOR_SONG_TABLE_BODY_ROW);
+
+    // select the songs table body
+    WebElement tBody = (WebElement) ((JavascriptExecutor) driver)
+      .executeScript("return arguments[0].parentNode;", firstTr);
+
+    // HANDLE INSTRUMENTAL AND NOT FOUND!
+
+    // click show lyrics
+    WebElement lyricsBtn = tBody.findElement(By.cssSelector("#lyricsButton" + songId));
+    lyricsBtn.click();
+
+    // find lyrics
+    //WebElement lyrics = tBody.findElement(By.cssSelector(
+    //  "#lyrics_" + songId + ":nth-child(2)[style='display: none;']"
+    //));
+
+    //final String loadingText = "\'(loading lyrics...)\'";
+    final String loadingText = "loading";
+    WebElement lyrics = driver.findElement(By.xpath(
+      "//td[@id='lyrics_" + songId + "' and not(contains(text(), '" + loadingText + "'))]"
+    ));
+
+    final String html = lyrics.getText();
+
+    log.info("lyrics html: " + html);
+    return parser.parseLyrics(html);
   }
 }

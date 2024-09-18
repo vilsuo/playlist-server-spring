@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fs.fsapi.metallum.parser.ArtistTitleSearchResult;
+import com.fs.fsapi.metallum.parser.LyricsResult;
 import com.fs.fsapi.metallum.parser.SongResult;
 
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,16 @@ public class MetallumWebDriverController {
     return ResponseEntity
       .ok()
       .body(service.searchSongs(titleId));
+  }
+
+  @GetMapping("/songs/{titleId}/lyrics/{songId}")
+  public ResponseEntity<LyricsResult> searchSongLyrics(
+    @PathVariable String titleId,
+    @PathVariable String songId
+  ) {
+    return ResponseEntity
+      .ok()
+      .body(service.searchSongLyrics(titleId, songId));
   }
 
   @PostMapping("/cookie")

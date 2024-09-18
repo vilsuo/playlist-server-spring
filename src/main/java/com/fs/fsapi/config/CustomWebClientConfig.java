@@ -8,7 +8,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class CustomWebClientConfig {
 
-  @Value("${metallum.url: https://www.metal-archives.com}")
+  @Value("${metallum.url:https://www.metal-archives.com}")
   private String metallumUrl;
 
   @Bean

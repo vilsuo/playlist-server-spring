@@ -17,7 +17,7 @@ import com.fs.fsapi.metallum.parser.SongResult;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/metallum")
+@RequestMapping("/metallum/web-client")
 @RequiredArgsConstructor
 public class MetallumController {
 

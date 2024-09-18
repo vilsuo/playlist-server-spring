@@ -5,7 +5,9 @@ import java.util.List;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -39,7 +41,7 @@ public class MetallumWebDriverService {
 
   // LOCATORS FOR WAITING METALLUM PAGE LOADING
 
-  private final By LOCATOR_SEARCH_TABLE_BODY_ROW = By.cssSelector(
+  private final By LOCATOR_SEARCH_TABLE_BODY_FIRST_ROW = By.cssSelector(
     "#searchResultsAlbum > tbody > tr"
   );
 
@@ -67,10 +69,14 @@ public class MetallumWebDriverService {
     driver.manage().addCookie(new Cookie("cf_clearance", cookieValue));
 
     // wait for search results
-    driver.findElement(LOCATOR_SEARCH_TABLE_BODY_ROW);
+    WebElement firstTr = driver.findElement(LOCATOR_SEARCH_TABLE_BODY_FIRST_ROW);
 
-    final String html = driver.getPageSource();
+    // select the search results table body
+    WebElement tBody = (WebElement) ((JavascriptExecutor) driver)
+      .executeScript("return arguments[0].parentNode;", firstTr);
 
+    // convert table body element to string
+    final String html = tBody.getAttribute("outerHTML");
     return parser.parseSearchResults(html).get(0);
   }
 
@@ -92,10 +98,14 @@ public class MetallumWebDriverService {
     driver.manage().addCookie(new Cookie("cf_clearance", cookieValue));
 
     // wait for songs
-    driver.findElement(LOCATOR_SONG_TABLE_BODY_ROW);
+    WebElement firstTr = driver.findElement(LOCATOR_SONG_TABLE_BODY_ROW);
 
-    final String html = driver.getPageSource();
+    // select the songs table body
+    WebElement tBody = (WebElement) ((JavascriptExecutor) driver)
+      .executeScript("return arguments[0].parentNode;", firstTr);
 
+    // convert table body element to string
+    final String html = tBody.getAttribute("outerHTML");
     return parser.parseSongs(html);
   }
 }

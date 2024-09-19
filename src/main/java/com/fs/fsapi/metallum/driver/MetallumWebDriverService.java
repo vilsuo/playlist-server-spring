@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -46,7 +45,7 @@ public class MetallumWebDriverService {
     "#searchResultsAlbum > tbody > tr"
   );
 
-  private final By LOCATOR_SONG_TABLE_BODY_ROW = By.cssSelector(
+  private final By LOCATOR_SONG_TABLE_BODY_FIRST_ROW = By.cssSelector(
     ".table_lyrics > tbody > tr"
   );
 
@@ -58,27 +57,17 @@ public class MetallumWebDriverService {
    * @return search result
    */
   public ArtistTitleSearchResult searchByArtistAndTitle(String artist, String title) {
-    URI uri = UriComponentsBuilder
-      .fromHttpUrl("https://www.metal-archives.com")
-      .path("/search/advanced/searching/albums")
-      .queryParam("bandName", artist)
-      .queryParam("releaseTitle", title)
-      .build()
-      .toUri();
+    loadSearchPage(artist, title);
 
-    driver.get(uri.toString());
-    driver.manage().addCookie(new Cookie("cf_clearance", cookieValue));
+    // find search results table body
+    WebElement tbody = findTableBody(LOCATOR_SEARCH_TABLE_BODY_FIRST_ROW);
 
-    // wait for search results
-    WebElement firstTr = driver.findElement(LOCATOR_SEARCH_TABLE_BODY_FIRST_ROW);
+    List<ArtistTitleSearchResult> results = parser.parseSearchResults(
+      tbody.getAttribute("outerHTML")
+    );
 
-    // select the search results table body
-    WebElement tBody = (WebElement) ((JavascriptExecutor) driver)
-      .executeScript("return arguments[0].parentNode;", firstTr);
-
-    // convert table body element to string
-    final String html = tBody.getAttribute("outerHTML");
-    return parser.parseSearchResults(html).get(0);
+    // return the "best" result...
+    return results.get(0);
   }
 
   /**
@@ -88,26 +77,12 @@ public class MetallumWebDriverService {
    * @return release song list
    */
   public List<SongResult> searchSongs(String titleId) {
-    // only title id seems to be required,
-    // artist and title can be empty...
-    URI uri = UriComponentsBuilder
-      .fromHttpUrl("https://www.metal-archives.com")
-      .path("/albums/{artist}/{title}/{titleId}")
-      .build("", "", titleId);
+    loadTitlePage(titleId);
 
-    driver.get(uri.toString());
-    driver.manage().addCookie(new Cookie("cf_clearance", cookieValue));
+    // find song table body
+    WebElement tbody = findTableBody(LOCATOR_SONG_TABLE_BODY_FIRST_ROW);
 
-    // wait for songs
-    WebElement firstTr = driver.findElement(LOCATOR_SONG_TABLE_BODY_ROW);
-
-    // select the songs table body
-    WebElement tBody = (WebElement) ((JavascriptExecutor) driver)
-      .executeScript("return arguments[0].parentNode;", firstTr);
-
-    // convert table body element to string
-    final String html = tBody.getAttribute("outerHTML");
-    return parser.parseSongs(html);
+    return parser.parseSongs(tbody.getAttribute("outerHTML"));
   }
 
   /**
@@ -118,65 +93,87 @@ public class MetallumWebDriverService {
    *         the lyrics were not found
    */
   public LyricsResult searchSongLyrics(String titleId, String songId) {
+    loadTitlePage(titleId);
+
+    // find song table body
+    WebElement tbody = findTableBody(LOCATOR_SONG_TABLE_BODY_FIRST_ROW);
+
+    // find the last data element of the correct row
+    WebElement lastTd = tbody.findElement(
+      By.xpath("//*[@name=" + songId + "]/parent::td/parent::tr/td[last()]")
+    );
+
+    switch (driver.childrenCount(lastTd)) {
+      case 0: // lyrics not available
+        return new LyricsResult("Lyrics not available");
+
+      case 1: // lyrics available or instrumental
+        WebElement lyricsInfoElement = lastTd.findElement(
+          By.cssSelector("td > :first-child")
+        );
+
+        switch (lyricsInfoElement.getTagName()) {
+          case "a": // lyrics available
+            // click to show lyrics
+            final By lyricsBtnSelector = By.cssSelector("#lyricsButton" + songId);
+            WebElement lyricsBtn = tbody.findElement(lyricsBtnSelector);
+            lyricsBtn.click();
+
+            // wait for lyrics to appear
+            final String loadingText = "(loading lyrics...)";
+            WebElement lyricsElement = driver.findElement(By.xpath(
+              "//td[@id='lyrics_" + songId + "' and not(text()='" + loadingText + "')]"
+            ));
+
+            String rawLyrics = lyricsElement.getText();
+
+            // replace new lines so lyrics can be parsed correctly
+            rawLyrics = rawLyrics.replace("\n", "<br />");
+
+            return parser.parseLyrics(rawLyrics);
+        
+          case "em": // instrumental
+            return new LyricsResult("Instrumental");
+
+          default:
+            throw new CustomMetallumScrapingException("Unexpected children tag type");
+        }
+    
+      default:
+        throw new CustomMetallumScrapingException("Unexpected number of children");
+    }
+  }
+
+  private void loadSearchPage(String artist, String title) {
+    final URI uri = UriComponentsBuilder
+      .fromHttpUrl("https://www.metal-archives.com")
+      .path("/search/advanced/searching/albums")
+      .queryParam("bandName", artist)
+      .queryParam("releaseTitle", title)
+      .build()
+      .toUri();
+
+    driver.get(uri.toString());
+    driver.manage().addCookie(new Cookie("cf_clearance", cookieValue));
+  }
+
+  private void loadTitlePage(String titleId) {
     // only title id seems to be required,
     // artist and title can be empty...
-    URI uri = UriComponentsBuilder
+    final URI uri = UriComponentsBuilder
       .fromHttpUrl("https://www.metal-archives.com")
       .path("/albums/{artist}/{title}/{titleId}")
       .build("", "", titleId);
 
     driver.get(uri.toString());
     driver.manage().addCookie(new Cookie("cf_clearance", cookieValue));
+  }
 
-    // wait for songs table to have a song
-    WebElement firstTr = driver.findElement(LOCATOR_SONG_TABLE_BODY_ROW);
+  private WebElement findTableBody(By tableBodyRowLocator) {
+    // wait for the element
+    final WebElement firstTr = driver.findElement(tableBodyRowLocator);
 
     // select the songs table body
-    WebElement tbody = (WebElement) ((JavascriptExecutor) driver)
-      .executeScript("return arguments[0].parentNode;", firstTr);
-
-    WebElement lastTd = tbody.findElement(By.xpath(
-      "//*[@name=" + songId + "]/parent::td/parent::tr/td[last()]"
-    ));
-
-    log.info("td element: " + lastTd.getAttribute("outerHTML"));
-    log.info("child count: " + driver.childrenCount(lastTd));
-
-    switch (driver.childrenCount(lastTd)) {
-      case 0: // lyrics not available
-        return new LyricsResult("Lyrics not available");
-
-      case 1:
-        // lyrics available or instrumental
-        WebElement e = lastTd.findElement(By.cssSelector("td > :first-child"));
-
-        switch (e.getTagName()) {
-          case "a": // lyrics available
-            // click show lyrics
-            final By lyricsBtnSelector = By.cssSelector("#lyricsButton" + songId);
-            WebElement lyricsBtn = tbody.findElement(lyricsBtnSelector);
-            lyricsBtn.click();
-
-            // wait for lyrics to appear
-            final String LOADING_TEXT = "(loading lyrics...)";
-            WebElement lyrics = driver.findElement(By.xpath(
-              "//td[@id='lyrics_" + songId + "' and not(text()='" + LOADING_TEXT + "')]"
-            ));
-
-            final String html = lyrics.getText();
-            //log.info("lyrics found html: " + html);
-
-            return parser.parseLyrics(html);
-        
-          case "em": // instrumental
-            return new LyricsResult("Instrumental");
-
-          default:
-            throw new CustomMetallumScrapingException("Unexpected children type");
-        }
-    
-      default:
-        throw new CustomMetallumScrapingException("Unexpected number of children");
-    }
+    return firstTr.findElement(By.xpath("./parent::tbody"));
   }
 }

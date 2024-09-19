@@ -1,19 +1,18 @@
 package com.fs.fsapi.config;
 
-import java.time.Duration;
 import java.util.Collections;
 
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import com.fs.fsapi.metallum.driver.CustomChromeDriver;
 
 @Configuration
 public class CustomWebDriverConfig {
   
   @Bean
-  public WebDriver webDriver() {
+  public CustomChromeDriver webDriver() {
     ChromeOptions options = new ChromeOptions();
 
     // Try to bypass Cloudflare checks
@@ -29,8 +28,7 @@ public class CustomWebDriverConfig {
     options.addArguments("window-size=1920,1080");
     options.addArguments("--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36");
 
-    WebDriver driver = new ChromeDriver(options);
-    driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(20));
+    CustomChromeDriver driver = new CustomChromeDriver(options);
 
     return driver;
   }

@@ -6,7 +6,6 @@ import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -26,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class MetallumWebDriverService {
   
-  private final WebDriver driver;
+  private final CustomChromeDriver driver;
 
   private final MetallumPageParser parser;
 
@@ -131,33 +130,37 @@ public class MetallumWebDriverService {
     driver.get(uri.toString());
     driver.manage().addCookie(new Cookie("cf_clearance", cookieValue));
 
-    // wait for songs
+    // wait for songs table to have a song
     WebElement firstTr = driver.findElement(LOCATOR_SONG_TABLE_BODY_ROW);
 
     // select the songs table body
-    WebElement tBody = (WebElement) ((JavascriptExecutor) driver)
+    WebElement tbody = (WebElement) ((JavascriptExecutor) driver)
       .executeScript("return arguments[0].parentNode;", firstTr);
 
-    // HANDLE INSTRUMENTAL AND NOT FOUND!
+    final By lyricsBtnSelector = By.cssSelector("#lyricsButton" + songId);
+    final boolean hasLyrics = driver.isElementPresent(tbody, lyricsBtnSelector);
+    if (hasLyrics) {
+      // click show lyrics
+      WebElement lyricsBtn = tbody.findElement(lyricsBtnSelector);
+      lyricsBtn.click();
 
-    // click show lyrics
-    WebElement lyricsBtn = tBody.findElement(By.cssSelector("#lyricsButton" + songId));
-    lyricsBtn.click();
+      // wait for lyrics to appear
+      final String LOADING_TEXT = "(loading lyrics...)";
+      WebElement lyrics = driver.findElement(By.xpath(
+        "//td[@id='lyrics_" + songId + "' and not(text()='" + LOADING_TEXT + "')]"
+      ));
 
-    // find lyrics
-    //WebElement lyrics = tBody.findElement(By.cssSelector(
-    //  "#lyrics_" + songId + ":nth-child(2)[style='display: none;']"
-    //));
+      final String html = lyrics.getText();
+      log.info("lyrics found html: " + html);
 
-    //final String loadingText = "\'(loading lyrics...)\'";
-    final String loadingText = "loading";
-    WebElement lyrics = driver.findElement(By.xpath(
-      "//td[@id='lyrics_" + songId + "' and not(contains(text(), '" + loadingText + "'))]"
-    ));
+      return parser.parseLyrics(html);
 
-    final String html = lyrics.getText();
+    } else {
+      return new LyricsResult("instrumental or not available");
 
-    log.info("lyrics html: " + html);
-    return parser.parseLyrics(html);
+      //WebElement lyrics = driver.findElement(By.xpath(
+      //  "//td[@id='lyrics_" + songId + "' and not(contains(text(), '" + loadingText + "'))]"
+      //));
+    }
   }
 }

@@ -78,10 +78,7 @@ public class MetallumDriverService {
   public List<SongResult> searchSongs(String titleId) {
     loadTitlePage(titleId);
 
-    // find song table body
-    WebElement tbody = findTableBody(LOCATOR_SONG_TABLE_BODY_FIRST_ROW);
-
-    return parser.parseSongs(tbody.getAttribute("outerHTML"));
+    return parser.parseSongs(driver.getPageSource());
   }
 
   /**
@@ -151,6 +148,7 @@ public class MetallumDriverService {
 
     driver.get(uri.toString());
     driver.manage().addCookie(new Cookie("cf_clearance", cookieValue));
+    driver.waitForLoad();
   }
 
   private WebElement findTableBody(By tableBodyRowLocator) {

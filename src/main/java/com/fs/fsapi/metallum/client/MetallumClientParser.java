@@ -1,12 +1,7 @@
 package com.fs.fsapi.metallum.client;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 import com.fs.fsapi.bookmark.parser.LinkElement;
@@ -20,7 +15,6 @@ import com.fs.fsapi.metallum.result.ArtistTitleSearchResult;
 import com.fs.fsapi.metallum.result.InstrumentalLyricsResult;
 import com.fs.fsapi.metallum.result.LyricsResult;
 import com.fs.fsapi.metallum.result.NotAvailableLyricsResult;
-import com.fs.fsapi.metallum.result.SongResult;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -95,59 +89,6 @@ public class MetallumClientParser extends MetallumParser {
     }
 
     return new LinkElement(e);
-  }
-
-  /**
-   * Extract songs from the song table.
-   * 
-   * @param html  string where the song table can be found
-   * @return list of songs
-   */
-  public List<SongResult> parseSongs(String html) {
-    Document doc = Jsoup.parse(html);
-
-    Element tbody = doc.select(".table_lyrics > tbody").first();
-    if (tbody == null) {
-      throw new CustomMetallumScrapingException(
-        "Song table was not found"
-      );
-    }
-
-    List<SongResult> songs = new ArrayList<>();
-    tbody.children().stream()
-      .forEach(tr -> {
-        if (tr.hasClass("even") || tr.hasClass("odd")) {
-          Elements tds = tr.children();
-
-          final String id = extractSongId(tds.get(0));
-          final String songTitle = tds.get(1).ownText();
-          final String songDuration = tds.get(2).ownText();
-
-          songs.add(new SongResult(id, songTitle, songDuration));
-        }
-      });
-
-    return songs;
-  }
-
-  /**
-   * Get the song id from release table row data element.
-   * 
-   * @param tds  release table row data element (single song row)
-   * @return the song id
-   * @throws CustomMetallumScrapingException if id can not be found
-   */
-  private String extractSongId(Element element) {
-    if (element.childrenSize() > 0) {
-      Element child = element.child(0);
-      if (child.hasAttr("name")) {
-        return child.attr("name");
-      }
-    }
-
-    throw new CustomMetallumScrapingException(
-      "Song id was not found"
-    );
   }
 
   public LyricsResult parseLyrics(String text) {

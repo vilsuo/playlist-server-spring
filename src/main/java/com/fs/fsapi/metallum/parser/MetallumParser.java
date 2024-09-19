@@ -5,8 +5,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 
 import com.fs.fsapi.exceptions.CustomMetallumScrapingException;
@@ -18,8 +18,17 @@ public abstract class MetallumParser {
 
   // SONGS
 
-  public List<SongResult> parseSongs(String tbodyOuterHTML) {
-    return readTableBody(tbodyOuterHTML)
+  public List<SongResult> parseSongs(String pageSource) {
+    Document doc = Jsoup.parse(pageSource);
+
+    Element tbody = doc.select(".table_lyrics > tbody").first();
+    if (tbody == null) {
+      throw new CustomMetallumScrapingException(
+        "Song table was not found"
+      );
+    }
+
+    return tbody.children().stream()
       .filter(this::isTableRowDataElement)
       .map(Element::children)
       .map(this::parseSongTableRow)
@@ -49,8 +58,8 @@ public abstract class MetallumParser {
 
   // LYRICS
 
-  protected LyricsResult parseLyricsAvailableResult(String value, String rowSeparator) {
-    final List<String> lyrics = Stream.of(value.split(rowSeparator))
+  protected LyricsResult parseLyricsAvailableResult(String text, String rowSeparator) {
+    final List<String> lyrics = Stream.of(text.split(rowSeparator))
       .map(row -> row.trim())
       .collect(Collectors.toList());
 
@@ -59,6 +68,7 @@ public abstract class MetallumParser {
 
   // HELPERS
 
+  /*
   private Stream<Element> readTableBody(String tbodyOuterHTML) {
     // parse as is: https://stackoverflow.com/a/63024182
     final Element tbody = Jsoup.parse(tbodyOuterHTML, "", Parser.xmlParser())
@@ -72,6 +82,7 @@ public abstract class MetallumParser {
 
     return tbody.children().stream();
   }
+  */
 
   private boolean isTableRowDataElement(Element element) {
     return element.tagName().equals("tr") && (

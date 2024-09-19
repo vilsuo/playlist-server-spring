@@ -4,9 +4,13 @@ import java.time.Duration;
 import java.util.List;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 // https://stackoverflow.com/a/23937532
 public class CustomChromeDriver extends ChromeDriver {
@@ -51,8 +55,9 @@ public class CustomChromeDriver extends ChromeDriver {
   public boolean isElementPresent(By by) {
     return isElementPresent(this, by);
   }
+  */
 
-  private void waitForLoad() {
+  public void waitForLoad() {
     ExpectedCondition<Boolean> pageLoadCondition = new ExpectedCondition<Boolean>() {
       public Boolean apply(WebDriver wd) {
         // This will tel if page is loaded
@@ -66,7 +71,6 @@ public class CustomChromeDriver extends ChromeDriver {
     wait.until(pageLoadCondition);
 
     // Lower implicitly wait time
-    this.manage().timeouts().implicitlyWait(Duration.ofMillis(100));
+    //this.manage().timeouts().implicitlyWait(Duration.ofMillis(100));
   }
-  */
 }

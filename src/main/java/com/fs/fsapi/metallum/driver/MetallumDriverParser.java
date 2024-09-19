@@ -3,7 +3,6 @@ package com.fs.fsapi.metallum.driver;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
@@ -14,15 +13,18 @@ import org.springframework.stereotype.Service;
 import com.fs.fsapi.bookmark.parser.LinkElement;
 import com.fs.fsapi.exceptions.CustomDataNotFoundException;
 import com.fs.fsapi.exceptions.CustomMetallumScrapingException;
+import com.fs.fsapi.metallum.parser.MetallumParser;
 import com.fs.fsapi.metallum.result.ArtistTitleSearchResult;
+import com.fs.fsapi.metallum.result.InstrumentalLyricsResult;
 import com.fs.fsapi.metallum.result.LyricsResult;
+import com.fs.fsapi.metallum.result.NotAvailableLyricsResult;
 import com.fs.fsapi.metallum.result.SongResult;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class MetallumDriverParser {
+public class MetallumDriverParser extends MetallumParser {
 
   /**
    * Extract search results.
@@ -162,24 +164,17 @@ public class MetallumDriverParser {
     );
   }
 
-  public LyricsResult parseLyrics(String html) {
-    final String value = html.trim();
+  public LyricsResult parseLyrics(String text) {
+    final String value = text.trim();
 
-    // no lyrics
-    if (value.equals("<em>(lyrics not available)</em>")) {
-      return new LyricsResult("Lyrics not available");
+    if (value.isEmpty()) {
+      return new NotAvailableLyricsResult();
+
+    } else if (value.equals("instrumental")) {
+      return new InstrumentalLyricsResult();
     }
 
-    // instrumental
-    if (value.equals("(<em>Instrumental</em>)<br />")) {
-      return new LyricsResult("Instrumental");
-    }
-
-    final String ROW_SEPARATOR = "<br />";
-    final List<String> lyrics = Stream.of(value.split(ROW_SEPARATOR))
-      .map(row -> row.trim())
-      .collect(Collectors.toList());
-
-    return new LyricsResult(lyrics);
+    final String rowSeparator = "\n";
+    return super.parseLyricsAvailableResult(value, rowSeparator);
   }
 }

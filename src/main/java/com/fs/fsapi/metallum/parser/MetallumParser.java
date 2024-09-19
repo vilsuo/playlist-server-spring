@@ -1,8 +1,18 @@
 package com.fs.fsapi.metallum.parser;
 
-import org.springframework.stereotype.Service;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-@Service
-public class MetallumParser {
-  
+import com.fs.fsapi.metallum.result.LyricsResult;
+
+public abstract class MetallumParser {
+
+  protected LyricsResult parseLyricsAvailableResult(String value, String rowSeparator) {
+    final List<String> lyrics = Stream.of(value.split(rowSeparator))
+      .map(row -> row.trim())
+      .collect(Collectors.toList());
+
+    return new LyricsResult(lyrics);
+  }
 }

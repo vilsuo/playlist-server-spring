@@ -9,7 +9,6 @@ import org.openqa.selenium.WebElement;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.fs.fsapi.exceptions.CustomMetallumScrapingException;
 import com.fs.fsapi.metallum.result.ArtistTitleSearchResult;
 import com.fs.fsapi.metallum.result.LyricsResult;
 import com.fs.fsapi.metallum.result.SongResult;
@@ -103,45 +102,30 @@ public class MetallumDriverService {
       By.xpath("//*[@name=" + songId + "]/parent::td/parent::tr/td[last()]")
     );
 
-    switch (driver.childrenCount(lastTd)) {
-      case 0: // lyrics not available
-        return new LyricsResult("Lyrics not available");
+    if (driver.childrenCount(lastTd) == 1) {
+      WebElement lyricsInfoElement = lastTd.findElement(
+        By.cssSelector("td > :first-child")
+      );
 
-      case 1: // lyrics available or instrumental
-        WebElement lyricsInfoElement = lastTd.findElement(
-          By.cssSelector("td > :first-child")
-        );
+      final boolean lyricsAvailable = lyricsInfoElement.getTagName().equals("a");
+      if (lyricsAvailable) {
+        // toggle show lyrics
+        final By lyricsBtnSelector = By.cssSelector("#lyricsButton" + songId);
+        WebElement lyricsBtn = tbody.findElement(lyricsBtnSelector);
+        lyricsBtn.click();
 
-        switch (lyricsInfoElement.getTagName()) {
-          case "a": // lyrics available
-            // click to show lyrics
-            final By lyricsBtnSelector = By.cssSelector("#lyricsButton" + songId);
-            WebElement lyricsBtn = tbody.findElement(lyricsBtnSelector);
-            lyricsBtn.click();
+        // wait for lyrics to appear
+        final String loadingText = "(loading lyrics...)";
+        WebElement lyricsElement = driver.findElement(By.xpath(
+          "//td[@id='lyrics_" + songId + "' and not(text()='" + loadingText + "')]"
+        ));
 
-            // wait for lyrics to appear
-            final String loadingText = "(loading lyrics...)";
-            WebElement lyricsElement = driver.findElement(By.xpath(
-              "//td[@id='lyrics_" + songId + "' and not(text()='" + loadingText + "')]"
-            ));
-
-            String rawLyrics = lyricsElement.getText();
-
-            // replace new lines so lyrics can be parsed correctly
-            rawLyrics = rawLyrics.replace("\n", "<br />");
-
-            return parser.parseLyrics(rawLyrics);
-        
-          case "em": // instrumental
-            return new LyricsResult("Instrumental");
-
-          default:
-            throw new CustomMetallumScrapingException("Unexpected children tag type");
-        }
-    
-      default:
-        throw new CustomMetallumScrapingException("Unexpected number of children");
+        return parser.parseLyrics(lyricsElement.getText());
+      }
     }
+
+    // lyrics not available or instrumental
+    return parser.parseLyrics(lastTd.getText());
   }
 
   private void loadSearchPage(String artist, String title) {

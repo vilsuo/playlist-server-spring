@@ -8,16 +8,17 @@ import lombok.Getter;
 @Getter
 public class LyricsResult {
   
-  private String error;
-  private List<String> lyrics;
+  private String message;
+  
+  private List<String> lines;
 
-  public LyricsResult(String error) {
-    this.error = error;
-    lyrics = new ArrayList<>();
+  public LyricsResult(String message) {
+    this.message = message;
+    lines = new ArrayList<>();
   }
 
-  public LyricsResult(List<String> lyrics) {
-    this.error = "";
-    this.lyrics = lyrics;
+  public LyricsResult(List<String> lines) {
+    this.message = "";
+    this.lines = lines;
   }
 }

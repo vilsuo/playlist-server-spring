@@ -2,8 +2,6 @@ package com.fs.fsapi.metallum.client;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -15,17 +13,20 @@ import com.fs.fsapi.bookmark.parser.LinkElement;
 import com.fs.fsapi.exceptions.CustomDataNotFoundException;
 import com.fs.fsapi.exceptions.CustomMetallumException;
 import com.fs.fsapi.exceptions.CustomMetallumScrapingException;
+import com.fs.fsapi.metallum.parser.MetallumParser;
 import com.fs.fsapi.metallum.response.AaDataValue;
 import com.fs.fsapi.metallum.response.ArtistTitleSearchResponse;
 import com.fs.fsapi.metallum.result.ArtistTitleSearchResult;
+import com.fs.fsapi.metallum.result.InstrumentalLyricsResult;
 import com.fs.fsapi.metallum.result.LyricsResult;
+import com.fs.fsapi.metallum.result.NotAvailableLyricsResult;
 import com.fs.fsapi.metallum.result.SongResult;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class MetallumClientParser {
+public class MetallumClientParser extends MetallumParser {
 
   /**
    * Extract the best result from the response.
@@ -149,24 +150,20 @@ public class MetallumClientParser {
     );
   }
 
-  public LyricsResult parseLyrics(String html) {
-    final String value = html.trim();
+  public LyricsResult parseLyrics(String text) {
+    final String value = text.trim();
 
     // no lyrics
     if (value.equals("<em>(lyrics not available)</em>")) {
-      return new LyricsResult("Lyrics not available");
+      return new NotAvailableLyricsResult();
     }
 
     // instrumental
     if (value.equals("(<em>Instrumental</em>)<br />")) {
-      return new LyricsResult("Instrumental");
+      return new InstrumentalLyricsResult();
     }
 
-    final String ROW_SEPARATOR = "<br />";
-    final List<String> lyrics = Stream.of(value.split(ROW_SEPARATOR))
-      .map(row -> row.trim())
-      .collect(Collectors.toList());
-
-    return new LyricsResult(lyrics);
+    final String rowSeparator = "<br />";
+    return super.parseLyricsAvailableResult(value, rowSeparator);
   }
 }

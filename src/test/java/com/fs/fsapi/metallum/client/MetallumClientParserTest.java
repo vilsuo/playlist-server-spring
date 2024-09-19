@@ -88,17 +88,17 @@ public class MetallumClientParserTest {
       }
 
       @Test
-      public void shouldNotHaveErrorTest() throws IOException {
-        assertTrue(actual.getError().isEmpty());
+      public void shouldNotHaveMessageTest() throws IOException {
+        assertTrue(actual.getMessage().isEmpty());
       }
 
       @Test
       public void shouldHaveTheSongLyricsTest() throws IOException {
-        final List<String> expectedLyrics = expected.getLyrics();
-        final List<String> actualLyrics = actual.getLyrics();
+        final List<String> expectedLyrics = expected.getLines();
+        final List<String> actualLyrics = actual.getLines();
   
         assertEquals(expectedLyrics.size(), actualLyrics.size());
-        for (int i = 0; i < actual.getLyrics().size(); ++i) {
+        for (int i = 0; i < actual.getLines().size(); ++i) {
           assertEquals(expectedLyrics.get(i), actualLyrics.get(i));
         }
       }
@@ -119,16 +119,16 @@ public class MetallumClientParserTest {
       }
 
       @Test
-      public void shouldHaveErrorTest() throws IOException {
-        final String error = actual.getError();
-        assertFalse(error.isEmpty());
-        assertEquals("Lyrics not available", error);
+      public void shouldHaveMessageTest() throws IOException {
+        final String message = actual.getMessage();
+        assertFalse(message.isEmpty());
+        assertEquals("Lyrics not available", message);
       }
 
       @Test
       public void shouldNotHaveAnySongLyricsTest() throws IOException {
-        final List<String> expectedLyrics = expected.getLyrics();
-        final List<String> actualLyrics = actual.getLyrics();
+        final List<String> expectedLyrics = expected.getLines();
+        final List<String> actualLyrics = actual.getLines();
   
         assertTrue(expectedLyrics.isEmpty());
         assertTrue(actualLyrics.isEmpty());
@@ -148,16 +148,16 @@ public class MetallumClientParserTest {
       }
 
       @Test
-      public void shouldHaveErrorTest() throws IOException {
-        final String error = actual.getError();
-        assertFalse(error.isEmpty());
-        assertEquals("Instrumental", error);
+      public void shouldHaveMessageTest() throws IOException {
+        final String message = actual.getMessage();
+        assertFalse(message.isEmpty());
+        assertEquals("Instrumental", message);
       }
 
       @Test
       public void shouldNotHaveAnySongLyricsTest() throws IOException {
-        final List<String> expectedLyrics = expected.getLyrics();
-        final List<String> actualLyrics = actual.getLyrics();
+        final List<String> expectedLyrics = expected.getLines();
+        final List<String> actualLyrics = actual.getLines();
   
         assertTrue(expectedLyrics.isEmpty());
         assertTrue(actualLyrics.isEmpty());

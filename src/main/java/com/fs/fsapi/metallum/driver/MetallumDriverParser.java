@@ -18,7 +18,6 @@ import com.fs.fsapi.metallum.result.ArtistTitleSearchResult;
 import com.fs.fsapi.metallum.result.InstrumentalLyricsResult;
 import com.fs.fsapi.metallum.result.LyricsResult;
 import com.fs.fsapi.metallum.result.NotAvailableLyricsResult;
-import com.fs.fsapi.metallum.result.SongResult;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -87,51 +86,6 @@ public class MetallumDriverParser extends MetallumParser {
     }
 
     return new LinkElement(e);
-  }
-
-  /**
-   * Extract release title songs.
-   * 
-   * @param htmlTbody  song table body
-   * @return parsed list of songs
-   */
-  public List<SongResult> parseSongs(String htmlTbody) {
-    return readTableBody(htmlTbody, this::isTableRowDataElement).stream()
-      .map(this::parseSongTableRow)
-      .collect(Collectors.toList());
-  }
-
-  /**
-   * Parse a single song table row.
-   * 
-   * @param tds  child elements of a table row
-   * @return a song
-   */
-  private SongResult parseSongTableRow(Elements tds) {
-    final String id = extractSongId(tds.get(0));
-    final String songTitle = tds.get(1).ownText();
-    final String songDuration = tds.get(2).ownText();
-
-    return new SongResult(id, songTitle, songDuration);
-  }
-
-  /**
-   * Extract the song id from a release table row data element.
-   * 
-   * @param tds  release table row data element
-   * @return the song id
-   */
-  private String extractSongId(Element td) {
-    if (td.childrenSize() > 0) {
-      Element child = td.child(0);
-      if (child.hasAttr("name")) {
-        return child.attr("name");
-      }
-    }
-
-    throw new CustomMetallumScrapingException(
-      "Song id was not found"
-    );
   }
 
   /**

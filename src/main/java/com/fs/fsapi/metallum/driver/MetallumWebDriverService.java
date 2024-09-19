@@ -10,15 +10,13 @@ import org.openqa.selenium.WebElement;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.fs.fsapi.exceptions.CustomMetallumScrapingException;
 import com.fs.fsapi.metallum.parser.ArtistTitleSearchResult;
 import com.fs.fsapi.metallum.parser.LyricsResult;
 import com.fs.fsapi.metallum.parser.SongResult;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-// TODO
-// - lyrics: HANDLE INSTRUMENTAL AND NOT FOUND!
 
 @Slf4j
 @Service
@@ -137,30 +135,48 @@ public class MetallumWebDriverService {
     WebElement tbody = (WebElement) ((JavascriptExecutor) driver)
       .executeScript("return arguments[0].parentNode;", firstTr);
 
-    final By lyricsBtnSelector = By.cssSelector("#lyricsButton" + songId);
-    final boolean hasLyrics = driver.isElementPresent(tbody, lyricsBtnSelector);
-    if (hasLyrics) {
-      // click show lyrics
-      WebElement lyricsBtn = tbody.findElement(lyricsBtnSelector);
-      lyricsBtn.click();
+    WebElement lastTd = tbody.findElement(By.xpath(
+      "//*[@name=" + songId + "]/parent::td/parent::tr/td[last()]"
+    ));
 
-      // wait for lyrics to appear
-      final String LOADING_TEXT = "(loading lyrics...)";
-      WebElement lyrics = driver.findElement(By.xpath(
-        "//td[@id='lyrics_" + songId + "' and not(text()='" + LOADING_TEXT + "')]"
-      ));
+    log.info("td element: " + lastTd.getAttribute("outerHTML"));
+    log.info("child count: " + driver.childrenCount(lastTd));
 
-      final String html = lyrics.getText();
-      log.info("lyrics found html: " + html);
+    switch (driver.childrenCount(lastTd)) {
+      case 0: // lyrics not available
+        return new LyricsResult("Lyrics not available");
 
-      return parser.parseLyrics(html);
+      case 1:
+        // lyrics available or instrumental
+        WebElement e = lastTd.findElement(By.cssSelector("td > :first-child"));
 
-    } else {
-      return new LyricsResult("instrumental or not available");
+        switch (e.getTagName()) {
+          case "a": // lyrics available
+            // click show lyrics
+            final By lyricsBtnSelector = By.cssSelector("#lyricsButton" + songId);
+            WebElement lyricsBtn = tbody.findElement(lyricsBtnSelector);
+            lyricsBtn.click();
 
-      //WebElement lyrics = driver.findElement(By.xpath(
-      //  "//td[@id='lyrics_" + songId + "' and not(contains(text(), '" + loadingText + "'))]"
-      //));
+            // wait for lyrics to appear
+            final String LOADING_TEXT = "(loading lyrics...)";
+            WebElement lyrics = driver.findElement(By.xpath(
+              "//td[@id='lyrics_" + songId + "' and not(text()='" + LOADING_TEXT + "')]"
+            ));
+
+            final String html = lyrics.getText();
+            //log.info("lyrics found html: " + html);
+
+            return parser.parseLyrics(html);
+        
+          case "em": // instrumental
+            return new LyricsResult("Instrumental");
+
+          default:
+            throw new CustomMetallumScrapingException("Unexpected children type");
+        }
+    
+      default:
+        throw new CustomMetallumScrapingException("Unexpected number of children");
     }
   }
 }

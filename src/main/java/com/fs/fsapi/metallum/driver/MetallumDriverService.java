@@ -10,9 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fs.fsapi.exceptions.CustomMetallumScrapingException;
-import com.fs.fsapi.metallum.parser.ArtistTitleSearchResult;
-import com.fs.fsapi.metallum.parser.LyricsResult;
-import com.fs.fsapi.metallum.parser.SongResult;
+import com.fs.fsapi.metallum.result.ArtistTitleSearchResult;
+import com.fs.fsapi.metallum.result.LyricsResult;
+import com.fs.fsapi.metallum.result.SongResult;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,11 +20,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class MetallumWebDriverService {
+public class MetallumDriverService {
   
   private final CustomChromeDriver driver;
 
-  private final MetallumPageParser parser;
+  private final MetallumDriverParser parser;
 
   public static final String COOKIE_NAME = "cf_clearance";
 

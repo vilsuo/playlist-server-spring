@@ -1,4 +1,4 @@
-package com.fs.fsapi.metallum;
+package com.fs.fsapi.metallum.client;
 
 import java.util.List;
 
@@ -7,11 +7,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.fs.fsapi.metallum.cache.ArtistTitleSearchCache;
-import com.fs.fsapi.metallum.parser.ArtistTitleSearchResult;
-import com.fs.fsapi.metallum.parser.LyricsResult;
-import com.fs.fsapi.metallum.parser.MetallumParser;
-import com.fs.fsapi.metallum.parser.SongResult;
 import com.fs.fsapi.metallum.response.ArtistTitleSearchResponse;
+import com.fs.fsapi.metallum.result.ArtistTitleSearchResult;
+import com.fs.fsapi.metallum.result.LyricsResult;
+import com.fs.fsapi.metallum.result.SongResult;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,13 +22,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class MetallumService {
+public class MetallumClientService {
 
   public static final String METALLUM_BASE_URL = "https://www.metal-archives.com";
 
   private final WebClient webClient;
 
-  private final MetallumParser parser;
+  private final MetallumClientParser parser;
 
   private final ArtistTitleSearchCache cache;
 

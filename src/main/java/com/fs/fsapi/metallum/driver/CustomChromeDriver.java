@@ -4,19 +4,14 @@ import java.time.Duration;
 import java.util.List;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.SearchContext;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 // https://stackoverflow.com/a/23937532
 public class CustomChromeDriver extends ChromeDriver {
 
-  public static final Duration DEFAULT_TIMEOUT_SECONDS = Duration.ofSeconds(20);
+  public static final Duration DEFAULT_TIMEOUT_SECONDS = Duration.ofSeconds(15);
 
   private Duration timeout = DEFAULT_TIMEOUT_SECONDS;
 
@@ -25,14 +20,6 @@ public class CustomChromeDriver extends ChromeDriver {
     this.manage().timeouts().implicitlyWait(timeout);
   }
 
-  //public Duration getTimeout() {
-  //  return timeout;
-  //}
-  //
-  //public void setTimeout(Duration timeout) {
-  //  this.timeout = timeout;
-  //}
-  
   public int childrenCount(WebElement element) {
     // Lower implicitly wait time
     this.manage().timeouts().implicitlyWait(Duration.ofMillis(100));
@@ -47,6 +34,7 @@ public class CustomChromeDriver extends ChromeDriver {
     return children.size();
   }
 
+  /*
   public boolean isElementPresent(SearchContext context, By by) {
     boolean isPresent = true;
     waitForLoad();
@@ -80,4 +68,5 @@ public class CustomChromeDriver extends ChromeDriver {
     // Lower implicitly wait time
     this.manage().timeouts().implicitlyWait(Duration.ofMillis(100));
   }
+  */
 }

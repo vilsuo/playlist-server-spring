@@ -1,4 +1,4 @@
-package com.fs.fsapi.metallum;
+package com.fs.fsapi.metallum.client;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -16,8 +16,7 @@ import org.springframework.test.context.DynamicPropertySource;
 import com.fs.fsapi.config.CustomWebClientConfig;
 import com.fs.fsapi.helpers.MetallumFileHelper;
 import com.fs.fsapi.metallum.cache.ArtistTitleSearchCache;
-import com.fs.fsapi.metallum.parser.ArtistTitleSearchResult;
-import com.fs.fsapi.metallum.parser.MetallumParser;
+import com.fs.fsapi.metallum.result.ArtistTitleSearchResult;
 
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -28,11 +27,11 @@ import reactor.test.StepVerifier;
 
 @SpringBootTest(classes = {
   CustomWebClientConfig.class,
-  MetallumParser.class,
+  MetallumClientParser.class,
   ArtistTitleSearchCache.class,
-  MetallumService.class,
+  MetallumClientService.class,
 })
-public class MetallumServiceIntegrationTest {
+public class MetallumClientServiceIntegrationTest {
 
   static int MOCK_SERVER_PORT;
 
@@ -55,7 +54,7 @@ public class MetallumServiceIntegrationTest {
   private ArtistTitleSearchCache cache;
 
   @Autowired
-  private MetallumService service;
+  private MetallumClientService service;
 
   @BeforeEach
   public void init() throws IOException {

@@ -1,4 +1,4 @@
-package com.fs.fsapi.metallum.parser;
+package com.fs.fsapi.metallum.result;
 
 import com.fs.fsapi.bookmark.parser.LinkElement;
 

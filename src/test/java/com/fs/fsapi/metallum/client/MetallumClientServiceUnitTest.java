@@ -1,4 +1,4 @@
-package com.fs.fsapi.metallum;
+package com.fs.fsapi.metallum.client;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -29,9 +29,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.fs.fsapi.helpers.MetallumFileHelper;
 import com.fs.fsapi.metallum.cache.ArtistTitleSearchCache;
-import com.fs.fsapi.metallum.parser.ArtistTitleSearchResult;
-import com.fs.fsapi.metallum.parser.MetallumParser;
 import com.fs.fsapi.metallum.response.ArtistTitleSearchResponse;
+import com.fs.fsapi.metallum.result.ArtistTitleSearchResult;
 
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -43,19 +42,19 @@ import reactor.test.StepVerifier;
 // is StepVerifier necessary? learn to use better
 
 @ExtendWith(MockitoExtension.class)
-public class MetallumServiceUnitTest {
+public class MetallumClientServiceUnitTest {
 
   private MockWebServer mockWebServer;
 
   private WebClient webClient;
 
   @Mock
-  private MetallumParser parser;
+  private MetallumClientParser parser;
 
   @Mock
   private ArtistTitleSearchCache cache;
 
-  private MetallumService service;
+  private MetallumClientService service;
 
   @BeforeEach
   public void init() throws IOException {
@@ -64,7 +63,7 @@ public class MetallumServiceUnitTest {
 			.baseUrl(mockWebServer.url("/").toString())
 			.build();
 
-    service = new MetallumService(webClient, parser, cache);
+    service = new MetallumClientService(webClient, parser, cache);
   }
 
   @AfterEach

@@ -14,24 +14,24 @@ import org.springframework.stereotype.Service;
 import com.fs.fsapi.bookmark.parser.LinkElement;
 import com.fs.fsapi.exceptions.CustomDataNotFoundException;
 import com.fs.fsapi.exceptions.CustomMetallumScrapingException;
-import com.fs.fsapi.metallum.parser.ArtistTitleSearchResult;
-import com.fs.fsapi.metallum.parser.LyricsResult;
-import com.fs.fsapi.metallum.parser.SongResult;
+import com.fs.fsapi.metallum.result.ArtistTitleSearchResult;
+import com.fs.fsapi.metallum.result.LyricsResult;
+import com.fs.fsapi.metallum.result.SongResult;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class MetallumPageParser {
+public class MetallumDriverParser {
 
   /**
    * Extract search results.
    * 
-   * @param htmlTBody  search results table body
+   * @param htmlTbody  search results table body
    * @return parsed list of search results
    */
-  public List<ArtistTitleSearchResult> parseSearchResults(String htmlTBody) {
-    final List<Elements> trs = readTableBody(htmlTBody, this::isTableRowElement);
+  public List<ArtistTitleSearchResult> parseSearchResults(String htmlTbody) {
+    final List<Elements> trs = readTableBody(htmlTbody, this::isTableRowDataElement);
 
     if (trs.size() == 1) {
       final Elements tds = trs.get(0);
@@ -45,42 +45,6 @@ public class MetallumPageParser {
     return trs.stream()
       .map(this::parseSearchTableRow)
       .collect(Collectors.toList());
-
-    /*
-    final Element tbody = Jsoup.parse(htmlTBody, "", Parser.xmlParser())
-      .selectFirst("tbody");
-    
-    if (tbody == null) {
-      throw new CustomMetallumScrapingException(
-        "Search results table was not found"
-      );
-    }
-
-    final Elements trs = tbody.children();
-    if (trs.size() == 1) {
-      final Elements tds = trs.get(0).children();
-      if (tds.size() == 1) {
-        // no results
-        final String message = tds.get(0).ownText();
-        throw new CustomDataNotFoundException(message);
-      }
-    }
-
-    return tbody.children().stream()
-      .filter(e -> isTableRowElement(e))
-      .map(tr -> {
-        final Elements tds = tr.children();
-
-        final String artistLinkHtml = tds.get(0).html();
-        final String titleLinkHtml = tds.get(1).html();
-        final String releaseType = tds.get(2).ownText();
-
-        return parseSearchData(
-          new AaDataValue(artistLinkHtml, titleLinkHtml, releaseType)
-        );
-      })
-      .collect(Collectors.toList());
-    */
   }
 
   /**
@@ -126,37 +90,13 @@ public class MetallumPageParser {
   /**
    * Extract release title songs.
    * 
-   * @param htmlTBody  song table body
+   * @param htmlTbody  song table body
    * @return parsed list of songs
    */
-  public List<SongResult> parseSongs(String htmlTBody) {
-    return readTableBody(htmlTBody, this::isTableRowElement).stream()
+  public List<SongResult> parseSongs(String htmlTbody) {
+    return readTableBody(htmlTbody, this::isTableRowDataElement).stream()
       .map(this::parseSongTableRow)
       .collect(Collectors.toList());
-
-    /*
-    final Element tbody = Jsoup.parse(htmlTBody, "", Parser.xmlParser())
-      .selectFirst("tbody");
-    
-    if (tbody == null) {
-      throw new CustomMetallumScrapingException(
-        "Song table was not found"
-      );
-    }
-
-    return tbody.children().stream()
-      .filter(e -> isTableRowElement(e)) // last row should contain the total duration 
-      .map(tr -> {
-        Elements tds = tr.children();
-
-        final String id = extractSongId(tds.get(0));
-        final String songTitle = tds.get(1).ownText();
-        final String songDuration = tds.get(2).ownText();
-
-        return new SongResult(id, songTitle, songDuration);
-      })
-      .collect(Collectors.toList());
-      */
   }
 
   /**
@@ -195,13 +135,13 @@ public class MetallumPageParser {
   /**
    * Read HTML table body into a list of table row child elements.
    * 
-   * @param htmlTBody  html {@code tbody} element
+   * @param htmlTbody  html {@code tbody} element
    * @param rowFilter  filter for {@code tbody} child elements
    * @return list of table row child elements
    */
-  private List<Elements> readTableBody(String htmlTBody, Predicate<Element> rowFilter) {
+  private List<Elements> readTableBody(String htmlTbody, Predicate<Element> rowFilter) {
     // parse as is: https://stackoverflow.com/a/63024182
-    final Element tbody = Jsoup.parse(htmlTBody, "", Parser.xmlParser())
+    final Element tbody = Jsoup.parse(htmlTbody, "", Parser.xmlParser())
       .selectFirst("tbody");
     
     if (tbody == null) {
@@ -216,7 +156,7 @@ public class MetallumPageParser {
       .collect(Collectors.toList());
   }
 
-  private boolean isTableRowElement(Element element) {
+  private boolean isTableRowDataElement(Element element) {
     return element.tagName().equals("tr") && (
       element.hasClass("even") || element.hasClass("odd")
     );

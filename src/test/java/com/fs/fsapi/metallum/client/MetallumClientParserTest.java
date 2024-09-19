@@ -1,4 +1,4 @@
-package com.fs.fsapi.metallum.parser;
+package com.fs.fsapi.metallum.client;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -16,12 +16,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.fs.fsapi.helpers.MetallumFileHelper;
 import com.fs.fsapi.metallum.response.ArtistTitleSearchResponse;
+import com.fs.fsapi.metallum.result.ArtistTitleSearchResult;
+import com.fs.fsapi.metallum.result.LyricsResult;
+import com.fs.fsapi.metallum.result.SongResult;
 
-@SpringBootTest(classes = { MetallumParser.class })
-public class MetallumParserTest {
+@SpringBootTest(classes = { MetallumClientParser.class })
+public class MetallumClientParserTest {
 
   @Autowired
-  private MetallumParser parser;
+  private MetallumClientParser parser;
 
   @Nested
   @DisplayName("getSearchResult")

@@ -1,4 +1,4 @@
-package com.fs.fsapi.metallum.parser;
+package com.fs.fsapi.metallum.result;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

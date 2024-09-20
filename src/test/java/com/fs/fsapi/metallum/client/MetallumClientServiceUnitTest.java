@@ -5,11 +5,11 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
@@ -40,6 +40,10 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 // is StepVerifier necessary? learn to use better
+
+// TODO test
+// - lyrics available, not available, instrumental
+// - web client errors...
 
 @ExtendWith(MockitoExtension.class)
 public class MetallumClientServiceUnitTest {
@@ -77,6 +81,7 @@ public class MetallumClientServiceUnitTest {
 
     private final ArtistTitleSearchResponse expectedResponse = MetallumFileHelper.SEARCH_RESPONSE;
 
+    private final List<ArtistTitleSearchResult> expectedResults = MetallumFileHelper.SEARCH_RESULTS;
     private final ArtistTitleSearchResult expectedResult = MetallumFileHelper.SEARCH_RESULT;
 
     @BeforeEach
@@ -88,11 +93,8 @@ public class MetallumClientServiceUnitTest {
 
     @Test
     public void shouldReturnSearchResultTest() throws IOException, InterruptedException {
-      when(parser.getSearchResult(
-          any(ArtistTitleSearchResponse.class),
-          anyString(),
-          anyString()))
-        .thenReturn(expectedResult);
+      when(parser.parseSearchResults(any(ArtistTitleSearchResponse.class)))
+        .thenReturn(expectedResults);
 
       final String mockBody = MetallumFileHelper.readSearchResponseFile();
       
@@ -112,7 +114,7 @@ public class MetallumClientServiceUnitTest {
         artist, title
       );
 
-      verify(parser).getSearchResult(
+      verify(parser).parseSearchResults(
         argThat((response) -> response.getError().equals(expectedResponse.getError())
           && response.getTotalRecords() == expectedResponse.getTotalRecords()
           && response.getTotalDisplayRecords() == expectedResponse.getTotalDisplayRecords()
@@ -121,9 +123,7 @@ public class MetallumClientServiceUnitTest {
               .filter(i -> expectedResponse.getAaData().get(i)
                 .equals(response.getAaData().get(i)))
               .count() == expectedResponse.getAaData().size()
-        ),
-        eq(artist),
-        eq(title)
+        )
       );
 
       // Optional: confirm that your app made the HTTP requests you were expecting.

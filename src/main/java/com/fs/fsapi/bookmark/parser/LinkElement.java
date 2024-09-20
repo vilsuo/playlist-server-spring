@@ -16,6 +16,12 @@ public class LinkElement {
    * @param element  {@code a} element with {@code href} attribute
    */
   public LinkElement(Element element) {
+    if (element == null) {
+      throw new IllegalArgumentException(
+        "Expected element to be non null"
+      );
+    }
+
     // attached element must be a 'a' element with 'href' attribute
     final String tag = element.normalName();
     if (!tag.equals("a")) {

@@ -61,11 +61,13 @@ public class MetallumClientService {
       .bodyToMono(ArtistTitleSearchResponse.class)
       .block();
 
-    ArtistTitleSearchResult result = parser.getSearchResult(response, artist, title);
+    final List<ArtistTitleSearchResult> results = parser.parseSearchResults(response);
+    final ArtistTitleSearchResult result = results.get(0);
 
     // update cache
-    cache.put(artist, title, result);
+    //cache.put(artist, title, result);
 
+    // return the "best" result...
     return result;
   }
 

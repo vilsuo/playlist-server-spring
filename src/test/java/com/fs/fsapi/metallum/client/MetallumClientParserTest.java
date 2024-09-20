@@ -36,7 +36,7 @@ public class MetallumClientParserTest {
     public void shouldReturnSearchResultTest() {
       final ArtistTitleSearchResponse response = MetallumFileHelper.SEARCH_RESPONSE;
       final ArtistTitleSearchResult actual = parser
-        .getSearchResult(response, null, null);
+        .parseSearchResults(response).get(0);
 
       assertEquals(expected.getArtist(), actual.getArtist());
       assertEquals(expected.getArtistHref(), actual.getArtistHref());

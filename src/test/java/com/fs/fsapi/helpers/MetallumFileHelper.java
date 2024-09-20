@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -165,6 +166,11 @@ public class MetallumFileHelper {
     )), 
     "Demo"
   );
+
+  /**
+   * Expected parsed search results from {@link MetallumFileHelper#readSearchResponseFile}.
+   */
+  public static final List<ArtistTitleSearchResult> SEARCH_RESULTS = Collections.singletonList(SEARCH_RESULT);
 
   /**
    * Expected parsed result for reading song list from {@link MetallumFileHelper#readTitlePageWithLyricsFile}.

@@ -61,7 +61,7 @@ public class MetallumDriverService {
     // find search results table body
     WebElement tbody = findTableBody(LOCATOR_SEARCH_TABLE_BODY_FIRST_ROW);
 
-    List<ArtistTitleSearchResult> results = parser.parseSearchResults(
+    final List<ArtistTitleSearchResult> results = parser.parseSearchResults(
       tbody.getAttribute("outerHTML")
     );
 

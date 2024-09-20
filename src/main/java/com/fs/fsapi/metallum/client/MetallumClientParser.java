@@ -1,15 +1,12 @@
 package com.fs.fsapi.metallum.client;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Element;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
-import com.fs.fsapi.bookmark.parser.LinkElement;
 import com.fs.fsapi.exceptions.CustomDataNotFoundException;
 import com.fs.fsapi.exceptions.CustomMetallumException;
-import com.fs.fsapi.exceptions.CustomMetallumScrapingException;
 import com.fs.fsapi.metallum.parser.MetallumParser;
-import com.fs.fsapi.metallum.response.AaDataValue;
 import com.fs.fsapi.metallum.response.ArtistTitleSearchResponse;
 import com.fs.fsapi.metallum.result.ArtistTitleSearchResult;
 import com.fs.fsapi.metallum.result.InstrumentalLyricsResult;
@@ -32,63 +29,28 @@ public class MetallumClientParser extends MetallumParser {
    *               and error messages only
    * @return the extracted result
    */
-  public ArtistTitleSearchResult getSearchResult(
-    ArtistTitleSearchResponse response, String artist, String title
+  public List<ArtistTitleSearchResult> parseSearchResults(
+    ArtistTitleSearchResponse response
   ) {
     if (!response.getError().isBlank()) {
-      log.info(
-        "Error '" + response.getError() + "' while searching for '"
-        + title + "' by '" + artist + "'"
-      );
+      log.error("Error while searching '" + response.getError() + "''");
 
       throw new CustomMetallumException(response.getError());
     }
 
-    switch (response.getTotalRecords()) {
-      case 0: {
-        throw new CustomDataNotFoundException(
-          "No results for '" + title + "' by '" + artist + "'"
-        );
-      }
-      case 1: {
-        // return the only result
-        AaDataValue data = response.getAaData().get(0);
-        return parseSearchData(data);
-      }
-      default: {
-        log.info("Found multiple results for '" + title + "' by '" + artist);
-
-        // return the first result...
-        // - implement narrowing by release type?
-        // - return a list of results?
-        AaDataValue data = response.getAaData().get(0);
-        return parseSearchData(data);
-      }
+    // check if any results
+    if (response.getTotalRecords() == 0) {
+      throw new CustomDataNotFoundException("No matches found");
     }
-  }
 
-  private ArtistTitleSearchResult parseSearchData(AaDataValue data) {
-    return new ArtistTitleSearchResult(
-      parseSearchDataElementOuterHtml(data.getArtistLinkElementOuterHtml()),
-      parseSearchDataElementOuterHtml(data.getTitleLinkElementOuterHtml()),
-      data.getReleaseType()
+    return super.parseSearchTable(
+      response.getAaData(),
+      (aaData) -> new String[] {
+        aaData.getArtistLinkElementOuterHtml(),
+        aaData.getTitleLinkElementOuterHtml(),
+        aaData.getReleaseType()
+      }
     );
-  }
-
-  private LinkElement parseSearchDataElementOuterHtml(String html) {
-    final Element e = Jsoup.parse(html).selectFirst("a");
-
-    if (e == null) {
-      throw new CustomMetallumScrapingException(
-        "Expected data '" + html + "' to contain a 'a' element"
-      );
-    } else if (!e.hasAttr("href")) {
-      throw new CustomMetallumScrapingException(
-        "Expected data element '" + e.toString() + "' to have 'href' attribute"
-      );
-    }
-
-    return new LinkElement(e);
   }
 
   public LyricsResult parseLyrics(String text) {

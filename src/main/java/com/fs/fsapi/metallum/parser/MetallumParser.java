@@ -2,12 +2,14 @@ package com.fs.fsapi.metallum.parser;
 
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 
 import com.fs.fsapi.bookmark.parser.LinkElement;
@@ -58,15 +60,8 @@ public abstract class MetallumParser {
   public List<SongResult> parseSongs(String pageSource) {
     final Document doc = Jsoup.parse(pageSource);
     final Element tbody = doc.select(".table_lyrics > tbody").first();
-    if (tbody == null) {
-      throw new CustomMetallumScrapingException(
-        "Song table was not found"
-      );
-    }
 
-    return tbody.children().stream()
-      .filter(this::isTableRowDataElement)
-      .map(Element::children)
+    return readTableBody(tbody, this::isTableRowDataElement)
       .map(this::parseSongTableRow)
       .collect(Collectors.toList());
   }
@@ -111,21 +106,26 @@ public abstract class MetallumParser {
 
   // HELPERS
 
-  /*
-  private Stream<Element> readTableBody(String tbodyOuterHTML) {
-    // parse as is: https://stackoverflow.com/a/63024182
-    final Element tbody = Jsoup.parse(tbodyOuterHTML, "", Parser.xmlParser())
-      .selectFirst("tbody");
-    
+  private Stream<Elements> readTableBody(Element tbody, Predicate<Element> rowFilter) {
     if (tbody == null) {
       throw new CustomMetallumScrapingException(
         "Table was not found"
       );
     }
 
-    return tbody.children().stream();
+    return tbody.children().stream()
+      .filter(child -> rowFilter.test(child))
+      .map(Element::children);
   }
-  */
+  
+  protected List<Elements> readTableBody(String htmlTbody, Predicate<Element> rowFilter) {
+    // parse as is: https://stackoverflow.com/a/63024182
+    final Element tbody = Jsoup.parse(htmlTbody, "", Parser.xmlParser())
+      .selectFirst("tbody");
+    
+    return readTableBody(tbody, rowFilter)
+      .collect(Collectors.toList());
+  }
 
   protected boolean isTableRowDataElement(Element element) {
     return element.tagName().equals("tr") && (

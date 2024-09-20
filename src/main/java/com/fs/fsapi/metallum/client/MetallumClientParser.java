@@ -20,14 +20,10 @@ import lombok.extern.slf4j.Slf4j;
 public class MetallumClientParser extends MetallumParser {
 
   /**
-   * Extract the best result from the response.
+   * Extract search results.
    * 
-   * @param response  object where to extract details from
-   * @param artist  the artist name used in the response, used for logging
-   *                and error messages only
-   * @param title  the release title used in the response, used for logging
-   *               and error messages only
-   * @return the extracted result
+   * @param response  the search response
+   * @return parsed list of search results
    */
   public List<ArtistTitleSearchResult> parseSearchResults(
     ArtistTitleSearchResponse response

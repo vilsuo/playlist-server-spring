@@ -54,8 +54,8 @@ public class MetallumDriverController {
   }
 
   @PostMapping("/cookie")
-  public ResponseEntity<Void> postMethodName(@RequestBody String cfClearance) {
-    service.setCookieValue(cfClearance);
+  public ResponseEntity<Void> postMethodName(@RequestBody String value) {
+    service.replaceCookie(value);
     
     return ResponseEntity
       .noContent()

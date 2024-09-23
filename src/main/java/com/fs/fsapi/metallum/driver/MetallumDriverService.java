@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.List;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebElement;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -24,19 +23,6 @@ public class MetallumDriverService {
   private final CustomChromeDriver driver;
 
   private final MetallumDriverParser parser;
-
-  public static final String COOKIE_NAME = "cf_clearance";
-
-  // expires in 1 year
-  private String cookieValue = "MSmv8ktFlsRVVJVOAuxKdxlzUkdr87cvyv6KBDGmGI4-1726663642-1.2.1.1-tkKDIfpP63429xOiaE4spluoP1yS0CV46K_xrlcXPtzNhUrnn41ILUrPTb1woMdTKpJSb1bT8Et66bMaUZaLkVsjY0Uf0LhXqs0dgmJEiLV0w72mLZzzd.uHjKIW8CXX15YaH6AS.H2QuwT__DpZAveg2gKt__MYPfRSphLApHFeASxnNZoUuzhhA7AuWCrquTuXDD8JMq6G7E7W7qHz8iH5wUrdhTLK89cCWtbNyo1rL2uB627GdI72217jav.EVHh7fyOiqfR7by9.PZZWo2jWXy05LaB6L72Fb71ob20hFBsh4CSNRZS8LHMI5z_tJri04bcmHDFJpQ9Ib8T7.XGeYI5T9h_YNr9aFu1m91PobYQLz05njTFH2SgsOnkDa9wwrN0Za7RGArBkseSoXoAe.UZjDUdItiHlSPMQijO8cr_9a_ObIMq1vIfWXD70";
-
-  public void setCookieValue(String value) {
-    this.cookieValue = value;
-  }
-
-  public String getCookieValue() {
-    return cookieValue;
-  }
 
   // LOCATORS FOR WAITING METALLUM PAGE LOADING
 
@@ -59,7 +45,7 @@ public class MetallumDriverService {
     loadSearchPage(artist, title);
 
     // find search results table body
-    WebElement tbody = findTableBody(LOCATOR_SEARCH_TABLE_BODY_FIRST_ROW);
+    final WebElement tbody = findTableBody(LOCATOR_SEARCH_TABLE_BODY_FIRST_ROW);
 
     final List<ArtistTitleSearchResult> results = parser.parseSearchResults(
       tbody.getAttribute("outerHTML")
@@ -77,6 +63,7 @@ public class MetallumDriverService {
    */
   public List<SongResult> searchSongs(String titleId) {
     loadTitlePage(titleId);
+    driver.waitForLoad();
 
     return parser.parseSongs(driver.getPageSource());
   }
@@ -92,15 +79,15 @@ public class MetallumDriverService {
     loadTitlePage(titleId);
 
     // find song table body
-    WebElement tbody = findTableBody(LOCATOR_SONG_TABLE_BODY_FIRST_ROW);
+    final WebElement tbody = findTableBody(LOCATOR_SONG_TABLE_BODY_FIRST_ROW);
 
     // find the last data element of the correct row
-    WebElement lastTd = tbody.findElement(
+    final WebElement lastTd = tbody.findElement(
       By.xpath("//*[@name=" + songId + "]/parent::td/parent::tr/td[last()]")
     );
 
     if (driver.childrenCount(lastTd) == 1) {
-      WebElement lyricsInfoElement = lastTd.findElement(
+      final WebElement lyricsInfoElement = lastTd.findElement(
         By.cssSelector("td > :first-child")
       );
 
@@ -108,12 +95,11 @@ public class MetallumDriverService {
       if (lyricsAvailable) {
         // toggle show lyrics
         final By lyricsBtnSelector = By.cssSelector("#lyricsButton" + songId);
-        WebElement lyricsBtn = tbody.findElement(lyricsBtnSelector);
-        lyricsBtn.click();
+        tbody.findElement(lyricsBtnSelector).click();
 
         // wait for lyrics to appear
         final String loadingText = "(loading lyrics...)";
-        WebElement lyricsElement = driver.findElement(By.xpath(
+        final WebElement lyricsElement = driver.findElement(By.xpath(
           "//td[@id='lyrics_" + songId + "' and not(text()='" + loadingText + "')]"
         ));
 
@@ -134,8 +120,7 @@ public class MetallumDriverService {
       .build()
       .toUri();
 
-    driver.get(uri.toString());
-    driver.manage().addCookie(new Cookie("cf_clearance", cookieValue));
+    driver.get(uri);
   }
 
   private void loadTitlePage(String titleId) {
@@ -146,9 +131,11 @@ public class MetallumDriverService {
       .path("/albums/{artist}/{title}/{titleId}")
       .build("", "", titleId);
 
-    driver.get(uri.toString());
-    driver.manage().addCookie(new Cookie("cf_clearance", cookieValue));
-    driver.waitForLoad();
+    driver.get(uri);
+  }
+
+  public void replaceCookie(String value) {
+    driver.replaceCookie(value);
   }
 
   private WebElement findTableBody(By tableBodyRowLocator) {

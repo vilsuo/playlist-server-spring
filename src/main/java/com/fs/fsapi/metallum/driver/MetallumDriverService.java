@@ -8,14 +8,13 @@ import org.openqa.selenium.WebElement;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.fs.fsapi.metallum.cache.ArtistTitleSearchCache;
 import com.fs.fsapi.metallum.result.ArtistTitleSearchResult;
 import com.fs.fsapi.metallum.result.LyricsResult;
 import com.fs.fsapi.metallum.result.SongResult;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MetallumDriverService {
@@ -23,6 +22,8 @@ public class MetallumDriverService {
   private final CustomChromeDriver driver;
 
   private final MetallumDriverParser parser;
+
+  private final ArtistTitleSearchCache cache;
 
   // LOCATORS FOR WAITING METALLUM PAGE LOADING
 
@@ -42,17 +43,27 @@ public class MetallumDriverService {
    * @return search result
    */
   public ArtistTitleSearchResult searchByArtistAndTitle(String artist, String title) {
+    // check if cached
+    final var cached = cache.get(artist, title);
+    if (cached.isPresent()) {
+      //log.info("Cache hit!");
+      //return cached.get();
+    }
+
     loadSearchPage(artist, title);
 
     // find search results table body
     final WebElement tbody = findTableBody(LOCATOR_SEARCH_TABLE_BODY_FIRST_ROW);
 
-    final List<ArtistTitleSearchResult> results = parser.parseSearchResults(
-      tbody.getAttribute("outerHTML")
-    );
+    final List<ArtistTitleSearchResult> results = parser
+      .parseSearchResults(tbody.getAttribute("outerHTML"));
+    final ArtistTitleSearchResult result = results.get(0);
+
+    // update cache
+    cache.put(artist, title, result);
 
     // return the "best" result...
-    return results.get(0);
+    return result;
   }
 
   /**

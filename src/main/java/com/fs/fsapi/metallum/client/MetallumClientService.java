@@ -13,13 +13,11 @@ import com.fs.fsapi.metallum.result.LyricsResult;
 import com.fs.fsapi.metallum.result.SongResult;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 // TODO
 // - handle WebClientResponseException
 // - handle not found cases, etc...
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MetallumClientService {
@@ -44,13 +42,12 @@ public class MetallumClientService {
    */
   public ArtistTitleSearchResult searchByArtistAndTitle(String artist, String title) {
     // check if cached
-    var cached = cache.get(artist, title);
+    final var cached = cache.get(artist, title);
     if (cached.isPresent()) {
-      //log.info("Cache hit!");
       //return cached.get();
     }
 
-    ArtistTitleSearchResponse response = webClient.get()
+    final ArtistTitleSearchResponse response = webClient.get()
       .uri(uriBuilder -> uriBuilder
         .path("/search/ajax-advanced/searching/albums")
         .queryParam("bandName", artist)
@@ -65,7 +62,7 @@ public class MetallumClientService {
     final ArtistTitleSearchResult result = results.get(0);
 
     // update cache
-    //cache.put(artist, title, result);
+    cache.put(artist, title, result);
 
     // return the "best" result...
     return result;

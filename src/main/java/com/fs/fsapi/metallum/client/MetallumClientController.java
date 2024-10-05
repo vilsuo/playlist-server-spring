@@ -72,11 +72,14 @@ public class MetallumClientController {
       .body(service.searchSongs(titleId));
   }
 
-  @GetMapping("/lyrics/{songId}")
-  public ResponseEntity<LyricsResult> searchSongLyrics(@PathVariable String songId) {
+  @GetMapping("/songs/{titleId}/lyrics/{songId}")
+  public ResponseEntity<LyricsResult> searchSongLyrics(
+    @PathVariable String titleId,
+    @PathVariable String songId
+  ) {
     return ResponseEntity
       .ok()
-      .body(service.searchSongLyrics(songId));
+      .body(service.searchSongLyrics(titleId, songId));
   }
   
 }

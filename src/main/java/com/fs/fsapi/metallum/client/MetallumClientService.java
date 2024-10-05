@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.fs.fsapi.metallum.MetallumService;
 import com.fs.fsapi.metallum.cache.ArtistTitleSearchCache;
 import com.fs.fsapi.metallum.response.ArtistTitleSearchResponse;
 import com.fs.fsapi.metallum.result.ArtistTitleSearchResult;
@@ -20,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class MetallumClientService {
+public class MetallumClientService implements MetallumService {
 
   public static final String METALLUM_BASE_URL = "https://www.metal-archives.com";
 
@@ -30,16 +31,8 @@ public class MetallumClientService {
 
   private final ArtistTitleSearchCache cache;
 
-  private final String IMAGE_EXTENSION = ".jpg"; // always?
-  
-  /**
-   * Search basic release information. Contains links for the artist page and
-   * the release title page. Caches results to increase performance.
-   * 
-   * @param artist  the artist name
-   * @param title  the release title
-   * @return basic search result
-   */
+  private final String IMAGE_EXTENSION = ".jpg";
+  @Override
   public ArtistTitleSearchResult searchByArtistAndTitle(String artist, String title) {
     // check if cached
     final var cached = cache.get(artist, title);
@@ -165,14 +158,7 @@ public class MetallumClientService {
     return String.join("/", new String[]{ basePathSegment, middlePathSegments, id });
   }
 
-  /**
-   * Search songs by artist name and release title.
-   * 
-   * @param titleId  the release title id
-   * @return  a list containing the details of each song
-   * @implNote {@code path} songs are search from release title page, same as
-   * {@link ArtistTitleSearchResult#getTitleHref()}
-   */
+  @Override
   public List<SongResult> searchSongs(String titleId) {
     // only title id seems to be required,
     // artist and title can be empty...
@@ -188,14 +174,9 @@ public class MetallumClientService {
     return parser.parseSongs(html);
   }
 
-  /**
-   * Search song lyrics by song id.
-   * 
-   * @param songId  the song id
-   * @return html string containing the lyrics, or html string describing
-   *         the lyrics were not found
-   */
-  public LyricsResult searchSongLyrics(String songId) {
+  // title id not needed
+  @Override
+  public LyricsResult searchSongLyrics(String titleId, String songId) {
     final String html = webClient.get()
       .uri(uriBuilder -> uriBuilder
         .path("/release/ajax-view-lyrics/id/{songId}")

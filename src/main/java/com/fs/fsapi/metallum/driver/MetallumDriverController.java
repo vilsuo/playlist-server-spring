@@ -37,7 +37,7 @@ public class MetallumDriverController {
   @GetMapping("/songs/{titleId}")
   public ResponseEntity<List<SongResult>> searchSongs(
     @PathVariable String titleId
-  ) throws InterruptedException {
+  ) {
     return ResponseEntity
       .ok()
       .body(service.searchSongs(titleId));

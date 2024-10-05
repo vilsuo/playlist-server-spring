@@ -8,6 +8,7 @@ import org.openqa.selenium.WebElement;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.fs.fsapi.metallum.MetallumService;
 import com.fs.fsapi.metallum.cache.ArtistTitleSearchCache;
 import com.fs.fsapi.metallum.result.ArtistTitleSearchResult;
 import com.fs.fsapi.metallum.result.LyricsResult;
@@ -15,9 +16,12 @@ import com.fs.fsapi.metallum.result.SongResult;
 
 import lombok.RequiredArgsConstructor;
 
+// why wait for load in 'searchSongs'?
+// - is even necessary?
+
 @Service
 @RequiredArgsConstructor
-public class MetallumDriverService {
+public class MetallumDriverService implements MetallumService {
   
   private final CustomChromeDriver driver;
 
@@ -35,18 +39,11 @@ public class MetallumDriverService {
     ".table_lyrics > tbody > tr"
   );
 
-  /**
-   * Search for basic release information.
-   * 
-   * @param artist  the artist name
-   * @param title  the release title
-   * @return search result
-   */
+  @Override
   public ArtistTitleSearchResult searchByArtistAndTitle(String artist, String title) {
     // check if cached
     final var cached = cache.get(artist, title);
     if (cached.isPresent()) {
-      //log.info("Cache hit!");
       //return cached.get();
     }
 
@@ -66,26 +63,15 @@ public class MetallumDriverService {
     return result;
   }
 
-  /**
-   * Search songs of a release.
-   * 
-   * @param titleId  the release title id
-   * @return release song list
-   */
+  @Override
   public List<SongResult> searchSongs(String titleId) {
     loadTitlePage(titleId);
     driver.waitForLoad();
 
     return parser.parseSongs(driver.getPageSource());
   }
-
-  /**
-   * Search song lyrics by song id.
-   * 
-   * @param songId  the song id
-   * @return html string containing the lyrics, or html string describing
-   *         the lyrics were not found
-   */
+  
+  @Override
   public LyricsResult searchSongLyrics(String titleId, String songId) {
     loadTitlePage(titleId);
 

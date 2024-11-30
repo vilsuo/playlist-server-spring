@@ -1,10 +1,10 @@
-package com.fs.fsapi.metallum;
+package com.fs.fsapi.metallum.base;
 
 import java.util.List;
 
-import com.fs.fsapi.metallum.result.ArtistTitleSearchResult;
-import com.fs.fsapi.metallum.result.LyricsResult;
 import com.fs.fsapi.metallum.result.SongResult;
+import com.fs.fsapi.metallum.result.lyrics.LyricsResult;
+import com.fs.fsapi.metallum.result.search.ArtistTitleSearchResult;
 
 public interface MetallumService {
 

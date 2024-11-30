@@ -3,10 +3,11 @@ package com.fs.fsapi.metallum.cache;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.springframework.stereotype.Service;
 
-import com.fs.fsapi.metallum.result.ArtistTitleSearchResult;
+import com.fs.fsapi.metallum.result.search.ArtistTitleSearchResult;
 
 import lombok.RequiredArgsConstructor;
 
@@ -36,6 +37,22 @@ public class ArtistTitleSearchCache implements DoubleKeyMap<String, String, Arti
     }
 
     return Optional.empty();
+  }
+
+  @Override
+  public ArtistTitleSearchResult getOrElseSupply(
+    String artist,
+    String title,
+    Supplier<ArtistTitleSearchResult> resultSupplier
+  ) {
+    return this.get(artist, title).orElseGet(resultSupplier);
+  }
+
+  @Override
+  public void clear(String artist, String title) {
+    if (cache.containsKey(artist)) {
+      cache.get(artist).remove(title);
+    }
   }
 
   @Override

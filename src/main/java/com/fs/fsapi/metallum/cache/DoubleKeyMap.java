@@ -1,6 +1,7 @@
 package com.fs.fsapi.metallum.cache;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public interface DoubleKeyMap<K1, K2, T> {
 
@@ -8,7 +9,9 @@ public interface DoubleKeyMap<K1, K2, T> {
 
   public Optional<T> get(K1 key1, K2 key2);
 
-  //public void clear(K1 key1, K2 key2);
+  public T getOrElseSupply(K1 key1, K2 key2, Supplier<T> supplier);
+
+  public void clear(K1 key1, K2 key2);
 
   public void clear();
 

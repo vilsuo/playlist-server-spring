@@ -1,5 +1,7 @@
 package com.fs.fsapi.metallum.client;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 
@@ -10,25 +12,38 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 
-import com.fs.fsapi.config.CustomWebClientConfig;
 import com.fs.fsapi.helpers.MetallumFileHelper;
 import com.fs.fsapi.metallum.cache.ArtistTitleSearchCache;
-import com.fs.fsapi.metallum.result.ArtistTitleSearchResult;
+import com.fs.fsapi.metallum.result.ResultRanker;
+import com.fs.fsapi.metallum.result.search.ArtistTitleSearchResult;
 
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 // https://jskim1991.medium.com/spring-boot-using-mockwebserver-for-integration-tests-499030f6bfff
 
+// TODO:
+// - search
+//    - multiple results
+//    - no results
+// - other methods...
+
+
 @SpringBootTest(classes = {
   CustomWebClientConfig.class,
+  MetallumClient.class,
   MetallumClientParser.class,
   ArtistTitleSearchCache.class,
+  ResultRanker.class,
   MetallumClientService.class,
 })
 public class MetallumClientServiceIntegrationTest {
@@ -58,8 +73,12 @@ public class MetallumClientServiceIntegrationTest {
 
   @BeforeEach
   public void init() throws IOException {
+    // start mock web server
     mockWebServer = new MockWebServer();
     mockWebServer.start(MOCK_SERVER_PORT);
+
+    // clear cache
+    cache.clear();
   }
 
   @AfterEach
@@ -70,11 +89,6 @@ public class MetallumClientServiceIntegrationTest {
   @Nested
   @DisplayName("searchByArtistAndTitle")
   public class SearchByArtistAndTitle {
-
-    @BeforeEach
-    public void setUpCache() {
-      cache.clear();
-    }
 
     @Test
     public void test() throws IOException, InterruptedException {
@@ -92,13 +106,20 @@ public class MetallumClientServiceIntegrationTest {
       // Exercise your application code, which should make those HTTP requests.
       // Responses are returned in the same order that they are enqueued.
       final String artist = "Adramelech";
-      final String title = "Psychostasia";
+      final String title = "Human Extermination";
 
       final ArtistTitleSearchResult actual = service.searchByArtistAndTitle(
         artist, 
         title
       );
 
+      // Optional: confirm that your app made the HTTP requests you were expecting.
+      final RecordedRequest req = mockWebServer.takeRequest();
+      assertEquals(HttpMethod.GET.name(), req.getMethod());
+      assertEquals(MetallumFileHelper.SEARCH_PATH, req.getPath());
+      assertEquals(MediaType.APPLICATION_JSON_VALUE, req.getHeader(HttpHeaders.ACCEPT));
+
+      // Asserting response
       StepVerifier.create(Mono.just(actual))
         .expectNextMatches(result -> {
           return result.getArtist().equals(expected.getArtist())

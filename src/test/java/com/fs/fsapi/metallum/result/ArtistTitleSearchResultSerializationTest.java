@@ -12,6 +12,7 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
 
 import com.fs.fsapi.helpers.MetallumFileHelper;
+import com.fs.fsapi.metallum.result.search.ArtistTitleSearchResult;
 
 @JsonTest
 public class ArtistTitleSearchResultSerializationTest {

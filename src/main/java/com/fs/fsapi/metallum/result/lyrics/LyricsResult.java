@@ -1,4 +1,4 @@
-package com.fs.fsapi.metallum.result;
+package com.fs.fsapi.metallum.result.lyrics;
 
 import java.util.ArrayList;
 import java.util.List;

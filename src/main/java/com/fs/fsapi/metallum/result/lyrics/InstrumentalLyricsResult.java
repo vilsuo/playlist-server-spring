@@ -1,4 +1,4 @@
-package com.fs.fsapi.metallum.result;
+package com.fs.fsapi.metallum.result.lyrics;
 
 public class InstrumentalLyricsResult extends LyricsResult {
   

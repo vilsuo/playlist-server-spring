@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import com.fs.fsapi.helpers.MetallumFileHelper;
+import com.fs.fsapi.metallum.result.search.ArtistTitleSearchResult;
 
 public class ArtistTitleSearchResultTest {
   
@@ -48,6 +49,6 @@ public class ArtistTitleSearchResultTest {
 
   @Test
   public void shouldHaveExpectedReleaseTyTest() {
-    assertEquals("Demo", searchResult.getReleaseType());
+    assertEquals("Demo", searchResult.getReleaseType().label);
   }
 }

@@ -5,11 +5,11 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 import com.fs.fsapi.exceptions.CustomDataNotFoundException;
-import com.fs.fsapi.metallum.parser.MetallumParser;
-import com.fs.fsapi.metallum.result.ArtistTitleSearchResult;
-import com.fs.fsapi.metallum.result.InstrumentalLyricsResult;
-import com.fs.fsapi.metallum.result.LyricsResult;
-import com.fs.fsapi.metallum.result.NotAvailableLyricsResult;
+import com.fs.fsapi.metallum.base.MetallumParser;
+import com.fs.fsapi.metallum.result.lyrics.InstrumentalLyricsResult;
+import com.fs.fsapi.metallum.result.lyrics.LyricsResult;
+import com.fs.fsapi.metallum.result.lyrics.NotAvailableLyricsResult;
+import com.fs.fsapi.metallum.result.search.ArtistTitleSearchResult;
 
 @Service
 public class MetallumDriverParser extends MetallumParser {

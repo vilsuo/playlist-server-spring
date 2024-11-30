@@ -1,4 +1,4 @@
-package com.fs.fsapi.metallum.result;
+package com.fs.fsapi.metallum.result.search;
 
 import com.fs.fsapi.bookmark.parser.LinkElement;
 
@@ -11,7 +11,7 @@ public class ArtistTitleSearchResult {
 
   private LinkElement titleFolderLink;
 
-  private String releaseType;
+  private ReleaseType releaseType;
 
   public String getArtist() {
     return artistFolderLink.getText();
@@ -39,7 +39,7 @@ public class ArtistTitleSearchResult {
     return titleHref.substring(titleHref.lastIndexOf("/") + 1);
   }
 
-  public String getReleaseType() {
+  public ReleaseType getReleaseType() {
     return releaseType;
   }
 }

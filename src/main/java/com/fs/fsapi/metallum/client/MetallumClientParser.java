@@ -6,12 +6,12 @@ import org.springframework.stereotype.Service;
 
 import com.fs.fsapi.exceptions.CustomDataNotFoundException;
 import com.fs.fsapi.exceptions.CustomMetallumException;
-import com.fs.fsapi.metallum.parser.MetallumParser;
+import com.fs.fsapi.metallum.base.MetallumParser;
 import com.fs.fsapi.metallum.response.ArtistTitleSearchResponse;
-import com.fs.fsapi.metallum.result.ArtistTitleSearchResult;
-import com.fs.fsapi.metallum.result.InstrumentalLyricsResult;
-import com.fs.fsapi.metallum.result.LyricsResult;
-import com.fs.fsapi.metallum.result.NotAvailableLyricsResult;
+import com.fs.fsapi.metallum.result.lyrics.InstrumentalLyricsResult;
+import com.fs.fsapi.metallum.result.lyrics.LyricsResult;
+import com.fs.fsapi.metallum.result.lyrics.NotAvailableLyricsResult;
+import com.fs.fsapi.metallum.result.search.ArtistTitleSearchResult;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -52,13 +52,10 @@ public class MetallumClientParser extends MetallumParser {
   public LyricsResult parseLyrics(String text) {
     final String value = text.trim();
 
-    // no lyrics
     if (value.equals("<em>(lyrics not available)</em>")) {
       return new NotAvailableLyricsResult();
-    }
-
-    // instrumental
-    if (value.equals("(<em>Instrumental</em>)<br />")) {
+      
+    } else if (value.equals("(<em>Instrumental</em>)<br />")) {
       return new InstrumentalLyricsResult();
     }
 

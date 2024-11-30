@@ -13,9 +13,10 @@ import org.apache.commons.io.FileUtils;
 import com.fs.fsapi.bookmark.parser.LinkElement;
 import com.fs.fsapi.metallum.response.AaDataValue;
 import com.fs.fsapi.metallum.response.ArtistTitleSearchResponse;
-import com.fs.fsapi.metallum.result.ArtistTitleSearchResult;
-import com.fs.fsapi.metallum.result.LyricsResult;
 import com.fs.fsapi.metallum.result.SongResult;
+import com.fs.fsapi.metallum.result.lyrics.LyricsResult;
+import com.fs.fsapi.metallum.result.search.ArtistTitleSearchResult;
+import com.fs.fsapi.metallum.result.search.ReleaseType;
 
 public class MetallumFileHelper {
 
@@ -136,6 +137,9 @@ public class MetallumFileHelper {
 
   // EXPECTED RESULTS
 
+  // use %-encoding
+  public static final String SEARCH_PATH = "/search/ajax-advanced/searching/albums/?bandName=Adramelech&releaseTitle=Human%20Extermination";
+
   /**
    * Expected response for {@link MetallumFileHelper#readSearchResponseFile}.
    */
@@ -164,7 +168,7 @@ public class MetallumFileHelper {
       "Human Extermination",
       "https://www.metal-archives.com/albums/Adramelech/Human_Extermination/73550"
     )), 
-    "Demo"
+    ReleaseType.DEMO
   );
 
   /**

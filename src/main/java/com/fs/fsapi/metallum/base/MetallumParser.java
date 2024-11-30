@@ -1,4 +1,4 @@
-package com.fs.fsapi.metallum.parser;
+package com.fs.fsapi.metallum.base;
 
 import java.util.List;
 import java.util.function.Function;
@@ -14,9 +14,10 @@ import org.jsoup.select.Elements;
 
 import com.fs.fsapi.bookmark.parser.LinkElement;
 import com.fs.fsapi.exceptions.CustomMetallumScrapingException;
-import com.fs.fsapi.metallum.result.ArtistTitleSearchResult;
-import com.fs.fsapi.metallum.result.LyricsResult;
 import com.fs.fsapi.metallum.result.SongResult;
+import com.fs.fsapi.metallum.result.lyrics.LyricsResult;
+import com.fs.fsapi.metallum.result.search.ArtistTitleSearchResult;
+import com.fs.fsapi.metallum.result.search.ReleaseType;
 
 public abstract class MetallumParser {
 
@@ -39,9 +40,9 @@ public abstract class MetallumParser {
     }
 
     return new ArtistTitleSearchResult(
-      parseSearchTableRowLinkElement(rowContent[0]),
-      parseSearchTableRowLinkElement(rowContent[1]),
-      rowContent[2]
+      parseSearchTableRowLinkElement(rowContent[0]), // artist
+      parseSearchTableRowLinkElement(rowContent[1]), // release title
+      parseReleaseType(rowContent[2])                // release type
     );
   }
 
@@ -53,6 +54,14 @@ public abstract class MetallumParser {
     } catch (IllegalArgumentException ex) {
       throw new CustomMetallumScrapingException(ex.getMessage());
     }
+  }
+
+  private ReleaseType parseReleaseType(String value) {
+    return ReleaseType.valueOfLabel(value).orElseThrow(
+      () -> new CustomMetallumScrapingException(
+        "Unexped Release type '" + value + "' in search response"
+      )
+    );
   }
 
   // SONGS

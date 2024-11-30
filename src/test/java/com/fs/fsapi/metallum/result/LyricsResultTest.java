@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import com.fs.fsapi.metallum.result.lyrics.LyricsResult;
+
 public class LyricsResultTest {
   
   @Test

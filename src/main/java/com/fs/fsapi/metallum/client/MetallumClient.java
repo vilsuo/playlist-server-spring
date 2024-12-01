@@ -69,61 +69,61 @@ public class MetallumClient {
   /**
    * Search artist logo image.
    * 
-   * @param id  the artist id
+   * @param artistId  the artist id
    * @return the image
    */
-  public byte[] loadArtistLogo(String id) {
-    return loadImage(createArtistLogoPath(id));
+  public byte[] loadArtistLogo(String artistId) {
+    return loadImage(createArtistLogoPath(artistId));
   }
 
   /**
-   * Create url where the artist logo image can be found.
+   * Create the url where the artist logo image can be found.
    * 
-   * @param id  the artist id
+   * @param artistId  the artist id
    * @return the image url
    */
-  public String createArtistLogoUrl(String id) {
-    return client.getBaseUrl() + createArtistLogoPath(id);
+  public String createArtistLogoUrl(String artistId) {
+    return client.getBaseUrl() + createArtistLogoPath(artistId);
   }
 
   /**
    * Get the path of the artist logo image. 
    * 
-   * @param id  the artist id
+   * @param artistId  the artist id
    * @return the image
    */
-  private String createArtistLogoPath(String id) {
-    return createBaseImagePath(id) + "_logo" + IMAGE_EXTENSION;
+  private String createArtistLogoPath(String artistId) {
+    return createBaseImagePath(artistId) + "_logo" + IMAGE_EXTENSION;
   }
 
   /**
    * Search release title cover image.
    * 
-   * @param id  the release title id
+   * @param titleId  the release title id
    * @return the image
    */
-  public byte[] loadTitleCover(String id) {
-    return loadImage(createTitleCoverPath(id));
+  public byte[] loadTitleCover(String titleId) {
+    return loadImage(createTitleCoverPath(titleId));
   }
 
   /**
-   * Create url where the release title cover image can be found.
+   * Create the url where the release title cover image can be found.
    * 
-   * @param id  the release title id
+   * @param titleId  the release title id
    * @return the image url
    */
-  public String createTitleCoverUrl(String id) {
-    return client.getBaseUrl() + createTitleCoverPath(id);
+  public String createTitleCoverUrl(String titleId) {
+    return client.getBaseUrl() + createTitleCoverPath(titleId);
   }
 
   /**
    * Get the path of the release title cover image. 
    * 
-   * @param id  the release title id
+   * @param titleId  the release title id
    * @return the path image
    */
-  private String createTitleCoverPath(String id) {
-    return createBaseImagePath(id) + IMAGE_EXTENSION;
+  private String createTitleCoverPath(String titleId) {
+    return createBaseImagePath(titleId) + IMAGE_EXTENSION;
   }
 
   private byte[] loadImage(String imagePath) {

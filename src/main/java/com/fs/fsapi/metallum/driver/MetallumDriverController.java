@@ -43,6 +43,34 @@ public class MetallumDriverController implements MetallumController {
       .body(service.searchSongLyrics(titleId, songId));
   }
 
+  @Override
+  public ResponseEntity<byte[]> searchArtistLogo(String artistId) {
+    return ResponseEntity
+      .ok()
+      .body(service.searchArtistLogo(artistId));
+  }
+
+  @Override
+  public ResponseEntity<String> getArtistLogoUrl(String artistId) {
+    return ResponseEntity
+      .ok()
+      .body(service.getArtistLogoUrl(artistId));
+  }
+
+  @Override
+  public ResponseEntity<byte[]> searchTitleCover(String titleId) {
+    return ResponseEntity
+      .ok()
+      .body(service.searchTitleCover(titleId));
+  }
+
+  @Override
+  public ResponseEntity<String> getTitleCoverUrl(String titleId) {
+    return ResponseEntity
+      .ok()
+      .body(service.getTitleCoverUrl(titleId));
+  }
+
   @PostMapping("/cookie")
   public ResponseEntity<Void> setCookie(@RequestBody String value) {
     service.setBypassCookie(value);

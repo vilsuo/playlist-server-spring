@@ -33,4 +33,36 @@ public interface MetallumService {
    * @return the song lyrics
    */
   public LyricsResult searchSongLyrics(String titleId, String songId);
+
+  /**
+   * Get artist logo image.
+   * 
+   * @param artistId  the artist id
+   * @return the image
+   */
+  public byte[] searchArtistLogo(String artistId);
+
+  /**
+   * Get release title cover image.
+   * 
+   * @param titleId  the release title id
+   * @return the image
+   */
+  public byte[] searchTitleCover(String titleId);
+
+  /**
+   * Get the url where the artist logo image can be found.
+   * 
+   * @param id  the artist id
+   * @return the image url
+   */
+  public String getArtistLogoUrl(String id);
+
+  /**
+   * Get the url where the release title cover image can be found.
+   * 
+   * @param id  the release title id
+   * @return the image url
+   */
+  public String getTitleCoverUrl(String id);
 }

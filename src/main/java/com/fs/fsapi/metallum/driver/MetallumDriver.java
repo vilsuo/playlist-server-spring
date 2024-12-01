@@ -43,6 +43,16 @@ public class MetallumDriver {
     driver.get(uri);
   }
 
+  private void loadArtistPage(String artistId) {
+    // only artist id seems to be required,
+    // artist can be empty...
+    final URI uri = UriComponentsBuilder
+      .fromPath("/bands/{artist}/{artistId}")
+      .build("", artistId);
+
+    driver.get(uri);
+  }
+
   private void loadTitlePage(String titleId) {
     // only title id seems to be required,
     // artist and title can be empty...
@@ -116,5 +126,39 @@ public class MetallumDriver {
 
     // select the songs table body
     return firstTr.findElement(By.xpath("./parent::tbody"));
+  }
+
+  /**
+   * Get the url where the artist logo image can be found.
+   * 
+   * @param artistId  the artist id
+   * @return the image url
+   */
+  public String getArtistLogoUrl(String artistId) {
+    loadArtistPage(artistId);
+    driver.waitForLoad();
+
+    final WebElement img = driver.findElement(
+      By.cssSelector("#logo > img")
+    );
+
+    return img.getAttribute("src");
+  }
+
+  /**
+   * Get the url where the release title cover image can be found.
+   * 
+   * @param titleId  the release title id
+   * @return the image url
+   */
+  public String getTitleCoverUrl(String titleId) {
+    loadTitlePage(titleId);
+    driver.waitForLoad();
+
+    final WebElement img = driver.findElement(
+      By.cssSelector("#cover > img")
+    );
+
+    return img.getAttribute("src");
   }
 }

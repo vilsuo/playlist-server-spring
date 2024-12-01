@@ -3,8 +3,6 @@ package com.fs.fsapi.metallum.client;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -43,35 +41,29 @@ public class MetallumClientController implements MetallumController {
       .body(service.searchSongLyrics(titleId, songId));
   }
   
-  /*
-  @GetMapping("/logo/{artistId}")
-  public ResponseEntity<byte[]> searchArtistLogo(@PathVariable String artistId) {
+  @Override
+  public ResponseEntity<byte[]> searchArtistLogo(String artistId) {
     return ResponseEntity
       .ok()
-      .contentType(MediaType.IMAGE_JPEG)
       .body(service.searchArtistLogo(artistId));
   }
-  */
 
-  @GetMapping("/logo/{artistId}/url")
-  public ResponseEntity<String> getArtistLogoUrl(@PathVariable String artistId) {
+  @Override
+  public ResponseEntity<String> getArtistLogoUrl(String artistId) {
     return ResponseEntity
       .ok()
       .body(service.getArtistLogoUrl(artistId));
   }
 
-  /*
-  @GetMapping("/cover/{titleId}")
-  public ResponseEntity<byte[]> searchTitleCover(@PathVariable String titleId) {
+  @Override
+  public ResponseEntity<byte[]> searchTitleCover(String titleId) {
     return ResponseEntity
       .ok()
-      .contentType(MediaType.IMAGE_JPEG)
       .body(service.searchTitleCover(titleId));
   }
-  */
 
-  @GetMapping("/cover/{titleId}/url")
-  public ResponseEntity<String> getTitleCoverUrl(@PathVariable String titleId) {
+  @Override
+  public ResponseEntity<String> getTitleCoverUrl(String titleId) {
     return ResponseEntity
       .ok()
       .body(service.getTitleCoverUrl(titleId));

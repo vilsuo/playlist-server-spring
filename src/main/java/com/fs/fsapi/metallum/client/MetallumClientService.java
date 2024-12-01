@@ -58,42 +58,22 @@ public class MetallumClientService implements MetallumService {
     return parser.parseLyrics(client.loadSongLyrics(songId));
   }
 
-  /**
-   * Get artist logo image.
-   * 
-   * @param id  the artist id
-   * @return the image
-   */
-  public byte[] getArtistLogo(String id) {
+  @Override
+  public byte[] searchArtistLogo(String id) {
     return client.loadArtistLogo(id);
   }
 
-  /**
-   * Get release title cover image.
-   * 
-   * @param id  the release title id
-   * @return the image
-   */
-  public byte[] getTitleCover(String id) {
+  @Override
+  public byte[] searchTitleCover(String id) {
     return client.loadTitleCover(id);
   }
 
-  /**
-   * Get the url where the artist logo image can be found.
-   * 
-   * @param id  the artist id
-   * @return the image url
-   */
+  @Override
   public String getArtistLogoUrl(String id) {
     return client.createArtistLogoUrl(id);
   }
 
-  /**
-   * Get the url where the release title cover image can be found.
-   * 
-   * @param id  the release title id
-   * @return the image url
-   */
+  @Override
   public String getTitleCoverUrl(String id) {
     return client.createTitleCoverUrl(id);
   }

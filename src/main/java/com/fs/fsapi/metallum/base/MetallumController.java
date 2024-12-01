@@ -2,6 +2,7 @@ package com.fs.fsapi.metallum.base;
 
 import java.util.List;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,4 +31,15 @@ public interface MetallumController {
     @PathVariable String songId
   );
 
+  @GetMapping(value = "/logo/{artistId}", produces = MediaType.IMAGE_JPEG_VALUE)
+  public ResponseEntity<byte[]> searchArtistLogo(@PathVariable String artistId);
+
+  @GetMapping("/logo/{artistId}/url")
+  public ResponseEntity<String> getArtistLogoUrl(@PathVariable String artistId);
+
+  @GetMapping(value = "/cover/{titleId}", produces = MediaType.IMAGE_JPEG_VALUE)
+  public ResponseEntity<byte[]> searchTitleCover(@PathVariable String titleId);
+
+  @GetMapping("/cover/{titleId}/url")
+  public ResponseEntity<String> getTitleCoverUrl(@PathVariable String titleId);
 }

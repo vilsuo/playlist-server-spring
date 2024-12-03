@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.function.Predicate;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -105,8 +106,8 @@ public class MetallumClientServiceIntegrationTest {
 
       // Exercise your application code, which should make those HTTP requests.
       // Responses are returned in the same order that they are enqueued.
-      final String artist = "Adramelech";
-      final String title = "Human Extermination";
+      final String artist = MetallumFileHelper.SEARCH_ARTIST;
+      final String title = MetallumFileHelper.SEARCH_TITLE;
 
       final ArtistTitleSearchResult actual = service.searchByArtistAndTitle(
         artist, 
@@ -119,19 +120,26 @@ public class MetallumClientServiceIntegrationTest {
       assertEquals(MetallumFileHelper.SEARCH_PATH, req.getPath());
       assertEquals(MediaType.APPLICATION_JSON_VALUE, req.getHeader(HttpHeaders.ACCEPT));
 
-      // Asserting response
       StepVerifier.create(Mono.just(actual))
-        .expectNextMatches(result -> {
-          return result.getArtist().equals(expected.getArtist())
-            && result.getArtistHref().equals(expected.getArtistHref())
-            && result.getArtistId().equals(expected.getArtistId())
-            && result.getTitle().equals(expected.getTitle())
-            && result.getTitleHref().equals(expected.getTitleHref())
-            && result.getTitleId().equals(expected.getTitleId())
-            && result.getReleaseType().equals(expected.getReleaseType());
-        })
+        .expectNextMatches(searchResultPredicateFactory(expected))
         .verifyComplete();
-    } 
+    }
+
+    public Predicate<ArtistTitleSearchResult> searchResultPredicateFactory(ArtistTitleSearchResult expected) {
+      return new Predicate<ArtistTitleSearchResult>() {
+
+        @Override
+        public boolean test(ArtistTitleSearchResult actual) {
+          return actual.getArtist().equals(expected.getArtist())
+              && actual.getArtistHref().equals(expected.getArtistHref())
+              && actual.getArtistId().equals(expected.getArtistId())
+              && actual.getTitle().equals(expected.getTitle())
+              && actual.getTitleHref().equals(expected.getTitleHref())
+              && actual.getTitleId().equals(expected.getTitleId())
+              && actual.getReleaseType().equals(expected.getReleaseType());
+        }
+      };
+    }
   }
 }
 

@@ -22,10 +22,24 @@ public class MetallumFileHelper {
 
   private static final String METALLUM_TEST_FILES_LOCATION = "src/test/data/metallum";
 
+  // PARAMETERS
+
+  /**
+   * Metallum advanced search parameter for field "Band name".
+   */
+  public static final String SEARCH_ARTIST = "Adramelech";
+
+  /**
+   * Metallum advanced search parameter for field "Release title".
+   */
+  public static final String SEARCH_TITLE = "Human Extermination";
+
   // FILES
 
   /**
-   * Metallum advanced search result data file.
+   * Metallum advanced search result data file for 
+   * {@link MetallumFileHelper#SEARCH_ARTIST} and 
+   * {@link MetallumFileHelper#SEARCH_TITLE}.
    */
   private static final String SEARCH_RESPONSE_FILE = "search.json";
 

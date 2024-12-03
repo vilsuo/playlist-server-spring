@@ -3,8 +3,10 @@ package com.fs.fsapi.metallum.client;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -12,6 +14,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.AfterEach;
@@ -20,9 +23,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.Answer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -31,6 +37,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.fs.fsapi.helpers.MetallumFileHelper;
 import com.fs.fsapi.metallum.cache.ArtistTitleSearchCache;
 import com.fs.fsapi.metallum.response.ArtistTitleSearchResponse;
+import com.fs.fsapi.metallum.result.ResultRanker;
 import com.fs.fsapi.metallum.result.search.ArtistTitleSearchResult;
 
 import okhttp3.mockwebserver.MockResponse;
@@ -61,20 +68,32 @@ public class MetallumClientServiceUnitTest {
   @Mock
   private ArtistTitleSearchCache cache;
 
+  @Mock
+  private ResultRanker ranker;
+
   @InjectMocks
   private MetallumClientService service;
 
-  @BeforeEach
-  public void setUpCache() {
-    // mock cache to always not find
-    when(cache.get(anyString(), anyString()))
-      .thenReturn(Optional.empty());
-  }
-
-  /*
   @Nested
   @DisplayName("searchByArtistAndTitle")
   public class SearchByArtistAndTitle {
+
+    @BeforeEach
+    public void setUpCache() {
+      // https://stackoverflow.com/a/16819818
+      doAnswer(new Answer<>() {
+        public Object answer(InvocationOnMock invocation) {
+          Object[] args = invocation.getArguments();
+          Supplier<?> supplier = (Supplier<?>) args[2];
+          return supplier.get();
+        }
+      }).when(cache).getOrElseSupply(
+        anyString(),
+        anyString(),
+        // https://stackoverflow.com/a/13932751
+        ArgumentMatchers.<Supplier<ArtistTitleSearchResult>>any()
+      ); 
+    }
 
     private final ArtistTitleSearchResponse expectedResponse = MetallumFileHelper.SEARCH_RESPONSE;
 
@@ -82,27 +101,26 @@ public class MetallumClientServiceUnitTest {
     private final ArtistTitleSearchResult expectedResult = MetallumFileHelper.SEARCH_RESULT;
 
     @Test
-    public void shouldReturnSearchResultTest() throws IOException, InterruptedException {
+    public void shouldReturnSearchResultTest() {
+      when(client.loadSearchResponse(anyString(), anyString()))
+        .thenReturn(expectedResponse);
+
       when(parser.parseSearchResults(any(ArtistTitleSearchResponse.class)))
         .thenReturn(expectedResults);
-
-      final String mockBody = MetallumFileHelper.readSearchResponseFile();
       
-      // Schedule a response
-      final MockResponse mockResponse = new MockResponse()
-        .setResponseCode(200)
-        .setHeader("Content-Type", "application/json")
-        .setBody(mockBody);
-
-      mockWebServer.enqueue(mockResponse);
+      when(ranker.getBestSearchResult(anyList(), anyString(), anyString()))
+        .thenReturn(expectedResult);
 
       // Exercise your application code, which should make those HTTP requests.
       // Responses are returned in the same order that they are enqueued.
-      final String artist = "Adramelech";
-      final String title = "Psychostasia";
+      final String artist = MetallumFileHelper.SEARCH_ARTIST;
+      final String title = MetallumFileHelper.SEARCH_TITLE;
       final ArtistTitleSearchResult actual = service.searchByArtistAndTitle(
         artist, title
       );
+
+      // verify that mocks have been called correctly
+      verify(client).loadSearchResponse(artist, title);
 
       verify(parser).parseSearchResults(
         argThat((response) -> response.getError().equals(expectedResponse.getError())
@@ -116,20 +134,15 @@ public class MetallumClientServiceUnitTest {
         )
       );
 
-      // Optional: confirm that your app made the HTTP requests you were expecting.
-      final RecordedRequest req = mockWebServer.takeRequest();
-      assertEquals(HttpMethod.GET.name(), req.getMethod());
-      assertTrue(req.getPath().startsWith("/search/ajax-advanced/searching/albums"));
-      assertTrue(req.getPath().contains("bandName=" + artist));
-      assertTrue(req.getPath().contains("releaseTitle=" + title));
-      assertEquals(MediaType.APPLICATION_JSON_VALUE, req.getHeader(HttpHeaders.ACCEPT));
+      verify(ranker).getBestSearchResult(expectedResults, artist, title);
+
+      verify(cache).put(artist, title, expectedResult);
 
       StepVerifier.create(Mono.just(actual))
         .expectNextMatches(searchResultPredicateFactory(expectedResult))
         .verifyComplete();
     }
   }
-  */
 
   public Predicate<ArtistTitleSearchResult> searchResultPredicateFactory(ArtistTitleSearchResult expected) {
     return new Predicate<ArtistTitleSearchResult>() {

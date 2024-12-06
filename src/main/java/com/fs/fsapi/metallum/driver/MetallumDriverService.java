@@ -7,12 +7,16 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 
 import org.springframework.stereotype.Service;
 
 import com.fs.fsapi.exceptions.CustomMetallumException;
+import com.fs.fsapi.exceptions.CustomMetallumScrapingException;
+import com.fs.fsapi.metallum.MetallumImage;
 import com.fs.fsapi.metallum.base.MetallumService;
 import com.fs.fsapi.metallum.cache.ArtistTitleSearchCache;
 import com.fs.fsapi.metallum.result.ResultRanker;
@@ -33,6 +37,11 @@ public class MetallumDriverService implements MetallumService {
   private final ArtistTitleSearchCache cache;
 
   private final ResultRanker ranker;
+
+  /**
+   * Pattern used for finding the file-extension from url.
+   */
+  private static final Pattern EXTENSION_PATTERN = Pattern.compile("\\d+[^.]*\\.(\\w+)");
 
   @Override
   public ArtistTitleSearchResult searchByArtistAndTitle(String artist, String title) {
@@ -62,12 +71,12 @@ public class MetallumDriverService implements MetallumService {
   }
 
   @Override
-  public byte[] searchArtistLogo(String artistId) {
+  public MetallumImage searchArtistLogo(String artistId) {
     return loadImage(driver.getArtistLogoUrl(artistId));
   }
 
   @Override
-  public byte[] searchTitleCover(String titleId) {
+  public MetallumImage searchTitleCover(String titleId) {
     return loadImage(driver.getTitleCoverUrl(titleId));
 	}
 
@@ -81,21 +90,33 @@ public class MetallumDriverService implements MetallumService {
     return driver.getTitleCoverUrl(id);
   }
 
-  private byte[] loadImage(String imagePath) {
+  private MetallumImage loadImage(String imagePath) {
     try {
       final URL imageURL = new URI(imagePath).toURL();
       final BufferedImage img = ImageIO.read(imageURL);
 
+      final String extension = getExtension(imagePath);
       final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      ImageIO.write(img, "jpg", baos);
-      return baos.toByteArray();
+      ImageIO.write(img, extension, baos);
+
+      return new MetallumImage(baos.toByteArray(), extension);
 
     } catch (URISyntaxException e) {
       throw new CustomMetallumException("Invalid image path '" + imagePath + "'");
 
     } catch (IOException e) {
-      throw new RuntimeException("This should never happen", e);
+      throw new RuntimeException("Error reading or writing an image", e);
     }
+  }
+
+  private final String getExtension(String imagePath) {
+    final Matcher m = EXTENSION_PATTERN.matcher(imagePath);
+    if (!m.find()) {
+      throw new CustomMetallumScrapingException(
+        "Did not find extension from '" + imagePath + "'"
+      );
+    }
+    return m.group(1).toLowerCase();
   }
 
   public void setBypassCookie(String value) {

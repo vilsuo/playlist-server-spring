@@ -31,13 +31,13 @@ public interface MetallumController {
     @PathVariable String songId
   );
 
-  @GetMapping(value = "/logo/{artistId}", produces = MediaType.IMAGE_JPEG_VALUE)
+  @GetMapping(value = "/logo/{artistId}")
   public ResponseEntity<byte[]> searchArtistLogo(@PathVariable String artistId);
 
   @GetMapping("/logo/{artistId}/url")
   public ResponseEntity<String> getArtistLogoUrl(@PathVariable String artistId);
 
-  @GetMapping(value = "/cover/{titleId}", produces = MediaType.IMAGE_JPEG_VALUE)
+  @GetMapping(value = "/cover/{titleId}")
   public ResponseEntity<byte[]> searchTitleCover(@PathVariable String titleId);
 
   @GetMapping("/cover/{titleId}/url")

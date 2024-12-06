@@ -2,6 +2,7 @@ package com.fs.fsapi.metallum.base;
 
 import java.util.List;
 
+import com.fs.fsapi.metallum.MetallumImage;
 import com.fs.fsapi.metallum.result.SongResult;
 import com.fs.fsapi.metallum.result.lyrics.LyricsResult;
 import com.fs.fsapi.metallum.result.search.ArtistTitleSearchResult;
@@ -40,7 +41,7 @@ public interface MetallumService {
    * @param artistId  the artist id
    * @return the image
    */
-  public byte[] searchArtistLogo(String artistId);
+  public MetallumImage searchArtistLogo(String artistId);
 
   /**
    * Get release title cover image.
@@ -48,7 +49,7 @@ public interface MetallumService {
    * @param titleId  the release title id
    * @return the image
    */
-  public byte[] searchTitleCover(String titleId);
+  public MetallumImage searchTitleCover(String titleId);
 
   /**
    * Get the url where the artist logo image can be found.

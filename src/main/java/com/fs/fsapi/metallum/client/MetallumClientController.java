@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fs.fsapi.metallum.MetallumImage;
 import com.fs.fsapi.metallum.base.MetallumController;
 import com.fs.fsapi.metallum.result.SongResult;
 import com.fs.fsapi.metallum.result.lyrics.LyricsResult;
@@ -43,9 +44,12 @@ public class MetallumClientController implements MetallumController {
   
   @Override
   public ResponseEntity<byte[]> searchArtistLogo(String artistId) {
+    final MetallumImage img = service.searchArtistLogo(artistId);
+
     return ResponseEntity
       .ok()
-      .body(service.searchArtistLogo(artistId));
+      .contentType(img.getMediaType())
+      .body(img.getBytes());
   }
 
   @Override
@@ -57,9 +61,12 @@ public class MetallumClientController implements MetallumController {
 
   @Override
   public ResponseEntity<byte[]> searchTitleCover(String titleId) {
+    final MetallumImage img = service.searchTitleCover(titleId);
+
     return ResponseEntity
       .ok()
-      .body(service.searchTitleCover(titleId));
+      .contentType(img.getMediaType())
+      .body(img.getBytes());
   }
 
   @Override

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.fs.fsapi.metallum.MetallumImage;
 import com.fs.fsapi.metallum.base.MetallumService;
 import com.fs.fsapi.metallum.cache.ArtistTitleSearchCache;
 import com.fs.fsapi.metallum.response.ArtistTitleSearchResponse;
@@ -59,12 +60,12 @@ public class MetallumClientService implements MetallumService {
   }
 
   @Override
-  public byte[] searchArtistLogo(String id) {
+  public MetallumImage searchArtistLogo(String id) {
     return client.loadArtistLogo(id);
   }
 
   @Override
-  public byte[] searchTitleCover(String id) {
+  public MetallumImage searchTitleCover(String id) {
     return client.loadTitleCover(id);
   }
 

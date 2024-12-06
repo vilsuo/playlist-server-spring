@@ -1,8 +1,10 @@
 package com.fs.fsapi.metallum.client;
 
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.fs.fsapi.metallum.MetallumImage;
 import com.fs.fsapi.metallum.response.ArtistTitleSearchResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -13,7 +15,7 @@ public class MetallumClient {
   
   private final CustomWebClient client;
 
-  private final String IMAGE_EXTENSION = ".jpg";
+  private final String IMAGE_EXTENSION = "jpg";
 
   /**
    * 
@@ -72,7 +74,7 @@ public class MetallumClient {
    * @param artistId  the artist id
    * @return the image
    */
-  public byte[] loadArtistLogo(String artistId) {
+  public MetallumImage loadArtistLogo(String artistId) {
     return loadImage(createArtistLogoPath(artistId));
   }
 
@@ -93,7 +95,7 @@ public class MetallumClient {
    * @return the image
    */
   private String createArtistLogoPath(String artistId) {
-    return createBaseImagePath(artistId) + "_logo" + IMAGE_EXTENSION;
+    return createBaseImagePath(artistId) + "_logo." + IMAGE_EXTENSION;
   }
 
   /**
@@ -102,7 +104,7 @@ public class MetallumClient {
    * @param titleId  the release title id
    * @return the image
    */
-  public byte[] loadTitleCover(String titleId) {
+  public MetallumImage loadTitleCover(String titleId) {
     return loadImage(createTitleCoverPath(titleId));
   }
 
@@ -123,18 +125,23 @@ public class MetallumClient {
    * @return the path image
    */
   private String createTitleCoverPath(String titleId) {
-    return createBaseImagePath(titleId) + IMAGE_EXTENSION;
+    return createBaseImagePath(titleId) + "." + IMAGE_EXTENSION;
   }
 
-  private byte[] loadImage(String imagePath) {
-    return client.get()
+  private MetallumImage loadImage(String imagePath) {
+    final ResponseEntity<byte[]> response = client.get()
       .uri(uriBuilder -> uriBuilder
         .path(imagePath)
         .build())
-      .accept(MediaType.IMAGE_JPEG)
+      .header("Accept", "image/*")
       .retrieve()
-      .bodyToMono(byte[].class)
+      .toEntity(byte[].class)
       .block();
+
+    return new MetallumImage(
+      response.getBody(),
+      response.getHeaders().getContentType()
+    );
   }
 
   /**

@@ -24,14 +24,14 @@ public abstract class MetallumController implements MetallumControllerInterface 
   }
 
   @Override
-  public ResponseEntity<List<SongResult>> searchSongs(String titleId) {
+  public ResponseEntity<List<SongResult>> searchSongs(String artistId, String titleId) {
     return ResponseEntity
       .ok()
       .body(service.searchSongs(titleId));
   }
 
   @Override
-  public ResponseEntity<LyricsResult> searchSongLyrics(String titleId, String songId) {
+  public ResponseEntity<LyricsResult> searchSongLyrics(String artistId, String titleId, String songId) {
     return ResponseEntity
       .ok()
       .body(service.searchSongLyrics(titleId, songId));
@@ -55,9 +55,9 @@ public abstract class MetallumController implements MetallumControllerInterface 
       .body(service.getArtistLogoUrl(artistId));
   }
 
-  // postman can have hard time displaying images: manuel test from browser
+  // postman can have hard time displaying images: manual test from browser
   @Override
-  public ResponseEntity<byte[]> searchTitleCover(String titleId) {
+  public ResponseEntity<byte[]> searchTitleCover(String artistId, String titleId) {
     final ResultImage img = service.searchTitleCover(titleId);
 
     return ResponseEntity
@@ -67,7 +67,7 @@ public abstract class MetallumController implements MetallumControllerInterface 
   }
 
   @Override
-  public ResponseEntity<String> getTitleCoverUrl(String titleId) {
+  public ResponseEntity<String> getTitleCoverUrl(String artistId, String titleId) {
     return ResponseEntity
       .ok()
       .body(service.getTitleCoverUrl(titleId));

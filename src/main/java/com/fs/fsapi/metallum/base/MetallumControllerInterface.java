@@ -21,24 +21,34 @@ public interface MetallumControllerInterface {
     @RequestParam String title
   );
 
-  @GetMapping("/songs/{titleId}")
-  public ResponseEntity<List<SongResult>> searchSongs(@PathVariable String titleId);
+  @GetMapping("/artist/{artistId}/title/{titleId}/songs")
+  public ResponseEntity<List<SongResult>> searchSongs(
+    @PathVariable String artistId,
+    @PathVariable String titleId
+  );
 
-  @GetMapping("/songs/{titleId}/lyrics/{songId}")
+  @GetMapping("/artist/{artistId}/title/{titleId}/songs/{songId}/lyrics")
   public ResponseEntity<LyricsResult> searchSongLyrics(
+    @PathVariable String artistId,
     @PathVariable String titleId,
     @PathVariable String songId
   );
 
-  @GetMapping(value = "/logo/{artistId}")
+  @GetMapping("/artist/{artistId}/logo")
   public ResponseEntity<byte[]> searchArtistLogo(@PathVariable String artistId);
 
-  @GetMapping("/logo/{artistId}/url")
+  @GetMapping("/artist/{artistId}/logo/url")
   public ResponseEntity<String> getArtistLogoUrl(@PathVariable String artistId);
 
-  @GetMapping(value = "/cover/{titleId}")
-  public ResponseEntity<byte[]> searchTitleCover(@PathVariable String titleId);
+  @GetMapping("/artist/{artistId}/title/{titleId}/cover")
+  public ResponseEntity<byte[]> searchTitleCover(
+    @PathVariable String artistId,
+    @PathVariable String titleId
+  );
 
-  @GetMapping("/cover/{titleId}/url")
-  public ResponseEntity<String> getTitleCoverUrl(@PathVariable String titleId);
+  @GetMapping("/artist/{artistId}/title/{titleId}/cover/url")
+  public ResponseEntity<String> getTitleCoverUrl(
+    @PathVariable String artistId,
+    @PathVariable String titleId
+  );
 }

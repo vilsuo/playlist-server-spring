@@ -11,15 +11,15 @@ public interface MetallumServiceInterface {
 
   public ArtistTitleSearchResult searchByArtistAndTitle(String artist, String title);
 
-  public List<SongResult> searchSongs(String titleId);
+  public List<SongResult> searchSongs(String artistId, String titleId);
 
-  public LyricsResult searchSongLyrics(String titleId, String songId);
+  public LyricsResult searchSongLyrics(String artistId, String titleId, String songId);
 
   public ResultImage searchArtistLogo(String artistId);
 
-  public ResultImage searchTitleCover(String titleId);
+  public String getArtistLogoUrl(String artistId);
 
-  public String getArtistLogoUrl(String artistIdString);
+  public ResultImage searchTitleCover(String artistId, String titleId);
 
-  public String getTitleCoverUrl(String titleIdString);
+  public String getTitleCoverUrl(String artistId, String titleId);
 }

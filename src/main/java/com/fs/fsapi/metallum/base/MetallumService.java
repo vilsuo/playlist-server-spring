@@ -38,12 +38,12 @@ public abstract class MetallumService<T, S, R> implements MetallumServiceInterfa
   }
 
   @Override
-  public List<SongResult> searchSongs(String titleId) {
+  public List<SongResult> searchSongs(String artistId, String titleId) {
     return parser.parseSongs(web.getSongs(titleId));
   }
 
   @Override
-  public LyricsResult searchSongLyrics(String titleId, String songId) {
+  public LyricsResult searchSongLyrics(String artistId, String titleId, String songId) {
     return parser.parseLyrics(web.getSongLyrics(titleId, songId));
   }
 
@@ -53,17 +53,17 @@ public abstract class MetallumService<T, S, R> implements MetallumServiceInterfa
   }
 
   @Override
-  public ResultImage searchTitleCover(String titleId) {
-    return web.getTitleCover(titleId);
-  }
-
-  @Override
   public String getArtistLogoUrl(String artistId) {
     return web.getArtistLogoUrl(artistId);
   }
 
   @Override
-  public String getTitleCoverUrl(String titleId) {
+  public ResultImage searchTitleCover(String artistId, String titleId) {
+    return web.getTitleCover(titleId);
+  }
+
+  @Override
+  public String getTitleCoverUrl(String artistId, String titleId) {
     return web.getTitleCoverUrl(titleId);
   }
 }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.fs.fsapi.exceptions.CustomDataNotFoundException;
 import com.fs.fsapi.exceptions.CustomMetallumException;
 import com.fs.fsapi.metallum.base.MetallumParser;
+import com.fs.fsapi.metallum.base.MetallumParserInterface;
 import com.fs.fsapi.metallum.response.ArtistTitleSearchResponse;
 import com.fs.fsapi.metallum.result.lyrics.InstrumentalLyricsResult;
 import com.fs.fsapi.metallum.result.lyrics.LyricsResult;
@@ -17,20 +18,16 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class MetallumClientParser extends MetallumParser {
+public class MetallumClientParser extends MetallumParser
+  implements MetallumParserInterface<ArtistTitleSearchResponse, String, String>
+{
 
-  /**
-   * Extract search results.
-   * 
-   * @param response  the search response
-   * @return parsed list of search results
-   */
+  @Override
   public List<ArtistTitleSearchResult> parseSearchResults(
     ArtistTitleSearchResponse response
   ) {
     if (!response.getError().isBlank()) {
       log.error("Error while searching '" + response.getError() + "''");
-
       throw new CustomMetallumException(response.getError());
     }
 
@@ -49,6 +46,7 @@ public class MetallumClientParser extends MetallumParser {
     );
   }
 
+  @Override
   public LyricsResult parseLyrics(String text) {
     final String value = text.trim();
 

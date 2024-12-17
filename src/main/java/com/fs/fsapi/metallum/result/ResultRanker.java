@@ -40,7 +40,7 @@ public class ResultRanker {
     return argMin(results,
       new Function<ArtistTitleSearchResult, Integer>() {
         public Integer apply(ArtistTitleSearchResult result) {
-          // calculate case insensitive distance
+          // case insensitive
           final int artistDist = levDist(artist.toUpperCase(), result.getArtist().toUpperCase());
           final int titleDist = levDist(title.toUpperCase(), result.getTitle().toUpperCase());
 
@@ -74,7 +74,6 @@ public class ResultRanker {
 
       case BOXED_SET:
       case COLLABORATION:
-    
         return 3;
 
       case LIVE_ALBUM:
@@ -86,7 +85,7 @@ public class ResultRanker {
 
       default:
         throw new IllegalStateException(
-          "Unexped Release type '" + releaseType + "'"
+          "Unexpected Release type '" + releaseType + "'"
         );
     }
   }
@@ -112,13 +111,10 @@ public class ResultRanker {
       T elem = iter.next();
 
       final int value = valueFunc.apply(elem);
-      if (value < minValue) {
+      if (value <= RESULT_THRESHOLD) { return elem; }
+      else if (value < minValue) {
         best = elem;
         minValue = value;
-
-        if (value <= RESULT_THRESHOLD) {
-          return elem;
-        }
       }
       ++currIdx;
     }
@@ -146,8 +142,9 @@ public class ResultRanker {
       final char headA = a.charAt(0);
       final char headB = b.charAt(0);
 
-      if (headA == headB) { return levDist(tailA, tailB); }
-      else {
+      if (headA == headB) {
+        return levDist(tailA, tailB);
+      } else {
         return 1 + Math.min(Math.min(
           levDist(tailA, b),
           levDist(a, tailB)),

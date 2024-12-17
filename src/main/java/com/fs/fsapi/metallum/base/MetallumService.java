@@ -2,68 +2,68 @@ package com.fs.fsapi.metallum.base;
 
 import java.util.List;
 
-import com.fs.fsapi.metallum.MetallumImage;
+import com.fs.fsapi.metallum.cache.ArtistTitleSearchCache;
+import com.fs.fsapi.metallum.result.ResultImage;
+import com.fs.fsapi.metallum.result.ResultRanker;
 import com.fs.fsapi.metallum.result.SongResult;
 import com.fs.fsapi.metallum.result.lyrics.LyricsResult;
 import com.fs.fsapi.metallum.result.search.ArtistTitleSearchResult;
 
-public interface MetallumService {
+import lombok.RequiredArgsConstructor;
 
-  /**
-   * Search for basic release information.
-   * 
-   * @param artist  the artist name
-   * @param title  the release title
-   * @return search result
-   */
-  public ArtistTitleSearchResult searchByArtistAndTitle(String artist, String title);
+@RequiredArgsConstructor
+public abstract class MetallumService<T, S, R> implements MetallumServiceInterface {
 
-  /**
-   * Search songs of a release.
-   * 
-   * @param titleId  the release title id
-   * @return release song list
-   */
-  public List<SongResult> searchSongs(String titleId);
+  private final MetallumWebInterface<T, S, R> web;
 
-   /**
-   * Search song lyrics.
-   * 
-   * @param songId  the release title id
-   * @param songId  the song id
-   * @return the song lyrics
-   */
-  public LyricsResult searchSongLyrics(String titleId, String songId);
+  private final MetallumParserInterface<T, S, R> parser;
 
-  /**
-   * Get artist logo image.
-   * 
-   * @param artistId  the artist id
-   * @return the image
-   */
-  public MetallumImage searchArtistLogo(String artistId);
+  private final ArtistTitleSearchCache cache;
 
-  /**
-   * Get release title cover image.
-   * 
-   * @param titleId  the release title id
-   * @return the image
-   */
-  public MetallumImage searchTitleCover(String titleId);
+  private final ResultRanker ranker;
 
-  /**
-   * Get the url where the artist logo image can be found.
-   * 
-   * @param id  the artist id
-   * @return the image url
-   */
-  public String getArtistLogoUrl(String id);
+  @Override
+  public ArtistTitleSearchResult searchByArtistAndTitle(String artist, String title) {
+    return cache.getOrElseSupply(artist, title, () -> {
+      final T response = web.getSearchResponse(artist, title);
+      final List<ArtistTitleSearchResult> results = parser.parseSearchResults(response);
+      
+      final ArtistTitleSearchResult result = ranker
+        .getBestSearchResult(results, artist, title);
 
-  /**
-   * Get the url where the release title cover image can be found.
-   * 
-   * @param id  the release title id
-   * @return the image url
-   */
-  public String getTitleCoverUrl(String id);
+      cache.put(artist, title, result);
+
+      return result;
+    });
+  }
+
+  @Override
+  public List<SongResult> searchSongs(String titleId) {
+    return parser.parseSongs(web.getSongs(titleId));
+  }
+
+  @Override
+  public LyricsResult searchSongLyrics(String titleId, String songId) {
+    return parser.parseLyrics(web.getSongLyrics(titleId, songId));
+  }
+
+  @Override
+  public ResultImage searchArtistLogo(String artistId) {
+    return web.getArtistLogo(artistId);
+  }
+
+  @Override
+  public ResultImage searchTitleCover(String titleId) {
+    return web.getTitleCover(titleId);
+  }
+
+  @Override
+  public String getArtistLogoUrl(String artistId) {
+    return web.getArtistLogoUrl(artistId);
+  }
+
+  @Override
+  public String getTitleCoverUrl(String titleId) {
+    return web.getTitleCoverUrl(titleId);
+  }
 }

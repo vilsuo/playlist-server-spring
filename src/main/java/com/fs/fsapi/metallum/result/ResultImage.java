@@ -1,4 +1,4 @@
-package com.fs.fsapi.metallum;
+package com.fs.fsapi.metallum.result;
 
 import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.MediaType;
@@ -8,13 +8,13 @@ import com.fs.fsapi.exceptions.CustomMetallumScrapingException;
 import lombok.Getter;
 
 @Getter
-public class MetallumImage {
+public class ResultImage {
 
   private final MediaType mediaType;
 
   private final byte[] bytes;
 
-  public MetallumImage(byte[] bytes, MediaType mediaType) {
+  public ResultImage(byte[] bytes, MediaType mediaType) {
     if (!mediaType.getType().equals("image")) {
       throw new CustomMetallumScrapingException(
         "Unexpected media type '" + mediaType.getType() + "/" + mediaType.getSubtype() + "'"
@@ -25,7 +25,7 @@ public class MetallumImage {
     this.mediaType = mediaType;
   }
 
-  public MetallumImage(byte[] bytes, String subtype) {
+  public ResultImage(byte[] bytes, String subtype) {
     try {
       this.mediaType = MediaType.valueOf("image/" + subtype);
       this.bytes = bytes;

@@ -102,7 +102,7 @@ public class MetallumClientServiceUnitTest {
 
     @Test
     public void shouldReturnSearchResultTest() {
-      when(client.loadSearchResponse(anyString(), anyString()))
+      when(client.getSearchResponse(anyString(), anyString()))
         .thenReturn(expectedResponse);
 
       when(parser.parseSearchResults(any(ArtistTitleSearchResponse.class)))
@@ -120,7 +120,7 @@ public class MetallumClientServiceUnitTest {
       );
 
       // verify that mocks have been called correctly
-      verify(client).loadSearchResponse(artist, title);
+      verify(client).getSearchResponse(artist, title);
 
       verify(parser).parseSearchResults(
         argThat((response) -> response.getError().equals(expectedResponse.getError())

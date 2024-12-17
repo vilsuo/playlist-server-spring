@@ -4,29 +4,27 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.fs.fsapi.metallum.MetallumImage;
+import com.fs.fsapi.metallum.base.MetallumWebInterface;
 import com.fs.fsapi.metallum.response.ArtistTitleSearchResponse;
+import com.fs.fsapi.metallum.result.ResultImage;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class MetallumClient {
+public class MetallumClient implements MetallumWebInterface
+  <ArtistTitleSearchResponse, String, String>
+{
   
   private final CustomWebClient client;
 
   private final String IMAGE_EXTENSION = "jpg";
 
-  /**
-   * 
-   * @param artist
-   * @param title
-   * @return
-   */
-  public ArtistTitleSearchResponse loadSearchResponse(String artist, String title) {
+  @Override
+  public ArtistTitleSearchResponse getSearchResponse(String artist, String title) {
     return client.get()
       .uri(uriBuilder -> uriBuilder
-        .path("/search/ajax-advanced/searching/albums/") // actual has the '/' in the end
+        .path("/search/ajax-advanced/searching/albums/") // the actual path ends in '/'
         .queryParam("bandName", artist)
         .queryParam("releaseTitle", title)
         .build())
@@ -36,12 +34,8 @@ public class MetallumClient {
       .block();
   }
 
-  /**
-   * 
-   * @param titleId
-   * @return
-   */
-  public String loadSongs(String titleId) {
+  @Override
+  public String getSongs(String titleId) {
     return client.get()
       .uri(uriBuilder -> uriBuilder
         .path("/albums/{artist}/{title}/{titleId}") 
@@ -52,12 +46,8 @@ public class MetallumClient {
       .block();
   }
 
-  /**
-   * 
-   * @param songId
-   * @return
-   */
-  public String loadSongLyrics(String songId) {
+  @Override
+  public String getSongLyrics(String titleId, String songId) {
     return client.get()
       .uri(uriBuilder -> uriBuilder
         .path("/release/ajax-view-lyrics/id/{songId}")
@@ -68,67 +58,35 @@ public class MetallumClient {
       .block();
   }
 
-  /**
-   * Search artist logo image.
-   * 
-   * @param artistId  the artist id
-   * @return the image
-   */
-  public MetallumImage loadArtistLogo(String artistId) {
+  @Override
+  public ResultImage getArtistLogo(String artistId) {
     return loadImage(createArtistLogoPath(artistId));
   }
 
-  /**
-   * Create the url where the artist logo image can be found.
-   * 
-   * @param artistId  the artist id
-   * @return the image url
-   */
-  public String createArtistLogoUrl(String artistId) {
+  @Override
+  public String getArtistLogoUrl(String artistId) {
     return client.getBaseUrl() + createArtistLogoPath(artistId);
   }
 
-  /**
-   * Get the path of the artist logo image. 
-   * 
-   * @param artistId  the artist id
-   * @return the image
-   */
   private String createArtistLogoPath(String artistId) {
     return createBaseImagePath(artistId) + "_logo." + IMAGE_EXTENSION;
   }
 
-  /**
-   * Search release title cover image.
-   * 
-   * @param titleId  the release title id
-   * @return the image
-   */
-  public MetallumImage loadTitleCover(String titleId) {
+  @Override
+  public ResultImage getTitleCover(String titleId) {
     return loadImage(createTitleCoverPath(titleId));
   }
 
-  /**
-   * Create the url where the release title cover image can be found.
-   * 
-   * @param titleId  the release title id
-   * @return the image url
-   */
-  public String createTitleCoverUrl(String titleId) {
+  @Override
+  public String getTitleCoverUrl(String titleId) {
     return client.getBaseUrl() + createTitleCoverPath(titleId);
   }
 
-  /**
-   * Get the path of the release title cover image. 
-   * 
-   * @param titleId  the release title id
-   * @return the path image
-   */
   private String createTitleCoverPath(String titleId) {
     return createBaseImagePath(titleId) + "." + IMAGE_EXTENSION;
   }
 
-  private MetallumImage loadImage(String imagePath) {
+  private ResultImage loadImage(String imagePath) {
     final ResponseEntity<byte[]> response = client.get()
       .uri(uriBuilder -> uriBuilder
         .path(imagePath)
@@ -138,7 +96,7 @@ public class MetallumClient {
       .toEntity(byte[].class)
       .block();
 
-    return new MetallumImage(
+    return new ResultImage(
       response.getBody(),
       response.getHeaders().getContentType()
     );

@@ -6,15 +6,15 @@ public interface MetallumWebInterface<T, S, R> {
 
   public T getSearchResponse(String artist, String title);
 
-  public S getSongs(String titleId);
+  public S getSongs(String artistId, String titleId);
 
-  public R getSongLyrics(String titleId, String songId);
+  public R getSongLyrics(String artistId, String titleId, String songId);
   
   public ResultImage getArtistLogo(String artistId);
 
   public String getArtistLogoUrl(String artistId);
 
-  public ResultImage getTitleCover(String titleId);
+  public ResultImage getTitleCover(String artistId, String titleId);
 
-  public String getTitleCoverUrl(String titleId);
+  public String getTitleCoverUrl(String artistId, String titleId);
 }

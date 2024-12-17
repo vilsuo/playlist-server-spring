@@ -35,7 +35,7 @@ public class MetallumClient implements MetallumWebInterface
   }
 
   @Override
-  public String getSongs(String titleId) {
+  public String getSongs(String artistId, String titleId) {
     return client.get()
       .uri(uriBuilder -> uriBuilder
         .path("/albums/{artist}/{title}/{titleId}") 
@@ -47,7 +47,7 @@ public class MetallumClient implements MetallumWebInterface
   }
 
   @Override
-  public String getSongLyrics(String titleId, String songId) {
+  public String getSongLyrics(String artistId, String titleId, String songId) {
     return client.get()
       .uri(uriBuilder -> uriBuilder
         .path("/release/ajax-view-lyrics/id/{songId}")
@@ -73,12 +73,12 @@ public class MetallumClient implements MetallumWebInterface
   }
 
   @Override
-  public ResultImage getTitleCover(String titleId) {
+  public ResultImage getTitleCover(String artistId, String titleId) {
     return loadImage(createTitleCoverPath(titleId));
   }
 
   @Override
-  public String getTitleCoverUrl(String titleId) {
+  public String getTitleCoverUrl(String artistId, String titleId) {
     return client.getBaseUrl() + createTitleCoverPath(titleId);
   }
 

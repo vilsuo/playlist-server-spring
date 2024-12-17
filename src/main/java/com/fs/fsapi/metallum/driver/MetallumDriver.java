@@ -97,7 +97,7 @@ public class MetallumDriver implements MetallumWebInterface<String, String, Stri
 
   // return entire page
   @Override
-  public String getSongs(String titleId) {
+  public String getSongs(String artistId, String titleId) {
     loadTitlePage(titleId);
     driver.waitForLoad();
 
@@ -106,7 +106,7 @@ public class MetallumDriver implements MetallumWebInterface<String, String, Stri
 
   // return lyrics element text content
   @Override
-  public String getSongLyrics(String titleId, String songId) {
+  public String getSongLyrics(String artistId, String titleId, String songId) {
     loadTitlePage(titleId);
 
     // find song table body
@@ -169,12 +169,12 @@ public class MetallumDriver implements MetallumWebInterface<String, String, Stri
   }
 
   @Override
-  public ResultImage getTitleCover(String titleId) {
-    return imageService.loadImage(getTitleCoverUrl(titleId));
+  public ResultImage getTitleCover(String artistId, String titleId) {
+    return imageService.loadImage(getTitleCoverUrl(artistId, titleId));
   }
 
   @Override
-  public String getTitleCoverUrl(String titleId) {
+  public String getTitleCoverUrl(String artistId, String titleId) {
     loadTitlePage(titleId);
     driver.waitForLoad();
 

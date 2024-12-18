@@ -57,7 +57,7 @@ public class ResultRanker {
           case LIVE_ALBUM -> 4;
           case VIDEO, SPLIT_VIDEO -> 5;
           default -> throw new IllegalStateException(
-                  "Unexpected Release type '" + releaseType + "'"
+            "Unexpected Release type '" + releaseType + "'"
           );
       };
   }

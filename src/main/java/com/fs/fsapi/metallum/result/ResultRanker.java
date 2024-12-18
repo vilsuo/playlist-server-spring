@@ -28,21 +28,20 @@ public class ResultRanker {
     final int RESULT_THRESHOLD = 0; // stop only on exact match
     final int RESULT_LIMIT = 200; // metallum single page limit is 200 results
 
-    return argMin(results,
-      new Function<ArtistTitleSearchResult, Integer>() {
-        public Integer apply(ArtistTitleSearchResult result) {
-          // case-insensitive
-          final int artistDist = levDist(artist.toUpperCase(), result.getArtist().toUpperCase());
-          final int titleDist = levDist(title.toUpperCase(), result.getTitle().toUpperCase());
+    return argMin(results, result -> {
+      // case-insensitive
+      final int artistDist = levDist(artist.toUpperCase(), result.getArtist().toUpperCase());
+      final int titleDist = levDist(title.toUpperCase(), result.getTitle().toUpperCase());
 
-          final int totalDist = artistDist + titleDist;
+      final int totalDist = artistDist + titleDist;
 
-          // if not exact match, punish by result release type
-          return (totalDist != 0)
-            ? totalDist + punishByResultType(result)
-            : totalDist;
-        };
-      }, RESULT_THRESHOLD, RESULT_LIMIT
+      // if not exact match, punish by result release type
+      return (totalDist != 0)
+        ? totalDist + punishByResultType(result)
+        : totalDist;
+      },
+      RESULT_THRESHOLD,
+      RESULT_LIMIT
     );
   }
 

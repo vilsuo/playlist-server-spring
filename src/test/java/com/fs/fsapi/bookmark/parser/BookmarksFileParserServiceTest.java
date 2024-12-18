@@ -1,8 +1,6 @@
 package com.fs.fsapi.bookmark.parser;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
@@ -73,7 +71,7 @@ public class BookmarksFileParserServiceTest {
   @DisplayName("folder without sub folders")
   public class WithoutSubFolders {
 
-    private ValidHeader header = ValidHeader.CHILD;
+    private final ValidHeader header = ValidHeader.CHILD;
 
     private List<BookmarksLinkElement> actuals;
     private BookmarksLinkElement actual;
@@ -116,10 +114,10 @@ public class BookmarksFileParserServiceTest {
   @DisplayName("folder with a sub folder")
   public class WithSubFolders {
 
-    private ValidHeader header = ValidHeader.PARENT;
+    private final ValidHeader header = ValidHeader.PARENT;
 
     private List<BookmarksLinkElement> actuals;
-    private BookmarksLinkElement[] expectations = VALID_FILE_PARENT_LINKS;
+    private final BookmarksLinkElement[] expectations = VALID_FILE_PARENT_LINKS;
 
     @BeforeEach
     public void create() throws Exception {

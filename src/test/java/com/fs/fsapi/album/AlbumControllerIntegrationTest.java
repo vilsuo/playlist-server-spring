@@ -1,8 +1,6 @@
 package com.fs.fsapi.album;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -11,11 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -166,7 +160,7 @@ public class AlbumControllerIntegrationTest {
       final ApiValidationError validationError = validationErrors.get(0);
       assertEquals("videoId", validationError.getField());
       assertEquals("Video id is required", validationError.getMessage());
-      assertEquals(null, validationError.getRejectedValue());
+      assertNull(validationError.getRejectedValue());
     }
 
     @Test
@@ -279,7 +273,7 @@ public class AlbumControllerIntegrationTest {
       ApiValidationError validationError = validationErrors.get(0);
       assertEquals("videoId", validationError.getField());
       assertEquals("Video id is required", validationError.getMessage());
-      assertEquals(null, validationError.getRejectedValue());
+      assertNull(validationError.getRejectedValue());
     }
 
     @Test

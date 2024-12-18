@@ -1,8 +1,7 @@
 
 package com.fs.fsapi.validation;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Set;
 
@@ -119,7 +118,7 @@ public class VideoIdValidatorUnitTest {
 
   @Getter @Setter
   @AllArgsConstructor
-  public class TestObject {
+  public static class TestObject {
     
     @VideoId
     private String videoId;

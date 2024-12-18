@@ -81,17 +81,15 @@ public class MetallumClientServiceUnitTest {
     @BeforeEach
     public void setUpCache() {
       // https://stackoverflow.com/a/16819818
-      doAnswer(new Answer<>() {
-        public Object answer(InvocationOnMock invocation) {
-          Object[] args = invocation.getArguments();
-          Supplier<?> supplier = (Supplier<?>) args[2];
-          return supplier.get();
-        }
+      doAnswer((Answer<Object>) invocation -> {
+        Object[] args = invocation.getArguments();
+        Supplier<?> supplier = (Supplier<?>) args[2];
+        return supplier.get();
       }).when(cache).getOrElseSupply(
         anyString(),
         anyString(),
         // https://stackoverflow.com/a/13932751
-        ArgumentMatchers.<Supplier<ArtistTitleSearchResult>>any()
+        ArgumentMatchers.any()
       ); 
     }
 
@@ -145,19 +143,13 @@ public class MetallumClientServiceUnitTest {
   }
 
   public Predicate<ArtistTitleSearchResult> searchResultPredicateFactory(ArtistTitleSearchResult expected) {
-    return new Predicate<ArtistTitleSearchResult>() {
-
-      @Override
-      public boolean test(ArtistTitleSearchResult actual) {
-        return actual.getArtist().equals(expected.getArtist())
-            && actual.getArtistHref().equals(expected.getArtistHref())
-            && actual.getArtistId().equals(expected.getArtistId())
-            && actual.getTitle().equals(expected.getTitle())
-            && actual.getTitleHref().equals(expected.getTitleHref())
-            && actual.getTitleId().equals(expected.getTitleId())
-            && actual.getReleaseType().equals(expected.getReleaseType());
-      }
-    };
+    return actual -> actual.getArtist().equals(expected.getArtist())
+        && actual.getArtistHref().equals(expected.getArtistHref())
+        && actual.getArtistId().equals(expected.getArtistId())
+        && actual.getTitle().equals(expected.getTitle())
+        && actual.getTitleHref().equals(expected.getTitleHref())
+        && actual.getTitleId().equals(expected.getTitleId())
+        && actual.getReleaseType().equals(expected.getReleaseType());
   }
 
   /*

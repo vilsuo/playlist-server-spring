@@ -3,6 +3,7 @@ package com.fs.fsapi.metallum.result.search;
 import com.fs.fsapi.bookmark.parser.LinkElement;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @AllArgsConstructor
 public class ArtistTitleSearchResult {
@@ -11,6 +12,7 @@ public class ArtistTitleSearchResult {
 
   private LinkElement titleFolderLink;
 
+  @Getter
   private ReleaseType releaseType;
 
   public String getArtist() {
@@ -39,7 +41,4 @@ public class ArtistTitleSearchResult {
     return titleHref.substring(titleHref.lastIndexOf("/") + 1);
   }
 
-  public ReleaseType getReleaseType() {
-    return releaseType;
-  }
 }

@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import com.fs.fsapi.bookmark.parser.BookmarksLinkElement;
+import lombok.Getter;
 
 public class BookmarksFileHelper {
 
@@ -54,6 +55,7 @@ public class BookmarksFileHelper {
   /**
    * Header element text contents in file {@link BookmarksFileHelper#VALID_FILE}.
    */
+  @Getter
   public enum ValidHeader {
     ROOT ("Bookmarks"),
     CONTAINER ("Bookmarks bar"),
@@ -64,10 +66,6 @@ public class BookmarksFileHelper {
 
     private final String textContent;
 
-    public String getTextContent() {
-      return textContent;
-    }
-
     ValidHeader(String textContent) {
       this.textContent = textContent;
     }
@@ -77,6 +75,7 @@ public class BookmarksFileHelper {
    * Header element text contents in file {@link BookmarksFileHelper#INVALID_FILE_STRUCTURE}
    * and {@link BookmarksFileHelper#INVALID_FILE_LINK}.
    */
+  @Getter
   public enum InvalidHeader {
     STRUCTURE ("Example"),
 
@@ -96,10 +95,6 @@ public class BookmarksFileHelper {
     LINK_TEXT_CONTENT_INVALID ("Content");
 
     private final String textContent;
-
-    public String getTextContent() {
-      return textContent;
-    }
 
     InvalidHeader(String textContent) {
       this.textContent = textContent;

@@ -54,8 +54,8 @@ public class AlbumService {
     final String artist = value.getArtist();
     final String title = value.getTitle();
 
-    boolean checkDublicate = (artist != null) && (title != null);
-    if (checkDublicate && repository.existsByArtistAndTitle(artist, title)) {
+    boolean checkDuplicate = (artist != null) && (title != null);
+    if (checkDuplicate && repository.existsByArtistAndTitle(artist, title)) {
       throw new CustomParameterConstraintException(
         "Album with artist '" + artist + "' and title '" + title + "' already exists"
       );
@@ -82,8 +82,8 @@ public class AlbumService {
     final String artist = value.getArtist();
     final String title = value.getTitle();
 
-    boolean checkForDublicate = (artist != null) && (title != null);
-    if (checkForDublicate && repository.existsByArtistAndTitle(artist, title)) {
+    boolean checkForDuplicate = (artist != null) && (title != null);
+    if (checkForDuplicate && repository.existsByArtistAndTitle(artist, title)) {
       return Optional.empty();
     }
 
@@ -94,9 +94,9 @@ public class AlbumService {
   @Transactional
   public List<Album> createMany(List<AlbumParseResult> values) {
     return values.stream()
-      .map(value -> this.create(value))
+      .map(this::create)
       .filter(Optional::isPresent)
-      .map(opt -> opt.get())
+      .map(Optional::get)
       .collect(Collectors.toList());
   }
 

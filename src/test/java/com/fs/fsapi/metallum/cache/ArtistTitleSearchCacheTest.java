@@ -1,7 +1,6 @@
 package com.fs.fsapi.metallum.cache;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -31,7 +30,7 @@ public class ArtistTitleSearchCacheTest {
   private final Supplier<ArtistTitleSearchResult> supplier = new Supplier<ArtistTitleSearchResult>() {
     public ArtistTitleSearchResult get() {
       return expected;
-    };
+    }
   };
 
   @BeforeEach

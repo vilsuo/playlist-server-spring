@@ -26,7 +26,7 @@ public class BookmarksLinkParserService {
   private final Pattern TEXT_PATTERN = Pattern.compile("(.+?) - (.+?) \\((\\d+)\\)$");
 
   /**
-   * Create base album objects based on a extracted details about {@code a}
+   * Create base album objects based on an extracted details about {@code a}
    * elements.
    * 
    * <ul>
@@ -65,7 +65,7 @@ public class BookmarksLinkParserService {
   }
 
   /**
-   * Extract the video id query paramenter value.
+   * Extract the video id query parameter value.
    * 
    * @param href  element href attribute value
    * @return the extracted query parameter value
@@ -75,9 +75,7 @@ public class BookmarksLinkParserService {
       throw new CustomHtmlParsingException(
         "The 'href' attribute is missing"
       );
-    }
-  
-    if (!href.startsWith(HREF_PREFIX)) {
+    } else if (!href.startsWith(HREF_PREFIX)) {
       throw new CustomHtmlParsingException(
         "Expected the 'href' attribute value '" + href
         + "' to start with '"  + HREF_PREFIX + "'"
@@ -153,7 +151,7 @@ public class BookmarksLinkParserService {
 
   @Getter
   @AllArgsConstructor
-  public class TextDetails {
+  public static class TextDetails {
 
     final String artist;
 

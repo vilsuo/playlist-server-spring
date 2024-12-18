@@ -8,9 +8,9 @@ import lombok.Getter;
 @Getter
 public class LyricsResult {
   
-  private String message;
+  private final String message;
   
-  private List<String> lines;
+  private final List<String> lines;
 
   public LyricsResult(String message) {
     this.message = message;

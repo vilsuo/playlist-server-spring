@@ -1,8 +1,6 @@
 package com.fs.fsapi.bookmark.parser;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -223,7 +221,7 @@ public class BookmarksLinkParserServiceTest {
     }
 
     @Test
-    public void shouldReturnUnixExpochZeroWhenAddDateAttributeIsZeroTest() {
+    public void shouldReturnUnixEpochZeroWhenAddDateAttributeIsZeroTest() {
       final AlbumParseResult actual = parseSingleWithAddDate("0");
       assertEquals("1970-01-01T00:00:00Z", actual.getAddDate());
     }

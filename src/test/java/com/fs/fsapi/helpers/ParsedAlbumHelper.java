@@ -14,7 +14,7 @@ public class ParsedAlbumHelper {
    * 
    * @return 
    */
-  public static final AlbumParseResult MOCK_PARSE_RESULT_1() {
+  public static AlbumParseResult MOCK_PARSE_RESULT_1() {
     final AlbumCreation value = ALBUM_CREATION_VALUE_1();
 
     return new AlbumParseResult(
@@ -34,7 +34,7 @@ public class ParsedAlbumHelper {
    * 
    * @return 
    */
-  public static final AlbumParseResult MOCK_PARSE_RESULT_2() {
+  public static AlbumParseResult MOCK_PARSE_RESULT_2() {
     final AlbumCreation value = ALBUM_CREATION_VALUE_2();
 
     return new AlbumParseResult(
@@ -58,7 +58,7 @@ public class ParsedAlbumHelper {
    * </code>
    * @return 
    */
-  public static final AlbumParseResult MOCK_INVALID_PARSE_RESULT() {
+  public static AlbumParseResult MOCK_INVALID_PARSE_RESULT() {
     final AlbumCreation value = INVALID_ALBUM_CREATION_VALUE();
 
     return new AlbumParseResult(
@@ -77,7 +77,7 @@ public class ParsedAlbumHelper {
    * 
    * @return 
    */
-  public static final Album MOCK_MAPPED_PARSE_RESULT_1() {
+  public static Album MOCK_MAPPED_PARSE_RESULT_1() {
     final AlbumParseResult value = MOCK_PARSE_RESULT_1();
 
     return new Album(
@@ -97,7 +97,7 @@ public class ParsedAlbumHelper {
    * 
    * @return 
    */
-  public static final Album MOCK_MAPPED_PARSE_RESULT_2() {
+  public static Album MOCK_MAPPED_PARSE_RESULT_2() {
     final AlbumParseResult value = MOCK_PARSE_RESULT_2();
 
     return new Album(

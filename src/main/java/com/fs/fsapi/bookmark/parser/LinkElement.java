@@ -7,9 +7,9 @@ import lombok.Getter;
 @Getter
 public class LinkElement {
 
-  private String text; // link text content
+  private final String text; // link text content
 
-  private String href; // link 'href' attribute value
+  private final String href; // link 'href' attribute value
 
   /**
    * 

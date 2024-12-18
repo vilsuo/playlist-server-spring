@@ -1,12 +1,6 @@
 package com.fs.fsapi.album;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -121,7 +115,7 @@ public class AlbumServiceIntegrationTest {
         () -> service.findOne(id)
       );
 
-      assertEquals(e.getMessage(), "Album was not found");
+      assertEquals("Album was not found", e.getMessage());
     }
 
     @Test

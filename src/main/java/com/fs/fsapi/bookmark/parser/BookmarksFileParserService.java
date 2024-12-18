@@ -30,9 +30,9 @@ public class BookmarksFileParserService {
    * 
    * <pre> {@code
    * <root>         ::= <header> <folder> "<p />"
-   * <folder>       ::= "<dl>" (<dtcontainer> | <dtsingle>)* "</dl>"
-   * <dtcontainer>  ::= "<dt>" <header> <folder> "<p />" "</dt>"
-   * <dtsingle>     ::= "<dt>" <link> "</dt>"
+   * <folder>       ::= "<dl>" (<dtContainer> | <dtSingle>)* "</dl>"
+   * <dtContainer>  ::= "<dt>" <header> <folder> "<p />" "</dt>"
+   * <dtSingle>     ::= "<dt>" <link> "</dt>"
    * <header>       ::= "<h" <step> (" " <attribute>)*  ">" <text> "</h" <step> ">"
    * <link>         ::= "<a" (" " <attribute>)* ">" <text> "</a>"
    * <step>         ::= [1-6]
@@ -56,12 +56,12 @@ public class BookmarksFileParserService {
   }
 
   /**
-   * Find a header element with the given text content. Case sensitive.
+   * Find a header element with the given text content. Case-sensitive.
    * 
    * @param doc  Document to search in
    * @param headerText  text content of the header
    * @return the header element
-   * @throws CustomParameterConstraintException unless an unique such header is found
+   * @throws CustomParameterConstraintException unless a unique such header is found
    */
   private Element findHeader(Document doc, String headerText) {
     Elements headers = doc.select(

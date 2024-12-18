@@ -1,7 +1,6 @@
 package com.fs.fsapi.album;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.inOrder;
@@ -144,7 +143,7 @@ public class AlbumServiceUnitTest {
         );
 
         final Instant time = Instant.parse(MOCK_ADD_DATE_1);
-        mockedStatic.when(() -> Instant.now())
+        mockedStatic.when(Instant::now)
           .thenReturn(time);
       }
 
@@ -168,7 +167,7 @@ public class AlbumServiceUnitTest {
       @DisplayName("when saving does not throw")
       public class ValidValues {
 
-        private Album result = MOCK_ALBUM_1();
+        private final Album result = MOCK_ALBUM_1();
 
         @BeforeEach
         public void setUpSavingMock() {
@@ -314,7 +313,7 @@ public class AlbumServiceUnitTest {
       // nothing was saved
       verify(repository, times(0)).save(any());
 
-      assertEquals(e.getMessage(), "Album was not found");
+      assertEquals("Album was not found", e.getMessage());
     }
 
     @Test

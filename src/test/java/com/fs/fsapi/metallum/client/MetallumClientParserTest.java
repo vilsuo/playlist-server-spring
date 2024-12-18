@@ -1,8 +1,6 @@
 package com.fs.fsapi.metallum.client;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -88,12 +86,12 @@ public class MetallumClientParserTest {
       }
 
       @Test
-      public void shouldNotHaveMessageTest() throws IOException {
+      public void shouldNotHaveMessageTest() {
         assertTrue(actual.getMessage().isEmpty());
       }
 
       @Test
-      public void shouldHaveTheSongLyricsTest() throws IOException {
+      public void shouldHaveTheSongLyricsTest() {
         final List<String> expectedLyrics = expected.getLines();
         final List<String> actualLyrics = actual.getLines();
   
@@ -119,14 +117,14 @@ public class MetallumClientParserTest {
       }
 
       @Test
-      public void shouldHaveMessageTest() throws IOException {
+      public void shouldHaveMessageTest() {
         final String message = actual.getMessage();
         assertFalse(message.isEmpty());
         assertEquals("Lyrics not available", message);
       }
 
       @Test
-      public void shouldNotHaveAnySongLyricsTest() throws IOException {
+      public void shouldNotHaveAnySongLyricsTest() {
         final List<String> expectedLyrics = expected.getLines();
         final List<String> actualLyrics = actual.getLines();
   
@@ -148,14 +146,14 @@ public class MetallumClientParserTest {
       }
 
       @Test
-      public void shouldHaveMessageTest() throws IOException {
+      public void shouldHaveMessageTest() {
         final String message = actual.getMessage();
         assertFalse(message.isEmpty());
         assertEquals("Instrumental", message);
       }
 
       @Test
-      public void shouldNotHaveAnySongLyricsTest() throws IOException {
+      public void shouldNotHaveAnySongLyricsTest() {
         final List<String> expectedLyrics = expected.getLines();
         final List<String> actualLyrics = actual.getLines();
   

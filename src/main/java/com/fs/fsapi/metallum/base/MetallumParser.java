@@ -27,7 +27,7 @@ public abstract class MetallumParser {
     List<T> rows, Function<T, String[]> rowContentExtractor
   ) {
     return rows.stream()
-      .map(rowContentExtractor::apply)
+      .map(rowContentExtractor)
       .map(this::parseSearchTableRow)
       .collect(Collectors.toList());
   }
@@ -59,7 +59,7 @@ public abstract class MetallumParser {
   private ReleaseType parseReleaseType(String value) {
     return ReleaseType.valueOfLabel(value).orElseThrow(
       () -> new CustomMetallumScrapingException(
-        "Unexped Release type '" + value + "' in search response"
+        "Unexpected Release type '" + value + "' in search response"
       )
     );
   }
@@ -106,7 +106,7 @@ public abstract class MetallumParser {
 
   protected LyricsResult parseLyricsAvailableResult(String text, String rowSeparator) {
     return Stream.of(text.split(rowSeparator))
-      .map(row -> row.trim())
+      .map(String::trim)
       .collect(Collectors.collectingAndThen(
         Collectors.toList(),
         LyricsResult::new
@@ -123,7 +123,7 @@ public abstract class MetallumParser {
     }
 
     return tbody.children().stream()
-      .filter(child -> rowFilter.test(child))
+      .filter(rowFilter)
       .map(Element::children);
   }
   

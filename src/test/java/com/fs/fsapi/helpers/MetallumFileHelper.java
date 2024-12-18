@@ -161,13 +161,11 @@ public class MetallumFileHelper {
     "",
     1,
     1,
-    Arrays.asList(
-      new AaDataValue(List.of(
-        "<a href=\"https://www.metal-archives.com/bands/Adramelech/2426\" title=\"Adramelech (FI)\">Adramelech</a>",
-        "<a href=\"https://www.metal-archives.com/albums/Adramelech/Human_Extermination/73550\">Human Extermination</a> <!-- 16.817602 -->",
-        "Demo"
-      ))
-    )
+    List.of(new AaDataValue(List.of(
+      "<a href=\"https://www.metal-archives.com/bands/Adramelech/2426\" title=\"Adramelech (FI)\">Adramelech</a>",
+      "<a href=\"https://www.metal-archives.com/albums/Adramelech/Human_Extermination/73550\">Human Extermination</a> <!-- 16.817602 -->",
+      "Demo"
+    )))
   );
 
   /**
@@ -175,7 +173,7 @@ public class MetallumFileHelper {
    */
   public static final ArtistTitleSearchResult SEARCH_RESULT = new ArtistTitleSearchResult(
     new LinkElement(ElementHelper.createLinkTypeElement(
-      "Adramelech", 
+      "Adramelech",
       "https://www.metal-archives.com/bands/Adramelech/2426"
     )), 
     new LinkElement(ElementHelper.createLinkTypeElement(
@@ -306,11 +304,11 @@ public class MetallumFileHelper {
    * @return the release title image
    * @throws IOException
    */
-  public static final byte[] readTitleCoverImage() throws IOException {
+  public static byte[] readTitleCoverImage() throws IOException {
     return readImage(TITLE_COVER_RESPONSE_FILE);
   }
 
-  private static final byte[] readImage(String filename) throws IOException {
+  private static byte[] readImage(String filename) throws IOException {
     final File file = new File(METALLUM_TEST_FILES_LOCATION + "/" + filename);
     return Files.readAllBytes(file.toPath());
   }

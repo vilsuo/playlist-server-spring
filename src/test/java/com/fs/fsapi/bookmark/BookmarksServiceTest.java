@@ -1,8 +1,11 @@
 package com.fs.fsapi.bookmark;
 
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,9 +23,6 @@ import com.fs.fsapi.exceptions.CustomParameterConstraintException;
 
 import static com.fs.fsapi.helpers.BookmarksFileHelper.*;
 import static com.fs.fsapi.helpers.ParsedAlbumHelper.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest(classes = {
   BookmarksService.class,
@@ -125,7 +125,7 @@ public class BookmarksServiceTest {
     }
 
     @Test
-    public void shouldThrowWhenHeaderDoesNotExistWithTheGivenTextContentTest() throws Exception {
+    public void shouldThrowWhenHeaderDoesNotExistWithTheGivenTextContentTest() {
       final ValidHeader header = ValidHeader.NON_EXISTING;
 
       CustomParameterConstraintException ex = assertThrows(
@@ -192,8 +192,8 @@ public class BookmarksServiceTest {
     @DisplayName("folder with a sub folder")
     public class WithSubFolders {
 
-      private ValidHeader header = ValidHeader.PARENT;
-      private AlbumParseResult[] expectations = VALID_FILE_PARENT_RESULTS;
+      private final ValidHeader header = ValidHeader.PARENT;
+      private final AlbumParseResult[] expectations = VALID_FILE_PARENT_RESULTS;
       
       private List<AlbumParseResult> actuals;
 

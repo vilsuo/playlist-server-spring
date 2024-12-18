@@ -52,7 +52,7 @@ public class AlbumHelper {
     );
   }
 
-  public static final AlbumCreation ALBUM_CREATION_VALUE_2() {
+  public static AlbumCreation ALBUM_CREATION_VALUE_2() {
     return new AlbumCreation(
       "qJVktESKhKY",
       "Devastation",
@@ -66,7 +66,7 @@ public class AlbumHelper {
    * Has invalid video id {@link AlbumHelper#MOCK_INVALID_VIDEO_ID}.
    * @return
    */
-  public static final AlbumCreation INVALID_ALBUM_CREATION_VALUE() {
+  public static AlbumCreation INVALID_ALBUM_CREATION_VALUE() {
     return new AlbumCreation(
       MOCK_INVALID_VIDEO_ID,
       "Black Crucifixion",

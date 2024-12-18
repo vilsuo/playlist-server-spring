@@ -12,18 +12,6 @@ import com.fs.fsapi.metallum.result.search.ReleaseType;
 public class ResultRanker {
 
   /**
-   * The maximum number of results to be checked
-   * 
-   * (metallum single page limit is 200 results)
-   */
-  private final int RESULT_LIMIT = 200;
-
-  /**
-   * A stop value for value function
-   */
-  private final int RESULT_THRESHOLD = 0;
-
-  /**
    * Find a single best search result
    * 
    * @param results search results
@@ -37,10 +25,13 @@ public class ResultRanker {
     String artist,
     String title
   ) {
+    final int RESULT_THRESHOLD = 0; // stop only on exact match
+    final int RESULT_LIMIT = 200; // metallum single page limit is 200 results
+
     return argMin(results,
       new Function<ArtistTitleSearchResult, Integer>() {
         public Integer apply(ArtistTitleSearchResult result) {
-          // case insensitive
+          // case-insensitive
           final int artistDist = levDist(artist.toUpperCase(), result.getArtist().toUpperCase());
           final int titleDist = levDist(title.toUpperCase(), result.getTitle().toUpperCase());
 
@@ -51,7 +42,7 @@ public class ResultRanker {
             ? totalDist + punishByResultType(result)
             : totalDist;
         };
-      }
+      }, RESULT_THRESHOLD, RESULT_LIMIT
     );
   }
 
@@ -59,35 +50,17 @@ public class ResultRanker {
 
   private int punishByResultType(ArtistTitleSearchResult result) {
     final ReleaseType releaseType = result.getReleaseType();
-    switch (releaseType) {
-      case FULL_LENGTH:
-        return 0;
-
-      case DEMO:
-      case EP:
-        return 1;
-
-      case COMPILATION:
-      case SINGLE:
-      case SPLIT:
-        return 2;
-
-      case BOXED_SET:
-      case COLLABORATION:
-        return 3;
-
-      case LIVE_ALBUM:
-        return 4;
-
-      case VIDEO:
-      case SPLIT_VIDEO:
-        return 5;
-
-      default:
-        throw new IllegalStateException(
-          "Unexpected Release type '" + releaseType + "'"
-        );
-    }
+      return switch (releaseType) {
+          case FULL_LENGTH -> 0;
+          case DEMO, EP -> 1;
+          case COMPILATION, SINGLE, SPLIT -> 2;
+          case BOXED_SET, COLLABORATION -> 3;
+          case LIVE_ALBUM -> 4;
+          case VIDEO, SPLIT_VIDEO -> 5;
+          default -> throw new IllegalStateException(
+                  "Unexpected Release type '" + releaseType + "'"
+          );
+      };
   }
 
   // GENERAL
@@ -95,23 +68,25 @@ public class ResultRanker {
   /**
    * Get the value that produces the smallest value based on the value function
    * 
-   * @param <T>
-   * @param iterable the candidates
-   * @param valueFunc function that assigns an integer value to each
+   * @param <T>  the type of candidate
+   * @param iterable  the candidates
+   * @param valueFunc  function that assigns an integer value to each
    *                  candidate
-   * @return
+   * @param threshold  a stop value for value function
+   * @param maxIterations  the maximum number of results to be checked
+   * @return the best candidate that minimizes the value function
    */
-  private <T> T argMin(Iterable<T> iterable, Function<T, Integer> valueFunc) {
+  private <T> T argMin(Iterable<T> iterable, Function<T, Integer> valueFunc, int threshold, int maxIterations) {
     T best = null;
     int minValue = Integer.MAX_VALUE;
 
     int currIdx = 0;
     var iter = iterable.iterator();
-    while (iter.hasNext() && currIdx < RESULT_LIMIT) {
+    while (iter.hasNext() && currIdx < maxIterations) {
       T elem = iter.next();
 
       final int value = valueFunc.apply(elem);
-      if (value <= RESULT_THRESHOLD) { return elem; }
+      if (value <= threshold) { return elem; }
       else if (value < minValue) {
         best = elem;
         minValue = value;
@@ -125,8 +100,8 @@ public class ResultRanker {
   /**
    * Calculates the Levenshtein distance between two strings.
    * 
-   * @param a
-   * @param b
+   * @param a  first string
+   * @param b  second string
    * @return the minimum number of single-character edits (insertions, deletions 
    *         or substitutions) required to change one word into the other
    */

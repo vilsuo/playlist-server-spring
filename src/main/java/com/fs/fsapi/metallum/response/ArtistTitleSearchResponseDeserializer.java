@@ -20,7 +20,7 @@ public class ArtistTitleSearchResponseDeserializer extends StdDeserializer<Artis
   // response properties
   private final String ERROR_PROPERTY = "error"; 
   private final String TOTAL_RECORDS_PROPERTY = "iTotalRecords";
-  private final String TOTAL_DISPLAY_RECORDS_PROPERTY = "iTotalRecords";
+  private final String TOTAL_DISPLAY_RECORDS_PROPERTY = "iTotalDisplayRecords";
   private final String DATA_PROPERTY = "aaData";
   //private final String ECHO_PROPERTY = "sEcho"; // unknown int value in response...
 

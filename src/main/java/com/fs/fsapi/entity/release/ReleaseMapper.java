@@ -13,5 +13,4 @@ public interface ReleaseMapper {
 
     public Release releaseParseResultToRelease(ReleaseParseResult source);
 
-    public void updateReleaseFromReleaseUpdate(ReleaseUpdate source, @MappingTarget Release target);
 }

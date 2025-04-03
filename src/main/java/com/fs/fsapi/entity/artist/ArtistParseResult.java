@@ -1,6 +1,5 @@
 package com.fs.fsapi.entity.artist;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -8,7 +7,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ArtistParseResult {
 
-    @NotNull
     private String metallumId;
 
     private String name;

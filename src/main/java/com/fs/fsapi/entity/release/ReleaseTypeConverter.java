@@ -21,6 +21,6 @@ public class ReleaseTypeConverter implements AttributeConverter<ReleaseType, Str
             return null;
         }
 
-        return ReleaseType.valueOfLabel(dbData).orElseGet(() -> null);
+        return ReleaseType.valueOfLabel(dbData).orElse(null);
     }
 }

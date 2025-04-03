@@ -31,7 +31,7 @@ public enum ReleaseType {
     }
   }
 
-  private ReleaseType(String label) {
+  ReleaseType(String label) {
     this.label = label;
   }
 

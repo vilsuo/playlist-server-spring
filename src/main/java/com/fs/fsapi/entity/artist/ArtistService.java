@@ -1,39 +1,46 @@
 package com.fs.fsapi.entity.artist;
 
+import com.fs.fsapi.entity.artist.repository.ArtistRepository;
+import com.fs.fsapi.entity.release.Release;
+import com.fs.fsapi.entity.release.ReleaseParseResult;
+import com.fs.fsapi.entity.release.ReleaseService;
 import com.fs.fsapi.exceptions.CustomDataNotFoundException;
 import com.fs.fsapi.exceptions.CustomParameterConstraintException;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
+import java.util.Optional;
 
-@Validated
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ArtistService {
 
     private final ArtistRepository repository;
 
+    private final ReleaseService service;
+
     private final ArtistMapper mapper;
 
-    @NonNull
+
     public List<Artist> findAll() {
-        return repository.findAll();
+        return repository.findArtistsWithReleases();
     }
 
-    @NonNull
-    public Artist find(@NotNull Integer id) {
+    private Artist findOne(Integer id) {
         return repository
             .findById(id)
             .orElseThrow(() -> new CustomDataNotFoundException("Artist was not found"));
     }
 
-    @NonNull
-    public Artist create(@Valid @NotNull ArtistParseResult values) {
+    public Optional<Artist> findByMetallumId(String metallumId) {
+        return repository.findByMetallumId(metallumId);
+    }
+
+    private Artist prepare(ArtistParseResult values) {
         final Artist artist = mapper.artistParseResultToArtist(values);
 
         final String metallumId = artist.getMetallumId();
@@ -43,33 +50,59 @@ public class ArtistService {
             );
         }
 
+        return artist;
+    }
+
+    // new Artist & Release
+    public Artist create(
+        ArtistParseResult artistParseResult,
+        ReleaseParseResult releaseParseResult
+    ) {
+        final Artist artist = prepare(artistParseResult);
+        final Release release = service.prepare(releaseParseResult);
+        artist.addRelease(release);
+
+        // cascade persist
         return repository.save(artist);
     }
 
-    @NonNull
-    public Artist update(@NotNull Integer id, @Valid @NotNull ArtistUpdate values) {
-        final Artist artist = repository
-            .findById(id)
-            .orElseThrow(() -> new CustomDataNotFoundException("Artist was not found"));
+    // new Release to an existing Artist
+    public Artist addRelease(String artistMetallumId, ReleaseParseResult parsedRelease) {
+        final Artist artist = findByMetallumId(artistMetallumId)
+            .orElseThrow(() -> new IllegalStateException(
+                "Expected Artist with metallum id '" + artistMetallumId + "' to exist"
+            ));
 
-        // can not update to an existing metallumId
-        final String newMetallumId = values.getMetallumId();
-        if (!artist.getMetallumId().equals(newMetallumId)) {
-            repository
-                .findByMetallumId(newMetallumId)
-                .ifPresent(found -> {
-                    throw new CustomParameterConstraintException(
-                        "Artist with metallumId '" + newMetallumId + "' already exists"
-                    );
-                });
+        final Release release = service.prepare(parsedRelease);
+        artist.addRelease(release);
+
+        // artist is managed, no need to save...?
+        return artist;
+    }
+
+    /**
+     * Delete Release by id. Deletes also the Artist attached to the Release if there 
+     * are no other Releases
+     *
+     * @param releaseId  the id of the Release to be deleted
+     * @return  true if Artist was deleted, false otherwise
+     */
+    public boolean delete(Integer releaseId) {
+        final Release release = service.findOne(releaseId);
+        final Artist artist = release.getArtist();
+
+        artist.removeRelease(release);
+        if (!artist.hasReleases()) {
+            // cascade delete
+            log.info("Removing artist " + artist);
+
+            repository.delete(artist);
+            return true;
+        } else {
+            // needed? does orphan removal work?
+            repository.save(artist);
         }
 
-        mapper.updateArtistFromArtistUpdate(values, artist);
-        return repository.save(artist);
-    }
-
-    // deletes also all Releases
-    public void delete(@NotNull Integer id) {
-        repository.deleteById(id);
+        return false;
     }
 }

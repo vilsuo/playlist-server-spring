@@ -12,6 +12,4 @@ import org.mapstruct.ReportingPolicy;
 public interface ArtistMapper {
 
     public Artist artistParseResultToArtist(ArtistParseResult source);
-
-    public void updateArtistFromArtistUpdate(ArtistUpdate source, @MappingTarget Artist target);
 }
